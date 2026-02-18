@@ -1,6 +1,8 @@
-========
-Overview
-========
+=====================================
+Easy Energy System Planing - eesyPlan
+=====================================
+
+The Easy Energy System Planing library is part of the `oemof <https://github.com/oemof/>`_ family.
 
 .. start-badges
 
