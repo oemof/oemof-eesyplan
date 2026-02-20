@@ -11,6 +11,7 @@ from oemof.solph import EnergySystem
 from oemof.solph import Model
 from oemof.solph import Results
 from oemof.tools.debugging import ExperimentalFeatureWarning
+from oemof.tools.logger import define_logging
 from oemof.visio import ESGraphRenderer
 
 from placades import TYPEMAP
@@ -28,9 +29,10 @@ def create_energy_system_from_dp(path, plot="graph"):
         attributemap={},
         typemap=TYPEMAP,
     )
-
     if plot == "graph":
-        graph.create_nx_graph(es, filename=path.with_suffix(".graphml"))
+        graph_path = path.with_suffix(".graphml")
+        logging.info(f"Writing graph to {graph_path}")
+        graph.create_nx_graph(es, filename=graph_path)
     elif plot == "visio":
         energy_system_graph = path.with_suffix(".png")
 
@@ -112,16 +114,23 @@ def main(path=None, plot="graph"):
     process_results(results)
     results_path = Path(Path(__file__).parent, "openPlan_results")
     export_results(results, export_path=results_path)
-    import_results(scenario_dir=path, results_path=results_path)
+    return import_results(scenario_dir=path, results_path=results_path)
 
 
 if __name__ == "__main__":
+    define_logging()
     parser = argparse.ArgumentParser(
         prog="solve datapackage",
         description="Simulate an energy system from a datapackage",
     )
-    parser.add_argument("filename")
-    parser.add_argument("-p", "--plot", default="visio", type=str)
+    parser.add_argument("-f", "--filename", default=None, type=str)
+    parser.add_argument("-p", "--plot", default="graph", type=str)
 
     args = parser.parse_args()
-    main(path=Path(args.filename) / "datapackage.json", plot="visio")
+
+    if args.filename is not None:
+        my_path = Path(args.filename, "datapackage.json")
+    else:
+        my_path = None
+
+    main(path=my_path, plot="graph")
