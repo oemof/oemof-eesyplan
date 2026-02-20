@@ -2,12 +2,11 @@ import warnings
 from pathlib import Path
 
 from oemof.datapackage import datapackage  # noqa
+from oemof.eesyplan import TYPEMAP
 from oemof.network import graph
 from oemof.solph import EnergySystem
 from oemof.tools.debugging import ExperimentalFeatureWarning
 from oemof.visio import ESGraphRenderer
-
-from oemof.eesyplan import TYPEMAP
 
 warnings.filterwarnings("ignore", category=ExperimentalFeatureWarning)
 

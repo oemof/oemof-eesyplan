@@ -6,6 +6,9 @@ from pathlib import Path
 from tkinter import filedialog
 
 from oemof.datapackage import datapackage  # noqa
+from oemof.eesyplan import TYPEMAP
+from oemof.eesyplan import export_results
+from oemof.eesyplan import import_results
 from oemof.network import graph
 from oemof.solph import EnergySystem
 from oemof.solph import Model
@@ -13,10 +16,6 @@ from oemof.solph import Results
 from oemof.tools.debugging import ExperimentalFeatureWarning
 from oemof.tools.logger import define_logging
 from oemof.visio import ESGraphRenderer
-
-from oemof.eesyplan import TYPEMAP
-from oemof.eesyplan import export_results
-from oemof.eesyplan import import_results
 
 warnings.filterwarnings("ignore", category=ExperimentalFeatureWarning)
 

@@ -1,13 +1,11 @@
 import logging
 
 import pandas as pd
+
 from oemof.datapackage import datapackage  # noqa
 from oemof.datapackage.resultpackage import read
 from oemof.datapackage.resultpackage import write
-
-from oemof.eesyplan import (
-    create_energy_system_from_dp,
-)
+from oemof.eesyplan import create_energy_system_from_dp
 
 
 def process_results(results):
