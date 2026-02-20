@@ -1,11 +1,10 @@
 import logging
+from pathlib import Path
 
 import pandas as pd
-
 from oemof.datapackage import datapackage  # noqa
 from oemof.datapackage.resultpackage import read
 from oemof.datapackage.resultpackage import write
-from oemof.eesyplan import create_energy_system as create
 
 
 def process_results(results):
@@ -35,19 +34,16 @@ def process_results(results):
     print("Objective:", results["objective"])
 
 
-def export_results(results, export_path):
+def export_results(results, path):
     write.export_results_to_datapackage(
-        results=results, base_path=export_path, zip=False
+        results=results, base_path=path, zip=False
     )
-    return export_path
+    logging.info(f"Exported results to {path}")
 
 
-def import_results(scenario_dir, results_path):
-    results = read.import_results_from_resultpackage(results_path)
-
-    groups = create.create_energy_system_from_dp(
-        scenario_dir=scenario_dir, results_path=results_path
-    ).groups
+def import_results(path, es):
+    results = read.import_results_from_resultpackage(path)
+    groups = es.groups
     for key in results.keys():
         if isinstance(results[key], pd.DataFrame):
             results[key].rename(columns=groups, inplace=True)

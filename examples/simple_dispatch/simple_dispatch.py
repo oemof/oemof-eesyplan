@@ -1,24 +1,28 @@
 import logging
 from pathlib import Path
 
-import pandas as pd
-from simple_dispatch_dp import create_energy_system_from_dp
-from simple_dispatch_scripted import create_energy_system_sc
-
-from oemof.datapackage.resultpackage import read
-from oemof.datapackage.resultpackage import write
 from oemof.network import graph
 from oemof.solph import Model
 from oemof.solph import Results
 from oemof.tools.logger import define_logging
+from simple_dispatch_dp import create_energy_system_from_dp
+from simple_dispatch_scripted import create_energy_system_sc
+
+from oemof.eesyplan import export_results
+from oemof.eesyplan import import_results
 
 
 def main(kind, debug=False):
     results = optimise(kind=kind, debug=debug)
     print("'*************** First time **************")
     process_results(results)  # original result object
-    path = export_results(results)
-    results = import_results(path)
+    export_path = Path(Path(__file__).parent, "openPlan_results")
+    export_results(results, path=export_path)
+    if kind == "dp":
+        es = create_energy_system_from_dp()
+    else:
+        es = create_energy_system_sc()
+    results = import_results(export_path, es=es)
     print("'*************** Second time **************")
     process_results(results)  # imported result object
 
@@ -76,24 +80,6 @@ def process_results(results):
         print("Invest:", results["invest"])
 
     print("Objective:", results["objective"])
-
-
-def export_results(results):
-    export_path = Path(Path(__file__).parent, "openPlan_results")
-    write.export_results_to_datapackage(
-        results=results, base_path=export_path, zip=False
-    )
-    return export_path
-
-
-def import_results(path):
-    results = read.import_results_from_resultpackage(path)
-    groups = create_energy_system_from_dp().groups
-    for key in results.keys():
-        if isinstance(results[key], pd.DataFrame):
-            results[key].rename(columns=groups, inplace=True)
-    logging.info("Imported results")
-    return results
 
 
 if __name__ == "__main__":

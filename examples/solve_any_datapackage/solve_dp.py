@@ -5,10 +5,9 @@ import warnings
 from pathlib import Path
 from tkinter import filedialog
 
+import pandas as pd
+
 from oemof.datapackage import datapackage  # noqa
-from oemof.eesyplan import TYPEMAP
-from oemof.eesyplan import export_results
-from oemof.eesyplan import import_results
 from oemof.network import graph
 from oemof.solph import EnergySystem
 from oemof.solph import Model
@@ -16,6 +15,11 @@ from oemof.solph import Results
 from oemof.tools.debugging import ExperimentalFeatureWarning
 from oemof.tools.logger import define_logging
 from oemof.visio import ESGraphRenderer
+
+from oemof.eesyplan import TYPEMAP
+from oemof.eesyplan import CarrierBus
+from oemof.eesyplan import export_results
+from oemof.eesyplan import import_results
 
 warnings.filterwarnings("ignore", category=ExperimentalFeatureWarning)
 
@@ -62,26 +66,21 @@ def optimise(energy_system, solver="cbc", debug=False):
 
 
 def process_results(results):
-    rdf = results["flow"]
+    logging.info("Process results")
+    flows = results["flow"]
+    nodes = {b[0] for b in flows.columns} | {b[1] for b in flows.columns}
 
-    for n, m in [(0, 1), (1, 0)]:
-        rdf.rename(
-            columns={
-                c[n]: c[n].label[-1]
-                for c in rdf.columns
-                if isinstance(c[n].label, tuple)
-                and not isinstance(c[m].label, tuple)
-            },
-            level=n,
-            inplace=True,
+    balances = {}
+    for node in nodes:
+        in_flow = flows[[c for c in flows.columns if c[0] == node]]
+        out_flow = flows[[c for c in flows.columns if c[1] == node]]
+        balances[node] = pd.concat(
+            [in_flow, out_flow], keys=["in", "out"], axis=1
         )
-    elec_in = rdf[[c for c in rdf.columns if c[0] == "electricity"]]
-    elec_out = rdf[[c for c in rdf.columns if c[1] == "electricity"]]
-    print(elec_in.sum())
-    print(elec_out.sum())
-    print("*****************")
-    print("Input:", round(elec_in.sum().sum()))
-    print("Output:", round(elec_out.sum().sum()))
+    balances = pd.DataFrame(pd.concat(
+        balances.values(), keys=balances.keys(), axis=1
+    ))
+    print(balances.sum())
     print("Objective:", results["objective"])
 
 
@@ -112,8 +111,9 @@ def main(path=None, plot="graph"):
     results = optimise(es)
     process_results(results)
     results_path = Path(Path(__file__).parent, "openPlan_results")
-    export_results(results, export_path=results_path)
-    return import_results(scenario_dir=path, results_path=results_path)
+    export_results(results, path=results_path)
+    imported_results = import_results(path=results_path, es=es)
+    process_results(imported_results)
 
 
 if __name__ == "__main__":
