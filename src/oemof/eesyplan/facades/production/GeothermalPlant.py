@@ -1,4 +1,4 @@
-from oemof.eesyplan import _create_invest_if_wanted
+from oemof.eesyplan.investment import _create_invest_if_wanted
 from oemof.solph import Flow
 from oemof.solph.components import Source
 

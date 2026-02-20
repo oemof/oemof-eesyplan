@@ -1,6 +1,8 @@
 from pathlib import Path
 
 import pandas as pd
+from oemof.solph import EnergySystem
+from oemof.solph import create_time_index
 
 from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import Demand
@@ -9,8 +11,6 @@ from oemof.eesyplan import ElectricalStorage
 from oemof.eesyplan import Project
 from oemof.eesyplan import PvPlant
 from oemof.eesyplan import WindTurbine
-from oemof.solph import EnergySystem
-from oemof.solph import create_time_index
 
 DATA_PATH = Path("data")
 

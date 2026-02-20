@@ -1,11 +1,11 @@
-from oemof.eesyplan import check_parameter
+from oemof.eesyplan.type_checks import check_parameter
 
 try:
     from oemof.tools.economics import annuity
 except ModuleNotFoundError:
     annuity = None
 
-from oemof.eesyplan import calculate_annuity_mvs
+from oemof.eesyplan.investment import calculate_annuity_mvs
 
 
 class Project:

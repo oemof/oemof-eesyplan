@@ -2,15 +2,14 @@ import logging
 from pathlib import Path
 
 import pandas as pd
-from simple_dispatch_dp import create_energy_system_from_dp
-from simple_dispatch_scripted import create_energy_system_sc
-
 from oemof.datapackage.resultpackage import read
 from oemof.datapackage.resultpackage import write
 from oemof.network import graph
 from oemof.solph import Model
 from oemof.solph import Results
 from oemof.tools.logger import define_logging
+from simple_dispatch_dp import create_energy_system_from_dp
+from simple_dispatch_scripted import create_energy_system_sc
 
 
 def main(kind, debug=False):

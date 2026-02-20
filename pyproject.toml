@@ -63,7 +63,7 @@ requires-python = ">=3.10"
 dependencies = [
     "oemof-network",
     "oemof-solph",
-    "oemof-datapackage",
+    "oemof-datapackage@git+https://github.com/oemof/oemof-datapackage.git@add-result-package",
 ]
 
 [project.optional-dependencies]

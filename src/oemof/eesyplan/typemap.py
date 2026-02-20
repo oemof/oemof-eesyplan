@@ -1,5 +1,6 @@
+from oemof.solph.components import Source
+
 from oemof.eesyplan import CHP
-from oemof.eesyplan import Battery
 from oemof.eesyplan import BiogasPlant
 from oemof.eesyplan import Boiler
 from oemof.eesyplan import CarrierBus
@@ -27,11 +28,10 @@ from oemof.eesyplan import PvPlant
 from oemof.eesyplan import SolarThermalPlant
 from oemof.eesyplan import ThermalStorage
 from oemof.eesyplan import WindTurbine
-from oemof.solph.components import Source
 
 TYPEMAP = {
     "CHP": CHP,
-    "Battery": Battery,
+    "Battery": ElectricalStorage,
     "CarrierBus": CarrierBus,
     "demand": Demand,
     "Source": Source,
