@@ -2,7 +2,7 @@ import warnings
 from pathlib import Path
 
 from oemof.datapackage import datapackage  # noqa
-from oemof.eesyplan import TYPEMAP
+from oemof.eesyplan.typemap import TYPEMAP
 from oemof.network import graph
 from oemof.solph import EnergySystem
 from oemof.tools.debugging import ExperimentalFeatureWarning

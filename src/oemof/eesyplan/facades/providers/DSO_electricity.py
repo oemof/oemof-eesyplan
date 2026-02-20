@@ -1,4 +1,4 @@
-from oemof.eesyplan import DSO
+from oemof.eesyplan.facades.providers.dso import DSO
 
 
 class DsoElectricity(DSO):
