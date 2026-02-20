@@ -67,7 +67,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest", "coverage", "pvlib", "demandlib", "tox"]
+test = ["pytest", "coverage", "pvlib", "demandlib", "tox", "oemof-visio"]
 dummy = ["oemof"]
 docs = ["sphinx", "sphinx_rtd_theme"]
 examples = []

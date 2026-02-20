@@ -16,7 +16,7 @@ The Easy Energy System Planing library is part of the `oemof <https://github.com
     * - package
       - |version| |wheel| |supported-versions| |supported-implementations| |commits-since|
 .. |docs| image:: https://readthedocs.org/projects/oemof-eesyplan/badge/?style=flat
-    :target: https://readthedocs.org/projects/oemof-eesyplan/
+    :target: https://oemof-eesyplan.readthedocs.io/en/latest/
     :alt: Documentation Status
 
 .. |github-actions| image:: https://github.com/oemof/oemof-eesyplan/actions/workflows/github-actions.yml/badge.svg
@@ -71,7 +71,7 @@ Documentation
 =============
 
 
-https://oemof-eesyplan.readthedocs.io/
+https://oemof-eesyplan.readthedocs.io/en/latest/
 
 
 Development

@@ -2,6 +2,8 @@
 
 __version__ = "0.0.1"
 
+from oemof.eesyplan.datapackage import create_energy_system
+from oemof.eesyplan.datapackage import results
 from oemof.eesyplan.facades.buses.carrier import CarrierBus
 from oemof.eesyplan.facades.compansation.excess import Excess
 from oemof.eesyplan.facades.compansation.shortage import Shortage
@@ -72,4 +74,6 @@ __all__ = [
     "SolarThermalPlant",
     "ThermalStorage",
     "WindTurbine",
+    "create_energy_system",
+    "results",
 ]
