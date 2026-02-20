@@ -23,9 +23,9 @@ The Easy Energy System Planing library is part of the `oemof <https://github.com
     :alt: GitHub Actions Build Status
     :target: https://github.com/oemof/oemof-eesyplan/actions
 
-.. |codecov| image:: https://raw.githubusercontent.com/oemof/oemof-eesyplan/coverage-badge/coverage.svg
-    :alt: Coverage Status
-    :target: https://github.com/oemof/oemof-eesyplan/actions
+.. image:: https://codecov.io/gh/oemof/oemof-eesyplan/branch/dev/graph/badge.svg
+   :target: https://codecov.io/gh/oemof/oemof-eesyplan
+   :alt: Coverage Status
 
 .. |version| image:: https://img.shields.io/pypi/v/oemof-eesyplan.svg
     :alt: PyPI Package latest release
