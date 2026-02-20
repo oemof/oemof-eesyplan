@@ -71,7 +71,11 @@ jobs:
       - name: test
 
         run: tox -e ${{ matrix.tox_env }} -v
-      - name: upload coverage
+
+      - name: Run tests
+        run: npx jest --coverage
+
+      - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
