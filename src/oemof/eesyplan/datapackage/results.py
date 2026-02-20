@@ -1,7 +1,7 @@
 import logging
-from pathlib import Path
 
 import pandas as pd
+
 from oemof.datapackage import datapackage  # noqa
 from oemof.datapackage.resultpackage import read
 from oemof.datapackage.resultpackage import write

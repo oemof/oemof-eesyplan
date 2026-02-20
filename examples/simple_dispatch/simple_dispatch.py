@@ -1,28 +1,29 @@
 import logging
 from pathlib import Path
 
-from oemof.network import graph
-from oemof.solph import Model
-from oemof.solph import Results
-from oemof.tools.logger import define_logging
 from simple_dispatch_dp import create_energy_system_from_dp
 from simple_dispatch_scripted import create_energy_system_sc
 
 from oemof.eesyplan import export_results
 from oemof.eesyplan import import_results
+from oemof.network import graph
+from oemof.solph import Model
+from oemof.solph import Results
+from oemof.tools.logger import define_logging
 
 
 def main(kind, debug=False):
     results = optimise(kind=kind, debug=debug)
     print("'*************** First time **************")
     process_results(results)  # original result object
-    export_path = Path(Path(__file__).parent, "openPlan_results")
-    export_results(results, path=export_path)
+    results_path = Path(Path.home(), "openplan", "openPlan_results")
+    results_path.mkdir(parents=True, exist_ok=True)
+    export_results(results, path=results_path)
     if kind == "dp":
         es = create_energy_system_from_dp()
     else:
         es = create_energy_system_sc()
-    results = import_results(export_path, es=es)
+    results = import_results(results_path, es=es)
     print("'*************** Second time **************")
     process_results(results)  # imported result object
 

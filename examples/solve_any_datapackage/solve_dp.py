@@ -8,6 +8,9 @@ from tkinter import filedialog
 import pandas as pd
 
 from oemof.datapackage import datapackage  # noqa
+from oemof.eesyplan import TYPEMAP
+from oemof.eesyplan import export_results
+from oemof.eesyplan import import_results
 from oemof.network import graph
 from oemof.solph import EnergySystem
 from oemof.solph import Model
@@ -15,11 +18,6 @@ from oemof.solph import Results
 from oemof.tools.debugging import ExperimentalFeatureWarning
 from oemof.tools.logger import define_logging
 from oemof.visio import ESGraphRenderer
-
-from oemof.eesyplan import TYPEMAP
-from oemof.eesyplan import CarrierBus
-from oemof.eesyplan import export_results
-from oemof.eesyplan import import_results
 
 warnings.filterwarnings("ignore", category=ExperimentalFeatureWarning)
 
@@ -77,9 +75,9 @@ def process_results(results):
         balances[node] = pd.concat(
             [in_flow, out_flow], keys=["in", "out"], axis=1
         )
-    balances = pd.DataFrame(pd.concat(
-        balances.values(), keys=balances.keys(), axis=1
-    ))
+    balances = pd.DataFrame(
+        pd.concat(balances.values(), keys=balances.keys(), axis=1)
+    )
     print(balances.sum())
     print("Objective:", results["objective"])
 
@@ -110,7 +108,8 @@ def main(path=None, plot="graph"):
     es = create_energy_system_from_dp(path, plot=plot)
     results = optimise(es)
     process_results(results)
-    results_path = Path(Path(__file__).parent, "openPlan_results")
+    results_path = Path(Path.home(), "openplan", "openPlan_results")
+    results_path.mkdir(parents=True, exist_ok=True)
     export_results(results, path=results_path)
     imported_results = import_results(path=results_path, es=es)
     process_results(imported_results)
