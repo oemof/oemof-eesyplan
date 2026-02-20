@@ -4,4 +4,4 @@ Installation
 
 At the command line::
 
-    pip install placades
+    pip install oemof-eesyplan

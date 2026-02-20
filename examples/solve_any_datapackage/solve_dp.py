@@ -14,9 +14,9 @@ from oemof.tools.debugging import ExperimentalFeatureWarning
 from oemof.tools.logger import define_logging
 from oemof.visio import ESGraphRenderer
 
-from placades import TYPEMAP
-from placades.datapackage.results import export_results
-from placades.datapackage.results import import_results
+from oemof.eesyplan import TYPEMAP
+from oemof.eesyplan import export_results
+from oemof.eesyplan import import_results
 
 warnings.filterwarnings("ignore", category=ExperimentalFeatureWarning)
 

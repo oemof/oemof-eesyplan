@@ -8,7 +8,7 @@ little bit helps, and credit will always be given.
 Bug reports
 ===========
 
-When `reporting a bug <https://github.com/open-plan-tool/placades/issues>`_ please include:
+When `reporting a bug <https://github.com/oemof/oemof-eesyplan/issues>`_ please include:
 
     * Your operating system name and version.
     * Any details about your local setup that might be helpful in troubleshooting.
@@ -17,14 +17,14 @@ When `reporting a bug <https://github.com/open-plan-tool/placades/issues>`_ plea
 Documentation improvements
 ==========================
 
-placades could always use more documentation, whether as part of the
-official placades docs, in docstrings, or even on the web in blog posts,
+oemof-eesyplan could always use more documentation, whether as part of the
+official oemof-eesyplan docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Feature requests and feedback
 =============================
 
-The best way to send feedback is to file an issue at https://github.com/open-plan-tool/placades/issues.
+The best way to send feedback is to file an issue at https://github.com/oemof/oemof-eesyplan/issues.
 
 If you are proposing a feature:
 
@@ -35,13 +35,13 @@ If you are proposing a feature:
 Development
 ===========
 
-To set up `placades` for local development:
+To set up `oemof-eesyplan` for local development:
 
-1. Fork `placades <https://github.com/open-plan-tool/placades>`_
+1. Fork `oemof-eesyplan <https://github.com/oemof/oemof-eesyplan>`_
    (look for the "Fork" button).
 2. Clone your fork locally::
 
-    git clone git@github.com:YOURGITHUBNAME/placades.git
+    git clone git@github.com:YOURGITHUBNAME/oemof-eesyplan.git
 
 3. Create a branch for local development::
 

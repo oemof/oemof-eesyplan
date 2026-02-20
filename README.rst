@@ -15,37 +15,37 @@ The Easy Energy System Planing library is part of the `oemof <https://github.com
       - |github-actions|
     * - package
       - |version| |wheel| |supported-versions| |supported-implementations| |commits-since|
-.. |docs| image:: https://readthedocs.org/projects/placades/badge/?style=flat
-    :target: https://readthedocs.org/projects/placades/
+.. |docs| image:: https://readthedocs.org/projects/oemof-eesyplan/badge/?style=flat
+    :target: https://readthedocs.org/projects/oemof-eesyplan/
     :alt: Documentation Status
 
-.. |github-actions| image:: https://github.com/open-plan-tool/placades/actions/workflows/github-actions.yml/badge.svg
+.. |github-actions| image:: https://github.com/oemof/oemof-eesyplan/actions/workflows/github-actions.yml/badge.svg
     :alt: GitHub Actions Build Status
-    :target: https://github.com/open-plan-tool/placades/actions
+    :target: https://github.com/oemof/oemof-eesyplan/actions
 
-.. |codecov| image:: https://raw.githubusercontent.com/open-plan-tool/placades/coverage-badge/coverage.svg
+.. |codecov| image:: https://raw.githubusercontent.com/oemof/oemof-eesyplan/coverage-badge/coverage.svg
     :alt: Coverage Status
-    :target: https://github.com/open-plan-tool/placades/actions
+    :target: https://github.com/oemof/oemof-eesyplan/actions
 
-.. |version| image:: https://img.shields.io/pypi/v/placades.svg
+.. |version| image:: https://img.shields.io/pypi/v/oemof-eesyplan.svg
     :alt: PyPI Package latest release
-    :target: https://pypi.org/project/placades
+    :target: https://pypi.org/project/oemof-eesyplan
 
-.. |wheel| image:: https://img.shields.io/pypi/wheel/placades.svg
+.. |wheel| image:: https://img.shields.io/pypi/wheel/oemof-eesyplan.svg
     :alt: PyPI Wheel
-    :target: https://pypi.org/project/placades
+    :target: https://pypi.org/project/oemof-eesyplan
 
-.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/placades.svg
+.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/oemof-eesyplan.svg
     :alt: Supported versions
-    :target: https://pypi.org/project/placades
+    :target: https://pypi.org/project/oemof-eesyplan
 
-.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/placades.svg
+.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/oemof-eesyplan.svg
     :alt: Supported implementations
-    :target: https://pypi.org/project/placades
+    :target: https://pypi.org/project/oemof-eesyplan
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/open-plan-tool/placades/v0.0.0.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/oemof/oemof-eesyplan/v0.0.0.svg
     :alt: Commits since latest release
-    :target: https://github.com/open-plan-tool/placades/compare/v0.0.0...main
+    :target: https://github.com/oemof/oemof-eesyplan/compare/v0.0.0...main
 
 
 
@@ -60,18 +60,18 @@ Installation
 
 ::
 
-    pip install placades
+    pip install oemof-eesyplan
 
 You can also install the in-development version with::
 
-    pip install https://github.com/open-plan-tool/placades/archive/main.zip
+    pip install https://github.com/oemof/oemof-eesyplan/archive/main.zip
 
 
 Documentation
 =============
 
 
-https://placades.readthedocs.io/
+https://oemof-eesyplan.readthedocs.io/
 
 
 Development

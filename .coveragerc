@@ -6,7 +6,7 @@ source =
 [run]
 branch = true
 source =
-    placades
+    src
     tests
 parallel = true
 

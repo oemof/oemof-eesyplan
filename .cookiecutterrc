@@ -5,14 +5,14 @@
 # automatically for any template). To use it:
 #
 #    pip install cookiepatcher
-#    cookiepatcher gh:ionelmc/cookiecutter-pylibrary placades
+#    cookiepatcher gh:ionelmc/cookiecutter-pylibrary oemof.eesyplan
 #
 # See:
 #    https://pypi.org/project/cookiepatcher
 #
 # Alternatively, you can run:
 #
-#    cookiecutter --overwrite-if-exists --config-file=placades/.cookiecutterrc gh:ionelmc/cookiecutter-pylibrary
+#    cookiecutter --overwrite-if-exists --config-file=oemof.eesyplan/.cookiecutterrc gh:ionelmc/cookiecutter-pylibrary
 
 default_context:
     c_extension_optional: "no"
@@ -22,9 +22,9 @@ default_context:
     codeclimate: "no"
     codecov: "yes"
     command_line_interface: "no"
-    command_line_interface_bin_name: "placades"
+    command_line_interface_bin_name: "oemof.eesyplan"
     coveralls: "no"
-    distribution_name: "placades"
+    distribution_name: "oemof.eesyplan"
     email: "MAIL@OPEN.PLAN:DE"
     formatter_quote_style: "double"
     full_name: "Open Plan Community"
@@ -34,9 +34,9 @@ default_context:
     github_actions_windows: "yes"
     license: "MIT license"
     module_name: "core"
-    package_name: "placades"
+    package_name: "oemof.eesyplan"
     pre_commit: "yes"
-    project_name: "placades"
+    project_name: "oemof.eesyplan"
     project_short_description: "SHORT DESCRIPTION"
     pypi_badge: "yes"
     pypi_disable_upload: "no"
@@ -44,12 +44,12 @@ default_context:
     repo_hosting: "github.com"
     repo_hosting_domain: "github.com"
     repo_main_branch: "main"
-    repo_name: "placades"
+    repo_name: "oemof.eesyplan"
     repo_username: "open-plan-tool"
     scrutinizer: "no"
     setup_py_uses_setuptools_scm: "no"
     sphinx_docs: "yes"
-    sphinx_docs_hosting: "https://placades.readthedocs.io/"
+    sphinx_docs_hosting: "https://oemof.eesyplan.readthedocs.io/"
     sphinx_doctest: "no"
     sphinx_theme: "furo"
     test_matrix_separate_coverage: "no"

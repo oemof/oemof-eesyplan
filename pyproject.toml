@@ -1,21 +1,36 @@
 [build-system]
-requires = [
-    "setuptools>=69",
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.sdist]
+include = [
+  ".coveragerc",
+  ".editorconfig",
+  ".readthedocs.yml",
+  ".pre-commit-config.yaml",
+  "tox.ini",
+  "AUTHORS.rst",
+  "CHANGELOG.rst",
+  "CONTRIBUTING.rst",
+  "LICENSE",
+  "README.rst",
+  "examples/",
+  "docs/",
+  "src/",
+  "tests/",
 ]
-build-backend = "setuptools.build_meta"
+exclude = ["docs/_build", "**/*.egg-info"]
 
 [project]
-dynamic = [
-    "readme",
-]
-name = "placades"
-version = "0.0.0"
+name = "oemof.eesyplan"
+dynamic = ["readme","version"]
+description = "SHORT DESCRIPTION"
+readme = "README.rst"
+authors = [
+    { name = "Open Plan Community and oemof developer group", email = "CONTACT EMAIL" },
+version = "0.0.1"
 license = "MIT"
 license-files = ["LICENSE"]
-description = "SHORT DESCRIPTION"
-authors = [
-    { name = "Open Plan Community", email = "openplan@ifam.fraunhofer.de" },
-]
 classifiers = [
     # complete classifier list:
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -27,7 +42,6 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -42,23 +56,46 @@ requires-python = ">=3.10"
 dependencies = [
     "oemof-network",
     "oemof-solph",
+    "oemof-datapackage",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "pvlib", "demandlib", "tox"]
+test = ["pytest", "coverage", "pvlib", "demandlib", "tox"]
 dummy = ["oemof"]
+docs = ["sphinx", "sphinx_rtd_theme"]
+examples = []
 
 [project.urls]
-"Sources" = "https://github.com/open-plan-tool/placades"
-"Documentation" = "https://placades.readthedocs.io/"
-"Changelog" = "https://placades.readthedocs.io/en/latest/changelog.html"
-"Issue Tracker" = "https://github.com/open-plan-tool/placades/issues"
+Homepage = "https://github.com/oemof/oemof-eesyplan"
+Documentation = "https://oemof-eesyplan.readthedocs.io/"
+Changelog = "https://oemof-eesyplan.readthedocs.io/en/latest/changelog.html"
+"Issue Tracker" = "https://github.com/oemof/oemof-eesyplan/issues/"
 
 [tool.ruff]
 extend-exclude = ["static", "ci/templates"]
 line-length = 79
 src = ["src", "tests", "examples"]
-target-version = "py310"
+target-version = "py313"
+
+[tool.black]
+line-length = 79
+target-version = ['py310', 'py311', 'py312']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | ci
+)/
+'''
 
 [tool.ruff.lint.per-file-ignores]
 "ci/*" = ["S"]

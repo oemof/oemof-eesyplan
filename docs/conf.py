@@ -11,7 +11,7 @@ extensions = [
 ]
 source_suffix = ".rst"
 master_doc = "index"
-project = "placades"
+project = "oemof-eesyplan"
 year = "2025-2026"
 author = "Open Plan Community"
 copyright = f"{year}, {author}"
@@ -20,13 +20,13 @@ version = release = "0.0.0"
 pygments_style = "trac"
 templates_path = ["."]
 extlinks = {
-    "issue": ("https://github.com/open-plan-tool/placades/issues/%s", "#%s"),
-    "pr": ("https://github.com/open-plan-tool/placades/pull/%s", "PR #%s"),
+    "issue": ("https://github.com/oemof/oemof-eesyplan/issues/%s", "#%s"),
+    "pr": ("https://github.com/oemof/oemof-eesyplan/pull/%s", "PR #%s"),
 }
 
 html_theme = "furo"
 html_theme_options = {
-    "githuburl": "https://github.com/open-plan-tool/placades/",
+    "githuburl": "https://github.com/oemof/oemof-eesyplan/",
 }
 
 html_use_smartypants = True

@@ -4,13 +4,13 @@ import pandas as pd
 from oemof.solph import EnergySystem
 from oemof.solph import create_time_index
 
-from placades import CarrierBus
-from placades import Demand
-from placades import DsoElectricity
-from placades import ElectricalStorage
-from placades import Project
-from placades import PvPlant
-from placades import WindTurbine
+from oemof.eesyplan import CarrierBus
+from oemof.eesyplan import Demand
+from oemof.eesyplan import DsoElectricity
+from oemof.eesyplan import ElectricalStorage
+from oemof.eesyplan import Project
+from oemof.eesyplan import PvPlant
+from oemof.eesyplan import WindTurbine
 
 DATA_PATH = Path("data")
 

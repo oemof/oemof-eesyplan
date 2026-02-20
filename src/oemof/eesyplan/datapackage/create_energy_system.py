@@ -12,19 +12,20 @@ from oemof.eesyplan import TYPEMAP
 warnings.filterwarnings("ignore", category=ExperimentalFeatureWarning)
 
 
-def create_energy_system_from_dp():
-    results_path = Path(Path.home(), "eesyplan", "results")
-    scenario_name = "test_placade_example"
-    scenario_dir = "openPlan_package"
-    plot = "graph"  # "graph", "visio", None
+def create_energy_system_from_dp(
+    scenario_dir, results_path, scenario_name="scenario", plot=None
+):
+    # results_path = Path(Path.home(), "oemof-eesyplan", "results")
+    # scenario_dir = "openPlan_package"
+    # plot = "graph"  # "graph", "visio", None
 
     Path.mkdir(results_path, parents=True, exist_ok=True)
 
     # create energy system object from the datapackage
     es = EnergySystem.from_datapackage(
-        Path(scenario_dir, "datapackage.json"),
+        scenario_dir,  # Path(scenario_dir, "datapackage.json"),
         attributemap={},
-        typemap=TYPEMAP,
+        typemap=TYPEMAP,  # TODO load the typemap from information within the datapackage
     )
 
     if plot == "graph":

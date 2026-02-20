@@ -4,4 +4,4 @@ Reference
 .. toctree::
     :glob:
 
-    placades*
+    eesyplan*
