@@ -15,7 +15,7 @@ project = "oemof-eesyplan"
 year = "2025-2026"
 author = "Open Plan Community"
 copyright = f"{year}, {author}"
-version = release = "0.0.0"
+version = release = "0.0.1"
 
 pygments_style = "trac"
 templates_path = ["."]

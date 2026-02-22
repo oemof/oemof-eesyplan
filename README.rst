@@ -12,7 +12,7 @@ The Easy Energy System Planing library is part of the `oemof <https://github.com
     * - docs
       - |docs|
     * - tests
-      - |github-actions| |coveralls| |codecov_stable| dev: |codecov_dev|
+      - |github-actions| |coveralls| |codecov_stable|
     * - package
       - |version| |wheel| |supported-versions| |supported-implementations| |commits-since|
 .. |docs| image:: https://readthedocs.org/projects/oemof-eesyplan/badge/?style=flat
@@ -51,9 +51,9 @@ The Easy Energy System Planing library is part of the `oemof <https://github.com
     :alt: Supported implementations
     :target: https://pypi.org/project/oemof-eesyplan
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/oemof/oemof-eesyplan/v0.0.0.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/oemof/oemof-eesyplan/v0.0.1.svg
     :alt: Commits since latest release
-    :target: https://github.com/oemof/oemof-eesyplan/compare/v0.0.0...main
+    :target: https://github.com/oemof/oemof-eesyplan/compare/v0.0.1...main
 
 
 
