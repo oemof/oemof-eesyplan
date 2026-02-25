@@ -72,7 +72,6 @@ class Project:
                 discount_factor=self.discount_factor,
             )
         elif method == "oemof":
-            check_missing_module(annuity, "oemof", "oemof-tools")
             check_parameter(
                 capex_var, self.lifetime, self.discount_factor, lifetime
             )
@@ -83,13 +82,3 @@ class Project:
                 u=lifetime,
             )
         return None
-
-
-def check_missing_module(module, name, package):
-    if module is None:
-        msg = (
-            f"To use the annuity method of {name} the package "
-            f"{package} is needed.\nUse `pip install {package}` "
-            "to install it."
-        )
-        raise ModuleNotFoundError(msg)
