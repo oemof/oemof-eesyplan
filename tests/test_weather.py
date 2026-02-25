@@ -12,3 +12,8 @@ def test_weather_file_import():
     assert round(w_obj.air_temperature_c.mean(), 3) == 9.921
     assert len(w_obj) == 8760
     assert round(w_obj.to_dict()["air_temperature_c"].mean(), 3) == 9.921
+
+
+def test_weather_object():
+    wd = weather_data.WeatherData()
+    assert isinstance(wd, weather_data.WeatherData)
