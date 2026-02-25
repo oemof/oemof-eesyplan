@@ -23,7 +23,6 @@ from oemof.eesyplan.facades.demand.electricity_demand import Demand
 from oemof.eesyplan.facades.demand.fuel_demand import FuelDemand
 from oemof.eesyplan.facades.demand.heat_demand import HeatDemand
 from oemof.eesyplan.facades.demand.hydrogen_demand import H2Demand
-from oemof.eesyplan.facades.komponenten import CHP
 from oemof.eesyplan.facades.production.BiogasPlant import BiogasPlant
 from oemof.eesyplan.facades.production.GeothermalPlant import GeothermalPlant
 from oemof.eesyplan.facades.production.PvPlant import PvPlant
@@ -44,7 +43,6 @@ from oemof.eesyplan.project import Project
 from oemof.eesyplan.typemap import TYPEMAP
 
 __all__ = [
-    "CHP",
     "DSO",
     "TYPEMAP",
     "BiogasPlant",

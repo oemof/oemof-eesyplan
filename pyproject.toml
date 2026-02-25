@@ -26,6 +26,7 @@ include = [
     "ci/requirements.txt",
     "ci/templates/.github/workflows/github-actions.yml",
     "pytest.ini",
+    "tests/test_data/TRY2015_39065002972500_Jahr.dat",
 ]
 exclude = ["docs/_build", "**/*.egg-info"]
 
@@ -67,9 +68,18 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest", "coverage", "pvlib", "demandlib", "tox", "oemof-visio"]
+test = [
+    "pytest",
+    "coverage",
+    "pvlib",
+    "demandlib",
+    "tox",
+    "oemof-visio",
+    "pyproj",
+]
 dummy = ["oemof"]
 docs = ["sphinx", "sphinx_rtd_theme"]
+importer = ["pyproj"]
 examples = []
 
 [project.urls]

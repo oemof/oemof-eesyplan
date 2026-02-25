@@ -60,16 +60,34 @@ class HydrogenStorage(GenericStorage):
         ...         discount_factor=0.01
         ...     )
         >>> h2_bus = CarrierBus(name="my_h2_bus")
-        >>> my_bess = HydrogenStorage(
-        ...     name="lithium_battery_system",
+        >>> my_storage = HydrogenStorage(
+        ...     name="hydrogen_storage_system",
         ...     bus_in_h2=h2_bus,
         ...     age_installed=0,
-        ...     installed_capacity=0,
+        ...     installed_capacity=10,
         ...     capex_var=3,
         ...     opex_fix=5,
         ...     opex_var=0.,
         ...     lifetime=10,
         ...     optimize_cap=False,
+        ...     soc_max=1,
+        ...     soc_min=0,
+        ...     crate=1,
+        ...     efficiency=0.99,
+        ...     project_data=my_project,
+        ...     self_discharge=0.0001,
+        ... )
+        >>> my_invest_storage = HydrogenStorage(
+        ...     name="hydrogen_storage_system_extension",
+        ...     bus_in_h2=h2_bus,
+        ...     bus_out_h2=h2_bus,
+        ...     age_installed=0,
+        ...     installed_capacity=10,
+        ...     capex_var=3,
+        ...     opex_fix=5,
+        ...     opex_var=0.,
+        ...     lifetime=10,
+        ...     optimize_cap=True,
         ...     soc_max=1,
         ...     soc_min=0,
         ...     crate=1,

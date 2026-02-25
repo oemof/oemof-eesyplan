@@ -1,7 +1,9 @@
 import argparse
 import logging
+import tempfile
 import tkinter as tk
 import warnings
+import zipfile
 from pathlib import Path
 from tkinter import filedialog
 
@@ -85,7 +87,32 @@ def process_results(results):
 def file_dialog():
     root = tk.Tk()
     root.withdraw()
-    return filedialog.askopenfilename(filetypes=[("json files", "*.json")])
+    return filedialog.askopenfilename(
+        filetypes=[("Supported files", "*.json *.zip")]
+    )
+
+
+def unzip_package(zip_path: Path, ext_path: Path) -> Path:
+    """
+    Extract a zip file to a temporary directory.
+
+    Returns:
+        TemporaryDirectory object (caller must manage cleanup)
+    """
+
+    with zipfile.ZipFile(zip_path, "r") as zip_ref:
+        zip_ref.extractall(ext_path)
+
+    json_files = list(Path(ext_path).rglob("*.json"))
+    if len(json_files) > 1:
+        filenames = [file.name for file in Path(ext_path).rglob("*.json")]
+        filenames_str = ",".join(filenames)
+        raise ValueError(
+            f"To many json files ({filenames_str}) found in zip-Package:\n"
+            f" {zip_path}"
+        )
+    else:
+        return json_files[0]
 
 
 def main(path=None, plot="graph"):
@@ -104,8 +131,14 @@ def main(path=None, plot="graph"):
 
     """
     if path is None:
-        path = file_dialog()
-    es = create_energy_system_from_dp(path, plot=plot)
+        path = Path(file_dialog())
+    if path.suffix == ".zip":
+        temp_dir = tempfile.TemporaryDirectory()
+        path = unzip_package(path, Path(temp_dir.name))
+        es = create_energy_system_from_dp(path, plot=plot)
+        temp_dir.cleanup()
+    else:
+        es = create_energy_system_from_dp(path, plot=plot)
     results = optimise(es)
     process_results(results)
     results_path = Path(Path.home(), "openplan", "openPlan_results")

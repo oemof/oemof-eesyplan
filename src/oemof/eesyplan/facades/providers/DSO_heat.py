@@ -47,7 +47,7 @@ class DsoHeat(DSO):
 
         Examples
         --------
-        >>> from oemof.eesyplan import CarrierBus, DsoElectricity
+        >>> from oemof.eesyplan import CarrierBus
         >>> hbus = CarrierBus(name="heat_bus")
         >>> my_dso = DsoHeat(
         ...     name="main_grid",

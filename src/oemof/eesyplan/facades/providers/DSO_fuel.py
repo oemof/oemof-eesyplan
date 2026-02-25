@@ -47,7 +47,7 @@ class DsoFuel(DSO):
 
         Examples
         --------
-        >>> from oemof.eesyplan import CarrierBus, DsoElectricity
+        >>> from oemof.eesyplan import CarrierBus
         >>> gbus = CarrierBus(name="gas_bus")
         >>> my_dso = DsoFuel(
         ...     name="main_grid",

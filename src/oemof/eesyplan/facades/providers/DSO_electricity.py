@@ -47,7 +47,7 @@ class DsoElectricity(DSO):
 
         Examples
         --------
-        >>> from oemof.eesyplan import CarrierBus, DsoElectricity
+        >>> from oemof.eesyplan import CarrierBus
         >>> ebus = CarrierBus(name="electricity_bus")
         >>> my_dso = DsoElectricity(
         ...     name="main_grid",
@@ -55,6 +55,8 @@ class DsoElectricity(DSO):
         ...     energy_price=0.25,
         ...     feedin_tariff=0.08,
         ... )
+        >>> my_dso.name
+        'main_grid'
 
         """
         super().__init__(

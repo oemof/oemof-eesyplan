@@ -47,7 +47,7 @@ class DsoHydrogen(DSO):
 
         Examples
         --------
-        >>> from oemof.eesyplan import CarrierBus, DsoElectricity
+        >>> from oemof.eesyplan import CarrierBus
         >>> h2bus = CarrierBus(name="h2_bus")
         >>> my_dso = DsoHydrogen(
         ...     name="main_grid",

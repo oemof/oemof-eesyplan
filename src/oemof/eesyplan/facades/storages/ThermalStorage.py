@@ -62,16 +62,36 @@ class ThermalStorage(GenericStorage):
         ...         discount_factor=0.01
         ...     )
         >>> heat_bus = CarrierBus(name="my_heat_bus")
-        >>> my_bess = ThermalStorage(
+        >>> my_storage = ThermalStorage(
         ...     name="thermal_storage",
         ...     bus_in_heat=heat_bus,
         ...     age_installed=0,
-        ...     installed_capacity=0,
+        ...     installed_capacity=10,
         ...     capex_var=3,
         ...     opex_fix=5,
         ...     opex_var=0,
         ...     lifetime=10,
         ...     optimize_cap=False,
+        ...     soc_max=1,
+        ...     soc_min=0,
+        ...     crate=1,
+        ...     efficiency=0.99,
+        ...     project_data=my_project,
+        ...     fixed_thermal_losses_relative=0.6,
+        ...     fixed_thermal_losses_absolute=200,
+        ...     thermal_loss_rate=0.0001,
+        ... )
+        >>> my_invest_storage = ThermalStorage(
+        ...     name="thermal_storage_extension",
+        ...     bus_in_heat=heat_bus,
+        ...     bus_out_heat=heat_bus,
+        ...     age_installed=0,
+        ...     installed_capacity=0.1,
+        ...     capex_var=3,
+        ...     opex_fix=5,
+        ...     opex_var=0,
+        ...     lifetime=10,
+        ...     optimize_cap=True,
         ...     soc_max=1,
         ...     soc_min=0,
         ...     crate=1,

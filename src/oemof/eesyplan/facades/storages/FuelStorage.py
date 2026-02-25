@@ -60,16 +60,34 @@ class FuelStorage(GenericStorage):
         ...         discount_factor=0.01
         ...     )
         >>> fuel_bus = CarrierBus(name="gas_bus")
-        >>> my_bess = FuelStorage(
+        >>> my_storage = FuelStorage(
         ...     name="gas_storage_tank",
         ...     bus_in_fuel=fuel_bus,
+        ...     age_installed=0,
+        ...     installed_capacity=10,
+        ...     capex_var=3,
+        ...     opex_fix=5,
+        ...     opex_var=0.,
+        ...     lifetime=10,
+        ...     optimize_cap=False,
+        ...     soc_max=1,
+        ...     soc_min=0,
+        ...     crate=1,
+        ...     efficiency=0.99,
+        ...     project_data=my_project,
+        ...     self_discharge=0.0001,
+        ... )
+        >>> my_invest_storage = FuelStorage(
+        ...     name="gas_storage_tank_extension",
+        ...     bus_in_fuel=fuel_bus,
+        ...     bus_out_fuel=fuel_bus,
         ...     age_installed=0,
         ...     installed_capacity=0,
         ...     capex_var=3,
         ...     opex_fix=5,
         ...     opex_var=0.,
         ...     lifetime=10,
-        ...     optimize_cap=False,
+        ...     optimize_cap=True,
         ...     soc_max=1,
         ...     soc_min=0,
         ...     crate=1,
