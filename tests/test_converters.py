@@ -1,8 +1,8 @@
 import pytest
-from oemof.solph import Bus
 
 from oemof.eesyplan import Project
 from oemof.eesyplan.facades.converters.ChpVariableRatio import ChpVariableRatio
+from oemof.solph import Bus
 
 
 def test_chp_variable_ratio():
