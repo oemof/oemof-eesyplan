@@ -30,6 +30,33 @@ class Project:
         self.excess_cost = excess_cost
 
     def calculate_epc(self, capex_var, lifetime, age_installed, method="mvs"):
+        """
+        Calculate the annuity of investment..
+
+        Parameters
+        ----------
+        capex_var
+        lifetime
+        age_installed
+        method
+
+        Returns
+        -------
+        float or None
+
+        Examples
+        --------
+        >>> my_project = Project(
+        ...     name="my_project",
+        ...     lifetime=20,
+        ...     tax=0,
+        ...     discount_factor=0.01
+        ...     )
+        >>> round(my_project.calculate_epc(234, 20, 0), 3)
+        12.967
+        >>> my_project.calculate_epc(234, 20, 0, "wrong")
+
+        """
         if method == "mvs":
             check_parameter(
                 capex_var,
