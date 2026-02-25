@@ -97,9 +97,9 @@ jobs:
       - name: Test with coverage
 
         run: |
-          coverage run -m pytest -vv --junitxml=junit.xml
-          coverage xml
+          coverage run --rcfile=.coveragerc -m pytest -vv --junitxml=junit.xml
           coverage report --show-missing
+          coverage xml
 
       - name: Upload coverage to Codecov
 
