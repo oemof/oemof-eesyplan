@@ -72,37 +72,51 @@ jobs:
 
         run: tox -e ${{ matrix.tox_env }} -v
 
-  unit-test:
-    name: Run unit tests
+  coverage-test:
+    name: Run coverage test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
+
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
+
       - name: Set up Python 3.11
-        uses: actions/setup-python@v3
+
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: "3.13"
+
       - name: Install dependencies
+
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-cov
-          pip install .[test]
-      - name: Test with pytest
+          pip install -e .[test]
+
+      - name: Test with coverage
+
         run: |
-          pytest --cov --junitxml=junit.xml
-      # Copy and paste the codecov/test-results-action here
+          coverage run -m pytest -vv --junitxml=junit.xml
+          coverage xml
+          coverage report --show-missing
+
       - name: Upload coverage to Codecov
+
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+
       - name: Upload test results to Codecov
+
         if: ${{ !cancelled() }}
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Upload coverage to Coveralls
+
         uses: coverallsapp/github-action@v2
         with:
           format: cobertura
