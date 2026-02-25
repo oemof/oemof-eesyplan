@@ -26,6 +26,8 @@ class CarrierBus(Bus):  # todo add shortage source and excess sink with costs
         >>> gas_bus = CarrierBus(name="gas_grid", carrier="natural_gas")
         >>> heat_bus = CarrierBus(name="district_heating", carrier="heat")
         >>> h2_bus = CarrierBus(name="h2_network", carrier="hydrogen")
+        >>> h2_bus
+        <CarrierBus 'h2_network' carrier='hydrogen'>
         """
         super().__init__(label=name)
         self.carrier = carrier

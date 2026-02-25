@@ -23,6 +23,11 @@ class Excess(Sink):
 
     Examples
     --------
+    >>> from oemof.eesyplan import CarrierBus
+    >>> el_bus = CarrierBus(name="my_electricity_bus")
+    >>> ex = Excess("my_excess", el_bus, 999)
+    >>> ex.label
+    'my_excess'
 
     """
 

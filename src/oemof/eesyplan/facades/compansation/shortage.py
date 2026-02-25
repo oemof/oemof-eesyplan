@@ -23,6 +23,11 @@ class Shortage(Source):
 
     Examples
     --------
+    >>> from oemof.eesyplan import CarrierBus
+    >>> el_bus = CarrierBus(name="my_electricity_bus")
+    >>> ex = Shortage("my_shortage", el_bus, 999)
+    >>> ex.label
+    'my_shortage'
 
     """
 

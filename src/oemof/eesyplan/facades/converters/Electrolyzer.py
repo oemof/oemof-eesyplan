@@ -1,6 +1,7 @@
-from oemof.eesyplan.investment import _create_invest_if_wanted
 from oemof.solph import Flow
 from oemof.solph.components import Converter
+
+from oemof.eesyplan.investment import _create_invest_if_wanted
 
 
 class Electrolyzer(Converter):
@@ -95,6 +96,23 @@ class Electrolyzer(Converter):
         ...     maximum_capacity=None,
         ...     efficiency=0.9,
         ...     efficiency_heat=0.1,
+        ...     opex_var=0,
+        ...     optimize_cap=True,
+        ...     project_data=Project(
+        ...         name="Project_X", lifetime=20, tax=0,
+        ...         discount_factor=0.01),
+        ...     )
+        >>> electrolyzer_no_heat = Electrolyzer(
+        ...     name="Electrolyzer",
+        ...     bus_in_electricity=el_bus_in,
+        ...     bus_out_h2=h2_bus_out,
+        ...     age_installed=0,
+        ...     installed_capacity=0,
+        ...     capex_var=1000,
+        ...     opex_fix=1000,
+        ...     lifetime=20,
+        ...     maximum_capacity=None,
+        ...     efficiency=0.9,
         ...     opex_var=0,
         ...     optimize_cap=True,
         ...     project_data=Project(

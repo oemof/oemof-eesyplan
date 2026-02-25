@@ -71,7 +71,7 @@ class HeatPump(Converter):
         maximum_capacity : float or None, default=None
             Maximum total capacity of an asset that can be installed
             at the project site.
-        efficiency : float, default=0.8
+        cop : float or list-like, default=0.8
             Ratio of energy output to energy input.
 
         Examples
@@ -88,6 +88,18 @@ class HeatPump(Converter):
         ...     bus_out_heat=heat_bus,
         ...     installed_capacity=15,
         ...     cop=3.5,
+        ...     project_data=Project(
+        ...         name="Project_X", lifetime=20, tax=0,
+        ...         discount_factor=0.01,
+        ...     )
+        ... )
+        >>> my_heat_pump2 = HeatPump(
+        ...     name="air_source_heat_pump",
+        ...     bus_in_electricity=el_bus,
+        ...     bus_in_heat=ambient_heat_bus,
+        ...     bus_out_heat=heat_bus,
+        ...     installed_capacity=15,
+        ...     cop=[3.5] * 5,
         ...     project_data=Project(
         ...         name="Project_X", lifetime=20, tax=0,
         ...         discount_factor=0.01,

@@ -1,11 +1,7 @@
-from oemof.eesyplan.type_checks import check_parameter
-
-try:
-    from oemof.tools.economics import annuity
-except ModuleNotFoundError:
-    annuity = None
+from oemof.tools.economics import annuity
 
 from oemof.eesyplan.investment import calculate_annuity_mvs
+from oemof.eesyplan.type_checks import check_parameter
 
 
 class Project:
@@ -55,6 +51,8 @@ class Project:
         >>> round(my_project.calculate_epc(234, 20, 0), 3)
         12.967
         >>> my_project.calculate_epc(234, 20, 0, "wrong")
+        >>> round(my_project.calculate_epc(234, 20, 0, "oemof"), 3)
+        12.967
 
         """
         if method == "mvs":
