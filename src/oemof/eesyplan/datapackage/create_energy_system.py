@@ -18,7 +18,8 @@ def create_energy_system_from_dp(
     # scenario_dir = "openPlan_package"
     # plot = "graph"  # "graph", "visio", None
 
-    Path.mkdir(results_path, parents=True, exist_ok=True)
+    if scenario_dir.is_dir():
+        scenario_dir = scenario_dir / "datapackage.json"
 
     # create energy system object from the datapackage
     es = EnergySystem.from_datapackage(
