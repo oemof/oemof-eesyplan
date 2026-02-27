@@ -1,10 +1,13 @@
 import warnings
+import logging
 from pathlib import Path
 
 from oemof.datapackage import datapackage  # noqa
 from oemof.eesyplan.typemap import TYPEMAP
 from oemof.network import graph
+from oemof.solph import Model
 from oemof.solph import EnergySystem
+from oemof.solph import Results
 from oemof.tools.debugging import ExperimentalFeatureWarning
 from oemof.visio import ESGraphRenderer
 
@@ -47,3 +50,18 @@ def create_energy_system_from_dp(
             )
             es_graph.render()
     return es
+
+def optimise(energy_system, solver="cbc", debug=False):
+    """Optimise the energy system."""
+    logging.info("Create model")
+    optimization_model = Model(energysystem=energy_system)
+
+    # solve problem
+    logging.info("Solve model")
+
+    if debug:
+        skwargs = {"tee": True, "keepfiles": False}
+    else:
+        skwargs = {}
+    optimization_model.solve(solver=solver, solve_kwargs=skwargs)
+    return Results(optimization_model)
