@@ -9,7 +9,7 @@ from oemof.solph import Model
 from oemof.solph import EnergySystem
 from oemof.solph import Results
 from oemof.tools.debugging import ExperimentalFeatureWarning
-from oemof.visio import ESGraphRenderer
+
 
 warnings.filterwarnings("ignore", category=ExperimentalFeatureWarning)
 
@@ -38,6 +38,7 @@ def create_energy_system_from_dp(
                 es, filename=Path(results_path, "test_graph.graphml")
             )
         elif plot == "visio":
+            from oemof.visio import ESGraphRenderer
             energy_system_graph = Path(
                 results_path, f"{scenario_name}_energy_system.png"
             )
