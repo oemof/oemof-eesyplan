@@ -76,7 +76,7 @@ test = [
     "tox",
     "oemof-visio",
     "pyproj",
-    "python-mip",
+    "mip",
 ]
 dummy = ["oemof"]
 docs = ["sphinx", "sphinx_rtd_theme"]
