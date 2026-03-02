@@ -18,7 +18,9 @@ def test_simple_datapackage():
     results = optimise(energy_system)
     result_path = Path(Path.home(), ".oemof", "test_eesyplan_567263FG")
     result_path.mkdir(parents=True, exist_ok=True)
-    export_results(results, path=result_path)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=FutureWarning)
+        export_results(results, path=result_path)
     import_results(path=result_path, es=energy_system)
     shutil.rmtree(result_path)
     assert ~result_path.exists()
