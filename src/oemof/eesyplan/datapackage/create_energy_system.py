@@ -1,15 +1,19 @@
-import warnings
 import logging
+import warnings
 from pathlib import Path
 
 from oemof.datapackage import datapackage  # noqa
 from oemof.eesyplan.typemap import TYPEMAP
 from oemof.network import graph
-from oemof.solph import Model
 from oemof.solph import EnergySystem
+from oemof.solph import Model
 from oemof.solph import Results
 from oemof.tools.debugging import ExperimentalFeatureWarning
 
+try:
+    from oemof.visio import ESGraphRenderer
+except ImportError:
+    ESGraphRenderer = None
 
 warnings.filterwarnings("ignore", category=ExperimentalFeatureWarning)
 
@@ -25,10 +29,11 @@ def create_energy_system_from_dp(
         scenario_dir = scenario_dir / "datapackage.json"
 
     # create energy system object from the datapackage
+    # TODO load the typemap from information within the datapackage
     es = EnergySystem.from_datapackage(
         scenario_dir,  # Path(scenario_dir, "datapackage.json"),
         attributemap={},
-        typemap=TYPEMAP,  # TODO load the typemap from information within the datapackage
+        typemap=TYPEMAP,
     )
 
     if results_path is not None:
@@ -38,7 +43,14 @@ def create_energy_system_from_dp(
                 es, filename=Path(results_path, "test_graph.graphml")
             )
         elif plot == "visio":
-            from oemof.visio import ESGraphRenderer
+            if ESGraphRenderer is None:
+                msg = (
+                    "The package 'oemof-visio' must be installed to render "
+                    "the graph of the energy system.\n"
+                    "Use 'pip install oemof-visio' to install oemof-visio"
+                )
+                raise ImportError(msg)
+
             energy_system_graph = Path(
                 results_path, f"{scenario_name}_energy_system.png"
             )
@@ -51,6 +63,7 @@ def create_energy_system_from_dp(
             )
             es_graph.render()
     return es
+
 
 def optimise(energy_system, solver="cbc", debug=False):
     """Optimise the energy system."""
