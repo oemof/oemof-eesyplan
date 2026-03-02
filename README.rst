@@ -23,15 +23,11 @@ The Easy Energy System Planing library is part of the `oemof <https://github.com
     :alt: GitHub Actions Build Status
     :target: https://github.com/oemof/oemof-eesyplan/actions
 
-.. |coveralls| image:: https://coveralls.io/repos/github/oemof/oemof-eesyplan/badge.svg
+.. |coveralls| image:: https://coveralls.io/repos/github/oemof/oemof-eesyplan/badge.svg?branch=main
     :alt: Coveralls coverage status
-    :target: https://coveralls.io/github/oemof/oemof-eesyplan
+    :target: https://coveralls.io/github/oemof/oemof-eesyplan?branch=main
 
 .. |codecov_stable| image:: https://codecov.io/gh/oemof/oemof-eesyplan/branch/main/graph/badge.svg
-   :alt: Codecov Coverage Status
-   :target: https://codecov.io/gh/oemof/oemof-eesyplan
-
-.. |codecov_dev| image:: https://codecov.io/gh/oemof/oemof-eesyplan/branch/dev/graph/badge.svg
    :alt: Codecov Coverage Status
    :target: https://codecov.io/gh/oemof/oemof-eesyplan
 
