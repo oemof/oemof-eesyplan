@@ -9,8 +9,8 @@ from oemof.eesyplan import ElectricalStorage
 from oemof.eesyplan import Project
 from oemof.eesyplan import PvPlant
 from oemof.eesyplan import WindTurbine
-from oemof.solph import EnergySystem
-from oemof.solph import create_time_index
+from oemof.eesyplan import EnergySystem
+from oemof.eesyplan import optimise
 
 DATA_PATH = Path("data")
 
@@ -22,7 +22,34 @@ DATA_FILES = {
 }
 
 
-def create_energy_system_sc():
+def process_results(results):
+    rdf = results["flow"]
+
+    for n, m in [(0, 1), (1, 0)]:
+        rdf.rename(
+            columns={
+                c[n]: c[n].label[-1]
+                for c in rdf.columns
+                if isinstance(c[n].label, tuple)
+                and not isinstance(c[m].label, tuple)
+            },
+            level=n,
+            inplace=True,
+        )
+    elec_in = rdf[[c for c in rdf.columns if c[0] == "electricity"]]
+    elec_out = rdf[[c for c in rdf.columns if c[1] == "electricity"]]
+    print(elec_in.sum())
+    print(elec_out.sum())
+    print("*****************")
+    print("Input:", round(elec_in.sum().sum()))
+    print("Output:", round(elec_out.sum().sum()))
+    if "invest" in results:
+        print("Invest:", results["invest"])
+
+    print("Objective:", results["objective"])
+
+
+def simple_script():
     # Read data file
     project = Project(name="test", lifetime=20, tax=0, discount_factor=0)
 
@@ -32,10 +59,7 @@ def create_energy_system_sc():
         data[key] = pd.read_csv(path, header=None).squeeze()
 
     # ####################### initialize the energy system ####################
-    datetimeindex = create_time_index(2024, number=8760)
-    energy_system = EnergySystem(
-        timeindex=datetimeindex, infer_last_interval=False
-    )
+    energy_system = EnergySystem(2023)
 
     # ######################### create energysystem components ################
 
@@ -104,4 +128,9 @@ def create_energy_system_sc():
             input_timeseries=data["demand_elec"],
         )
     )
-    return energy_system
+    return optimise(energy_system)
+
+
+if __name__ == "__main__":
+    results = simple_script()
+    process_results(results)

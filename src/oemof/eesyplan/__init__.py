@@ -13,9 +13,8 @@ from oemof.eesyplan.facades.converters.Boiler import Boiler
 from oemof.eesyplan.facades.converters.ChpFixedRatio import ChpFixedRatio
 from oemof.eesyplan.facades.converters.ChpVariableRatio import ChpVariableRatio
 from oemof.eesyplan.facades.converters.DieselGenerator import DieselGenerator
-from oemof.eesyplan.facades.converters.ElectricalTransformator import (
-    ElectricalTransformator,
-)
+from oemof.eesyplan.facades.converters.ElectricalTransformator import \
+    ElectricalTransformator
 from oemof.eesyplan.facades.converters.Electrolyzer import Electrolyzer
 from oemof.eesyplan.facades.converters.FuelCell import FuelCell
 from oemof.eesyplan.facades.converters.HeatPump import HeatPump
@@ -26,9 +25,8 @@ from oemof.eesyplan.facades.demand.hydrogen_demand import H2Demand
 from oemof.eesyplan.facades.production.BiogasPlant import BiogasPlant
 from oemof.eesyplan.facades.production.GeothermalPlant import GeothermalPlant
 from oemof.eesyplan.facades.production.PvPlant import PvPlant
-from oemof.eesyplan.facades.production.SolarThermalPlant import (
-    SolarThermalPlant,
-)
+from oemof.eesyplan.facades.production.SolarThermalPlant import \
+    SolarThermalPlant
 from oemof.eesyplan.facades.production.WindTurbine import WindTurbine
 from oemof.eesyplan.facades.providers.dso import DSO
 from oemof.eesyplan.facades.providers.DSO_electricity import DsoElectricity
@@ -39,6 +37,8 @@ from oemof.eesyplan.facades.storages.ElectricalStorage import ElectricalStorage
 from oemof.eesyplan.facades.storages.FuelStorage import FuelStorage
 from oemof.eesyplan.facades.storages.HydrogenStorage import HydrogenStorage
 from oemof.eesyplan.facades.storages.ThermalStorage import ThermalStorage
+from oemof.eesyplan.model import EnergySystem
+from oemof.eesyplan.model import optimise
 from oemof.eesyplan.project import Project
 from oemof.eesyplan.typemap import TYPEMAP
 
@@ -59,6 +59,7 @@ __all__ = [
     "ElectricalStorage",
     "ElectricalTransformator",
     "Electrolyzer",
+    "EnergySystem",
     "Excess",
     "FuelCell",
     "FuelDemand",
@@ -77,5 +78,6 @@ __all__ = [
     "energy_system",
     "export_results",
     "import_results",
+    "optimise",
     "results",
 ]
