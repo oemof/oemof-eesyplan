@@ -22,6 +22,11 @@ templates_path = ["."]
 extlinks = {
     "issue": ("https://github.com/oemof/oemof-eesyplan/issues/%s", "#%s"),
     "pr": ("https://github.com/oemof/oemof-eesyplan/pull/%s", "PR #%s"),
+    "code": (
+        "https://github.com/oemof/oemof-eesyplan/blob/main/"
+        "src/oemof/eesyplan/%s",
+        "%s",
+    ),
 }
 
 html_theme = "furo"
