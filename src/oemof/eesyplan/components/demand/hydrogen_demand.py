@@ -2,9 +2,7 @@ from oemof.eesyplan.components.demand.demand import Demand
 
 
 class H2Demand(Demand):
-    def __init__(
-        self, name, bus_in_h2, input_timeseries, carrier="hydrogen"
-    ):
+    def __init__(self, name, bus_in_h2, input_timeseries, carrier="hydrogen"):
         """
         Hydrogen demand/consumption component.
 
