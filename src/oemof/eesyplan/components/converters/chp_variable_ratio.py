@@ -104,7 +104,7 @@ class ChpVariableRatio(ExtractionTurbineCHP):
 
         """
 
-        if efficiency_electricity_chp + efficiency_heat_chp >= 1.0:
+        if efficiency_electricity_chp + efficiency_heat_chp > 1.0:
             raise ValueError("Total efficiency is above 100%.")
 
         nv = project_data.create_invest_if_wanted(
