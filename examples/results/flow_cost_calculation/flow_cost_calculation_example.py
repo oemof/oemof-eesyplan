@@ -58,6 +58,16 @@ def create_energysystem():
 
     energysystem.add(
         components.Source(
+            label="waste_heat",
+            outputs={bus_heat: flows.Flow(
+                nominal_capacity=oemof.solph.Investment(
+                    ep_costs=300 / 12),
+                variable_costs=0.01)},
+        )
+    )
+
+    energysystem.add(
+        components.Source(
             label="wind",
             outputs={
                 bus_electricity: flows.Flow(
@@ -77,7 +87,7 @@ def create_energysystem():
             outputs={
                 bus_electricity: flows.Flow(
                     max=data["pv"],
-                    nominal_capacity=oemof.solph.Investment(ep_costs=800 / 12),
+                    nominal_capacity=oemof.solph.Investment(ep_costs=600/20/12,maximum=1000000),
                     variable_costs=0.001,
                 )
             },
@@ -100,7 +110,7 @@ def create_energysystem():
             label="demand_heat",
             inputs={
                 bus_heat: flows.Flow(
-                    fix=data["demand_heat"], nominal_capacity=0.1
+                    fix=data["demand_heat"], nominal_capacity=0.4
                 )
             },
         )
@@ -185,7 +195,7 @@ def create_energysystem():
     )
     energysystem.add(battery_storage)
 
-    nominal_capacity = oemof.solph.Investment(ep_costs=0.1 / 12)
+    nominal_capacity = oemof.solph.Investment(ep_costs=1 / 12)
     heat_storage = components.GenericStorage(
         nominal_capacity=nominal_capacity,
         label="heat_storage",
@@ -298,7 +308,19 @@ def main():
         f"revenues: {links_cost_df['value'].clip(upper=0).sum():,.2f} EUR"
     )
 
-
+    fig_cost_specific, links_cost_specific_df = sankey_for_flow_costs(
+        results, specific=True
+    )
+    fig_cost_specific.write_html("cost_sankey_specific.html")
+    fig_cost_specific.show()
+    print("Specific Cost Sankey saved to cost_sankey_specific.html")
+    print(
+        f"Specific cost-sankey links: {len(links_cost_specific_df)}, "
+        f"total specific cost: "
+        f"{links_cost_specific_df['value'].clip(lower=0).sum():,.4f} EUR/kWh, "
+        f"revenues: "
+        f"{links_cost_specific_df['value'].clip(upper=0).sum():,.4f} EUR/kWh"
+    )
 
     return results, all_flow_dict
 

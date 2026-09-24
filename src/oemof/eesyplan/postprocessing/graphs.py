@@ -317,6 +317,7 @@ def capacities_graph(
 def sankey_for_flow_costs(
     results,
     title: str = "Flow Cost Sankey",
+    specific: bool = False,
 ) -> tuple[go.Figure, pd.DataFrame]:
     """
     Create a Sankey diagram showing the costs carried by each physical flow.
@@ -350,6 +351,10 @@ def sankey_for_flow_costs(
         Solved oemof.solph result object.
     title : str
         Figure title.
+    specific : bool
+        If False (default), link values are absolute costs in ``EUR``.  If
+        True, each contribution is divided by the total energy of its flow,
+        giving the average specific cost in ``EUR/kWh``.
 
     Returns
     -------
@@ -357,7 +362,8 @@ def sankey_for_flow_costs(
         Plotly Sankey figure.
     links_df : pandas.DataFrame
         Table with columns: source, target, cost_type, value, color.  The
-        ``value`` column holds the signed cost contribution; the link widths
+        ``value`` column holds the signed contribution (``EUR`` absolute, or
+        average ``EUR/kWh`` specific when *specific=True*); the link widths
         in the figure use ``abs(value)``.
     """
     all_f = calculate_costs_of_all_flows(results)
@@ -501,6 +507,16 @@ def sankey_for_flow_costs(
 
     # one link per (root origin, fix/var) on the physical flow
     internal_origin_labels = {label_of[f] for f in internal_flows}
+    tot_flow_by_label = {
+        label_of[f]: all_f[f]["tot_flow"] for f in all_f
+    }
+
+    # For specific mode, reuse the specific values computed by the flow cost
+    # propagation: each origin's contribution divided by that flow's total
+    # energy (the same numbers plot_flow_cost_breakdown / print_flow_cost_summary
+    # report).  The price therefore changes exactly when the energy composition
+    # of the carrying flow changes (e.g. gas -> electricity after a converter)
+    # and stays constant on flows that do not change composition.
     link_rows = []  # (source node, target node, root, ctype, signed value)
     for f in all_f:
         if f in internal_flows:
@@ -509,9 +525,13 @@ def sankey_for_flow_costs(
         tgt = _node_of(f[1].label)
         if src == tgt:
             continue
+        tot_flow = tot_flow_by_label[label_of[f]]
         for (root, ctype), val in resolved[label_of[f]].items():
-            if val != 0:
-                link_rows.append((src, tgt, root, ctype, val))
+            if val == 0:
+                continue
+            if specific and tot_flow != 0:
+                val = val / tot_flow
+            link_rows.append((src, tgt, root, ctype, val))
 
     # ---- colour by root cost origin (internal origins -> grey) ----------
     all_roots = sorted({r for _, _, r, _, _ in link_rows})
@@ -557,6 +577,13 @@ def sankey_for_flow_costs(
         else:
             node_colors.append("lightgrey")
 
+    unit = "EUR/kWh" if specific else "EUR"
+    hovertemplate = (
+        "%{customdata[0]}<br>"
+        f"Value: %{{customdata[1]:,.4f}} {unit}"
+        "<extra></extra>"
+    )
+
     # ---- build figure ---------------------------------------------------
     fig = go.Figure(
         go.Sankey(
@@ -576,11 +603,7 @@ def sankey_for_flow_costs(
                 "customdata": list(
                     zip(labels, signed_values, strict=True)
                 ),
-                "hovertemplate": (
-                    "%{customdata[0]}<br>"
-                    "Value: %{customdata[1]:,.2f} EUR"
-                    "<extra></extra>"
-                ),
+                "hovertemplate": hovertemplate,
             },
         )
     )
