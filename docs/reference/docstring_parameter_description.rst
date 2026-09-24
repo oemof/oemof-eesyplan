@@ -37,7 +37,7 @@
 .. |bus_in_heat_auxiliary| replace:: Connected Bus component for the
     auxiliary heat input flow. [object].
 
-.. |bus_in_hydrogen| replace:: Connected Bus component for the hydrogen input
+.. |bus_in_h2| replace:: Connected Bus component for the hydrogen input
     flow. [object].
 
 .. |bus_out| replace:: Connected Bus component for the output flow. [object].
