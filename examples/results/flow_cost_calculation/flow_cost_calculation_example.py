@@ -144,7 +144,7 @@ def create_energysystem():
                     nominal_capacity=oemof.solph.Investment(
                         ep_costs=60 / 12, maximum=100
                     ),
-                    variable_costs=-10,
+                    variable_costs=10,
                 )
             },
             conversion_factors={bus_gas: 1},

@@ -324,12 +324,16 @@ def sankey_for_flow_costs(
     Nodes are the actual components/buses of the energy system (e.g.
     ``"wind"``, ``"electricity"``, ``"demand_el"``).  Each physical flow
     between two components is split into one link per cost contribution that
-    makes up its propagated costs, i.e. the fix/var breakdown of
-    :func:`calculate_costs_of_all_flows`.  Links are coloured by their cost
-    origin (lighter = fix, darker = var), so costs can be traced as they
-    propagate: wind costs start at ``wind``, enter ``electricity`` and
-    continue, still in wind colour, as part of every flow that contains wind
-    costs in its propagated breakdown.
+    makes up its propagated costs, as reported by
+    :func:`calculate_costs_of_all_flows`.  Links are coloured by their root
+    cost origin (lighter = fix, darker = var).  The contribution breakdown
+    only tracks costs to the directly upstream flow, so costs are re-labelled
+    on every hop (e.g. wind -> electricity -> battery discharge).  To keep
+    colours stable, each contribution is traced back to the flow where the
+    cost actually originated and is drawn in that colour wherever it
+    propagates: wind costs start at ``wind``, enter ``electricity`` and
+    continue, still in wind colour, as part of every downstream flow that
+    contains wind costs, incl. storage discharge.
 
     Internal circular flows are not drawn.  Each circular network is
     collapsed into a single node named after all its components; costs that
@@ -432,39 +436,92 @@ def sankey_for_flow_costs(
         b = int(b * (1 - factor))
         return f"rgb({r},{g},{b})"
 
-    # ---- cost breakdown per flow -> one link per (origin, fix/var) ------
-    # Each physical flow is split into one link per cost contribution that
-    # makes up its propagated costs, so the origins stay traceable by colour.
-    internal_origin_labels = {
-        f"{f[0].label}->{f[1].label}" for f in internal_flows
-    }
-    link_rows = []  # (source node, target node, origin label, ctype, signed value)
+    # ---- cost breakdown resolved to root origins ------------------------
+    # The contribution breakdown labels each amount with the directly
+    # upstream flow, so costs are re-labelled on every hop (e.g. rgas ->
+    # natural_gas -> pp_gas outputs, or wind -> electricity -> battery
+    # discharge).  To keep the colour stable, every contribution is traced
+    # back to the flow where the cost actually originated (the flow's own
+    # cost) and links are coloured by that root origin.
+    label_of = {f: f"{f[0].label}->{f[1].label}" for f in all_f}
+
+    contrib = {}   # label -> {(origin label, ctype): signed amount}
     for f, rec in all_f.items():
+        lbl = label_of[f]
+        sums = {}
+        for col in rec["contrib"].columns:
+            origin, ctype = col
+            val = float(rec["contrib"][col].sum())
+            if val != 0:
+                sums[(origin, ctype)] = val
+        contrib[lbl] = sums
+
+    def _resolve_origin(lbl, resolution, visiting):
+        if lbl in resolution:
+            return resolution[lbl]
+        if lbl in visiting:
+            # cycle guard: treat the cost as originating here (e.g. within a
+            # collapsed circular network the resolution is self-consistent).
+            res = {}
+            fix = contrib[lbl].get((lbl, "fix"), 0.0)
+            var = contrib[lbl].get((lbl, "var"), 0.0)
+            if fix:
+                res[(lbl, "fix")] = fix
+            if var:
+                res[(lbl, "var")] = var
+            resolution[lbl] = res
+            return res
+        visiting.add(lbl)
+        res = {}
+        fix = contrib[lbl].get((lbl, "fix"), 0.0)
+        var = contrib[lbl].get((lbl, "var"), 0.0)
+        if fix:
+            res[(lbl, "fix")] = fix
+        if var:
+            res[(lbl, "var")] = var
+        for (origin, ctype), amt in contrib[lbl].items():
+            if origin == lbl or amt == 0:
+                continue
+            ores = _resolve_origin(origin, resolution, visiting)
+            same = {r: v for (r, ct), v in ores.items() if ct == ctype}
+            denom = sum(same.values())
+            if abs(denom) < 1e-9:
+                denom = sum(ores.values())
+            if abs(denom) < 1e-9:
+                continue
+            for r, v in same.items():
+                res[(r, ctype)] = res.get((r, ctype), 0.0) + amt * v / denom
+        resolution[lbl] = res
+        visiting.discard(lbl)
+        return res
+
+    resolved = {}
+    for lbl in label_of.values():
+        _resolve_origin(lbl, resolved, set())
+
+    # one link per (root origin, fix/var) on the physical flow
+    internal_origin_labels = {label_of[f] for f in internal_flows}
+    link_rows = []  # (source node, target node, root, ctype, signed value)
+    for f in all_f:
         if f in internal_flows:
             continue
         src = _node_of(f[0].label)
         tgt = _node_of(f[1].label)
         if src == tgt:
             continue
-        contrib = rec["contrib"]
-        for col in contrib.columns:
-            origin, ctype = col
-            val = float(contrib[col].sum())
-            if val == 0:
-                continue
-            link_rows.append((src, tgt, origin, ctype, val))
+        for (root, ctype), val in resolved[label_of[f]].items():
+            if val != 0:
+                link_rows.append((src, tgt, root, ctype, val))
 
-    # ---- colour by cost origin (internal origins -> grey) ---------------
-    all_origins = sorted({o for _, _, o, _, _ in link_rows})
-    external_origins = [
-        o for o in all_origins if o not in internal_origin_labels
-    ]
-    n_ext = len(external_origins)
+    # ---- colour by root cost origin (internal origins -> grey) ----------
+    all_roots = sorted({r for _, _, r, _, _ in link_rows})
+    external_roots = [r for r in all_roots if r not in internal_origin_labels]
+    n_ext = len(external_roots)
     base_colours = {}
-    for i, origin in enumerate(external_origins):
-        base_colours[origin] = _hsv_to_hex(i / max(n_ext, 1), 0.65, 0.95)
-    for origin in internal_origin_labels:
-        base_colours[origin] = "#9E9E9E"
+    for i, root in enumerate(external_roots):
+        base_colours[root] = _hsv_to_hex(i / max(n_ext, 1), 0.65, 0.95)
+    for root in internal_origin_labels:
+        base_colours[root] = "#9E9E9E"
 
     node_labels = sorted({lbl for s, t, _, _, _ in link_rows for lbl in (s, t)})
     node_index = {n: i for i, n in enumerate(node_labels)}
@@ -473,18 +530,18 @@ def sankey_for_flow_costs(
     cost_types = []
     link_lines = []
 
-    for src, tgt, origin, ctype, val in link_rows:
+    for src, tgt, root, ctype, val in link_rows:
         base = (
-            _lighten(base_colours[origin])
+            _lighten(base_colours[root])
             if ctype == "fix"
-            else _darken(base_colours[origin])
+            else _darken(base_colours[root])
         )
         sources.append(node_index[src])
         targets.append(node_index[tgt])
         values.append(abs(val))
         signed_values.append(val)
-        labels.append(f"{origin} | {src} -> {tgt} ({ctype})")
-        cost_types.append(f"{origin} {ctype}")
+        labels.append(f"{root} | {src} -> {tgt} ({ctype})")
+        cost_types.append(f"{root} {ctype}")
         if val < 0:
             colours.append(_tint_towards_red(base))
             link_lines.append("rgb(180,0,0)")
