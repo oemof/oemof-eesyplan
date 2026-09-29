@@ -23,6 +23,8 @@ class ThermalStorage(EnergyStorage):
         efficiency_discharge=1.0,
         theoretical_time_charge=1.0,  # hours
         theoretical_time_discharge=None,  # hours
+        initial_storage_level=None,
+        end_storage_level=True,
     ):
         """
         Heat Energy Storage System (HESS).
@@ -141,4 +143,6 @@ class ThermalStorage(EnergyStorage):
             efficiency_discharge=efficiency_discharge,
             theoretical_time_charge=theoretical_time_charge,  # hours
             theoretical_time_discharge=theoretical_time_discharge,  # hours
+            initial_storage_level=initial_storage_level,
+            end_storage_level=end_storage_level,
         )

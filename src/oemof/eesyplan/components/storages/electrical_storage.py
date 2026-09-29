@@ -22,6 +22,8 @@ class ElectricalStorage(EnergyStorage):
         efficiency_discharge=1.0,
         c_rate_charge=1.0,
         c_rate_discharge=None,
+        initial_storage_level=None,
+        end_storage_level=True,
     ):
         """
         Battery Energy Storage System (BESS).
@@ -136,4 +138,6 @@ class ElectricalStorage(EnergyStorage):
             efficiency_discharge=efficiency_discharge,
             theoretical_time_charge=c_rate_charge,  # hours
             theoretical_time_discharge=c_rate_discharge,  # hours
+            initial_storage_level=initial_storage_level,
+            end_storage_level=end_storage_level,
         )
