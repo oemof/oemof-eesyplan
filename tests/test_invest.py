@@ -15,7 +15,7 @@ def test_error_message():
         Electrolyzer(
             name="Electrolyzer",
             bus_in_electricity=el_bus_in,
-            bus_out_h2=h2_bus_out,
+            bus_out_hydrogen=h2_bus_out,
             age_installed=0,
             installed_capacity=1000,
             maximum_capacity=1000,
