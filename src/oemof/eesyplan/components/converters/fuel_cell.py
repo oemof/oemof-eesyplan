@@ -6,7 +6,7 @@ class FuelCell(Converter):
     def __init__(
         self,
         name,
-        bus_in_h2,
+        bus_in_hydrogen,
         bus_out_electricity,
         age_installed=0,
         installed_capacity=None,
@@ -30,7 +30,7 @@ class FuelCell(Converter):
 
         :Structure:
           *input*
-            1. bus_in_h2 : H2
+            1. bus_in_hydrogen : H2
           *output*
             1. bus_out_electricity : Electricity
 
@@ -67,7 +67,7 @@ class FuelCell(Converter):
         >>> el_bus = Bus(label="electricity_bus")
         >>> my_fuel_cell = FuelCell(
         ...     name="hydrogen_fuel_cell",
-        ...     bus_in_h2=h2_bus,
+        ...     bus_in_hydrogen=h2_bus,
         ...     bus_out_electricity=el_bus,
         ...     age_installed=0,
         ...     maximum_capacity=1000,
@@ -91,7 +91,7 @@ class FuelCell(Converter):
             maximum_capacity=maximum_capacity,
         )
 
-        inputs = {bus_in_h2: Flow()}
+        inputs = {bus_in_hydrogen: Flow()}
 
         outputs = {
             bus_out_electricity: Flow(

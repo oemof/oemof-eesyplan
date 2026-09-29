@@ -25,6 +25,8 @@ class EnergyStorage(GenericStorage):
         efficiency_discharge=1.0,
         theoretical_time_charge=1.0,  # hours
         theoretical_time_discharge=None,  # hours
+        initial_storage_level=None,
+        end_storage_level=True,
     ):
         """
         Energy Storage System (ESS).
@@ -138,6 +140,8 @@ class EnergyStorage(GenericStorage):
         self.efficiency_charge = efficiency_charge
         self.efficiency_discharge = efficiency_discharge
         self.age_installed = age_installed
+        self.initial_storage_level = initial_storage_level
+        self.end_storage_level = end_storage_level
 
         if installed_capacity:
             self.capacity_charge = nv * theoretical_time_charge
@@ -169,8 +173,8 @@ class EnergyStorage(GenericStorage):
             outputs=outputs,
             min_storage_level=soc_min,
             max_storage_level=soc_max,
-            balanced=True,
-            initial_storage_level=None,
+            balanced=self.end_storage_level,
+            initial_storage_level=self.initial_storage_level,
             inflow_conversion_factor=self.efficiency_charge,
             outflow_conversion_factor=self.efficiency_discharge,
             invest_relation_input_capacity=self.crate_charge,
