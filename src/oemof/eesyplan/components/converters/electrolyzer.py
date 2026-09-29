@@ -7,7 +7,7 @@ class Electrolyzer(Converter):
         self,
         name,
         bus_in_electricity,
-        bus_out_h2,
+        bus_out_hydrogen,
         project_data,
         bus_out_heat=None,
         efficiency=0.3,
@@ -76,7 +76,7 @@ class Electrolyzer(Converter):
         ...     name="Electrolyzer",
         ...     bus_in_electricity=el_bus_in,
         ...     bus_out_heat=heat_bus_out,
-        ...     bus_out_h2=h2_bus_out,
+        ...     bus_out_hydrogen=h2_bus_out,
         ...     age_installed=0,
         ...     maximum_capacity=1000,
         ...     capex_spec=1000,
@@ -92,7 +92,7 @@ class Electrolyzer(Converter):
         >>> electrolyzer_no_heat = Electrolyzer(
         ...     name="Electrolyzer",
         ...     bus_in_electricity=el_bus_in,
-        ...     bus_out_h2=h2_bus_out,
+        ...     bus_out_hydrogen=h2_bus_out,
         ...     age_installed=0,
         ...     maximum_capacity=1000,
         ...     capex_spec=1000,
@@ -117,7 +117,7 @@ class Electrolyzer(Converter):
         inputs = {bus_in_electricity: Flow()}
 
         outputs = {
-            bus_out_h2: Flow(
+            bus_out_hydrogen: Flow(
                 nominal_capacity=nv,
                 variable_costs=variable_costs,
             )
@@ -142,7 +142,7 @@ class Electrolyzer(Converter):
             outputs=outputs,
             inputs=inputs,
             conversion_factors={
-                bus_out_h2: efficiency,
+                bus_out_hydrogen: efficiency,
                 bus_out_heat: efficiency_heat,
             },
         )

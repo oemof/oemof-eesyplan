@@ -5,7 +5,7 @@ class DsoHydrogen(DSO):
     def __init__(
         self,
         name,
-        bus_h2,
+        bus_hydrogen,
         energy_price=0.3,
         feedin_tariff=0.1,
         peak_demand_pricing=0,
@@ -26,7 +26,7 @@ class DsoHydrogen(DSO):
 
         :Structure:
           *input* & *output*
-            bus : bus_h2
+            bus : bus_hydrogen
 
         Parameters
         ----------
@@ -51,7 +51,7 @@ class DsoHydrogen(DSO):
         >>> h2bus = CarrierBus(name="h2_bus")
         >>> my_dso = DsoHydrogen(
         ...     name="main_grid",
-        ...     bus_h2=h2bus,
+        ...     bus_hydrogen=h2bus,
         ...     energy_price=0.25,
         ...     feedin_tariff=0.08,
         ... )
@@ -59,7 +59,7 @@ class DsoHydrogen(DSO):
         """
         super().__init__(
             name=name,
-            bus=bus_h2,
+            bus=bus_hydrogen,
             energy_price=energy_price,
             feedin_tariff=feedin_tariff,
             peak_demand_pricing=peak_demand_pricing,
