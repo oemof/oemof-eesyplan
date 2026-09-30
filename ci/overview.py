@@ -188,7 +188,7 @@ def build_rows(rst_desc: dict[str, str]) -> list[dict]:
             )
             continue
 
-        for name, obj in vars(module).items():
+        for _, obj in vars(module).items():
             if not inspect.isclass(obj) or obj.__module__ != mod_name:
                 continue
 
