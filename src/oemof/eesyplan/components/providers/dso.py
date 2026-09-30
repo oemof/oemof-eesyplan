@@ -10,9 +10,9 @@ class DSO(Node):
         self,
         name,
         bus,
-        maximum_capacity,
-        energy_price,
-        feedin_tariff,
+        energy_price=None,
+        feedin_tariff=None,
+        maximum_capacity=None,
         peak_demand_pricing=0,
         # peak_demand_pricing_period=1, ToDo: Still important? Not used!
         basic_amount=0,  # Warnung, weil nur für Profis :-)
@@ -43,11 +43,7 @@ class DSO(Node):
             |feedin_tariff|
         peak_demand_pricing : float, default=0
             |peak_demand_pricing|
-        peak_demand_pricing_period : int, default=1
-            |peak_demand_period|
-        renewable_share : float, default=0.44
-            |renewable_share|
-        feedin_cap : float or None, default=None
+        maximum_capacity : float or None, default=None
             |feedin_cap|
 
         Examples
@@ -72,27 +68,34 @@ class DSO(Node):
 
         super().__init__(label=self.name)
 
-        self.subnode(
-            Sink,
-            inputs={
-                self.bus: Flow(
-                    variable_costs=self.feedin_tariff * -1,
-                    nominal_capacity=self.maximum_capacity,
-                )
-            },
-            local_name="feedin_sink",
-        )
+        if energy_price is None and feedin_tariff is None:
+            raise ValueError(
+                "Either energy_price or feedin_tariff must be set"
+            )
 
-        self.subnode(
-            Source,
-            outputs={
-                self.bus: Flow(
-                    variable_costs=self.energy_price,
-                    nominal_capacity=Investment(
-                        ep_costs=self.peak_demand_pricing,
-                        maximum=self.maximum_capacity,
-                    ),
-                )
-            },
-            local_name="consumption_source",
-        )
+        if feedin_tariff is None:
+            self.subnode(
+                Sink,
+                inputs={
+                    self.bus: Flow(
+                        variable_costs=self.feedin_tariff * -1,
+                        nominal_capacity=self.maximum_capacity,
+                    )
+                },
+                local_name="feedin_sink",
+            )
+
+        if energy_price is None:
+            self.subnode(
+                Source,
+                outputs={
+                    self.bus: Flow(
+                        variable_costs=self.energy_price,
+                        nominal_capacity=Investment(
+                            ep_costs=self.peak_demand_pricing,
+                            maximum=self.maximum_capacity,
+                        ),
+                    )
+                },
+                local_name="consumption_source",
+            )
