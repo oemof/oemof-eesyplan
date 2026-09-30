@@ -35,6 +35,7 @@ class ThermalStorage(EnergyStorage):
            including all necessary components.
 
         Structure
+        ---------
         *input*
             charge : Heat
         *output*

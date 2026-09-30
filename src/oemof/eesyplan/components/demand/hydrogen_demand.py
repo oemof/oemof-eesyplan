@@ -12,6 +12,7 @@ class H2Demand(Demand):
         according to a specified time series pattern.
 
         Structure
+        ---------
         *input:*
             1. from_bus : Hydrogen
 
