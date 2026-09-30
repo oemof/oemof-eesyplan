@@ -1,7 +1,6 @@
 from oemof.network import Node
-from oemof.solph import Bus, Investment
 from oemof.solph import Flow
-from oemof.solph.components import Converter
+from oemof.solph import Investment
 from oemof.solph.components import Sink
 from oemof.solph.components import Source
 

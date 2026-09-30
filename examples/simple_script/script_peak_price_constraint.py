@@ -3,9 +3,9 @@ from pathlib import Path
 import pandas as pd
 
 from oemof.eesyplan import CarrierBus
-from oemof.eesyplan import ElectricityDemand
 from oemof.eesyplan import DsoElectricity
 from oemof.eesyplan import ElectricalStorage
+from oemof.eesyplan import ElectricityDemand
 from oemof.eesyplan import EnergySystem
 from oemof.eesyplan import Project
 from oemof.eesyplan import PvPlant
