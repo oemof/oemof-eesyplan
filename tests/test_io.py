@@ -1,6 +1,7 @@
 import tempfile
 import zipfile
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import pytest
 
@@ -122,8 +123,6 @@ class TestUnzipPackage:
             Path(empty_zip).unlink()
 
     def test_unzip_package_with_external_tempdir(self, sample_zip, tmp_path):
-        from tempfile import TemporaryDirectory
-
         # pass an explicit TemporaryDirectory to hit the `ext_path is
         # None` False branch
         with TemporaryDirectory() as ext_dir:
