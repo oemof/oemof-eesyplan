@@ -78,9 +78,15 @@ class Sink(SolphSink):
         >>> from oemof.eesyplan import Project
         >>> bus = CarrierBus("Test", balanced=False)
         >>> project = Project(
-        ...         name="Project_X", economic_period=20, tax=0,
-        ...         discount_factor=0.01)
-        >>> sink = Sink("test", project, bus)
+        ...     name="Project_X",
+        ...     economic_period=20,
+        ...     tax=0,
+        ...     discount_factor=0.01)
+        >>> sink = Sink(
+        ...     "test",
+        ...     installed_capacity=10,
+        ...     project_data=project,
+        ...     bus_in=bus)
         """
         self.age_installed = age_installed
 

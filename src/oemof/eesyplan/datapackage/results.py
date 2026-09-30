@@ -8,6 +8,14 @@ from oemof.datapackage.resultpackage import write
 
 
 def export_results(results, path):
+    # ToDo The following lines are neccessary until the bug is fixed in solph
+    for key in results.keys():
+        try:
+            results[key]
+        except KeyError:
+            results._variables.pop(key)
+    # ToDo End of temporary fix
+
     write.export_results_to_datapackage(
         results=results, base_path=path, zip=False
     )
