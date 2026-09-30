@@ -27,8 +27,8 @@ classifiers = [
 ]
 dependencies = [
   "oemof-datapackage",
-  "oemof-network",
-  "oemof-solph",
+  "oemof-network >=0.5.2,<0.5.3",
+  "oemof-solph >=0.6.4,<0.6.5",
 ]
 dynamic = ["version"]
 
@@ -54,6 +54,7 @@ test = [
   "oemof-demand",
   "tox",
   "oemof-visio",
+  "plotly <7",
   "pyproj",
   "mip",
   "mock"
@@ -109,7 +110,7 @@ include = [
   "pytest.ini",
   "tests/test_data/TRY2015_39065002972500_Jahr.dat",
 ]
-exclude = ["docs/_build", "**/*.egg-info"]
+exclude = ["docs/_build", "**/*.egg-info", "examples/results"]
 
 [tool.flit.module]
 name = "oemof.eesyplan"
