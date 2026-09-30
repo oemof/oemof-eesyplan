@@ -3,7 +3,6 @@ from oemof.solph.flows import Flow
 
 
 class Shortage(Source):
-
     def __init__(self, name, bus_out, cost):
         """
         Short description

@@ -21,10 +21,11 @@ import inspect
 import re
 from pathlib import Path
 
-
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 COMPONENTS_DIR = PROJECT_ROOT / "src" / "oemof" / "eesyplan" / "components"
-RST_FILE = PROJECT_ROOT / "docs" / "reference" / "docstring_parameter_description.rst"
+RST_FILE = (
+    PROJECT_ROOT / "docs" / "reference" / "docstring_parameter_description.rst"
+)
 OUTPUT = PROJECT_ROOT / "ci" / "component_parameters.csv"
 
 
@@ -78,7 +79,7 @@ def parse_docstring_params(docstring: str) -> dict[str, dict]:
         r"See Also|Attributes|Methods)\s*\n|\Z)",
         docstring,
         re.DOTALL | re.MULTILINE,
-        )
+    )
 
     # Wenn numpydoc-Format nicht gefunden, versuche einfacheres Format
     if not m:
@@ -89,7 +90,7 @@ def parse_docstring_params(docstring: str) -> dict[str, dict]:
             r"See Also|Attributes|Methods)\s*\n|\Z)",
             docstring,
             re.DOTALL | re.MULTILINE,
-            )
+        )
 
     if not m:
         return result
@@ -113,7 +114,9 @@ def parse_docstring_params(docstring: str) -> dict[str, dict]:
                 if not next_line.strip():
                     i += 1
                     break
-                if not next_line.startswith("    ") and not next_line.startswith("\t"):
+                if not next_line.startswith(
+                    "    "
+                ) and not next_line.startswith("\t"):
                     break
                 desc_lines.append(next_line.strip())
                 i += 1
@@ -128,7 +131,9 @@ def parse_docstring_params(docstring: str) -> dict[str, dict]:
     return result
 
 
-def resolve_description(text: str, rst_desc: dict[str, str]) -> tuple[str, str]:
+def resolve_description(
+    text: str, rst_desc: dict[str, str]
+) -> tuple[str, str]:
     """Loest |sphinx-verweise| im Beschreibungstext auf.
 
     Der Text wird in Segmente zerlegt: reiner Docstring-Text bleibt erhalten,
@@ -143,7 +148,7 @@ def resolve_description(text: str, rst_desc: dict[str, str]) -> tuple[str, str]:
     parts: list[tuple[str, str]] = []
     pos = 0
     for match in re.finditer(r"\|\s*([^|]+?)\s*\|", text):
-        literal = text[pos:match.start()].strip()
+        literal = text[pos : match.start()].strip()
         if literal:
             parts.append((literal, "docstring"))
         key = match.group(1).strip()
@@ -169,16 +174,18 @@ def build_rows(rst_desc: dict[str, str]) -> list[dict]:
     rows = []
 
     for py_file in iter_component_files():
-        mod_name = str(py_file.relative_to(PROJECT_ROOT)).replace(
-            "/", "."
-        )[:-3]
+        mod_name = str(py_file.relative_to(PROJECT_ROOT)).replace("/", ".")[
+            :-3
+        ]
 
         spec = importlib.util.spec_from_file_location(mod_name, py_file)
         module = importlib.util.module_from_spec(spec)
         try:
             spec.loader.exec_module(module)
         except Exception as exc:  # Import-Fehler tolerieren
-            print(f"  [WARN] {py_file.name} konnte nicht importiert werden: {exc}")
+            print(
+                f"  [WARN] {py_file.name} konnte nicht importiert werden: {exc}"
+            )
             continue
 
         for name, obj in vars(module).items():
@@ -220,7 +227,9 @@ def build_rows(rst_desc: dict[str, str]) -> list[dict]:
                 # --- Erklaerung-Ermittlung ---
                 if doc_entry and doc_entry["beschreibung"].strip():
                     beschreibung = doc_entry["beschreibung"]
-                    erklaerung, quelle = resolve_description(beschreibung, rst_desc)
+                    erklaerung, quelle = resolve_description(
+                        beschreibung, rst_desc
+                    )
                     if erklaerung:
                         erklaerung_quelle = quelle
                     else:

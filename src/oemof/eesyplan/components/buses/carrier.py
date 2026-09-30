@@ -5,7 +5,6 @@ from oemof.solph.components import Source
 
 
 class CarrierBus(Bus):
-
     def __init__(
         self,
         name,

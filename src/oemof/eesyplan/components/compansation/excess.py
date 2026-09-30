@@ -3,7 +3,6 @@ from oemof.solph.components import Sink
 
 
 class Excess(Sink):
-
     def __init__(self, name, bus_in, cost):
         """
         Short description
