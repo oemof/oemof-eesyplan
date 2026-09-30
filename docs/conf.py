@@ -31,7 +31,9 @@ extlinks = {
 
 html_theme = "furo"
 html_theme_options = {
-    "githuburl": "https://github.com/oemof/oemof-eesyplan/",
+    "source_repository": "https://github.com/oemof/oemof-eesyplan/",
+    "source_branch": "main",
+    "source_directory": "docs/",
 }
 
 html_use_smartypants = True
