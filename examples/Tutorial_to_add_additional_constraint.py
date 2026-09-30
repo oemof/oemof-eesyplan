@@ -1,10 +1,11 @@
+from pyomo.core.base.block import ScalarBlock
+from pyomo.environ import Constraint
+
 from oemof.network import Node
 from oemof.solph import Flow
 from oemof.solph import Investment
 from oemof.solph import Model
 from oemof.solph.components import Converter
-from pyomo.core.base.block import ScalarBlock
-from pyomo.environ import Constraint
 
 
 class ExtraPricingBlock(ScalarBlock):
