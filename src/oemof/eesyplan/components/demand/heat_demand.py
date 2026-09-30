@@ -9,9 +9,10 @@ class HeatDemand(Demand):
         This class represents a heat demand that consumes
         heat energy according to a specified time series pattern.
 
-        :Structure:
-            *input*
-                1. from_bus : Heat
+        Structure
+        ---------
+        *input*
+            1. from_bus : Heat
 
         Parameters
         ----------

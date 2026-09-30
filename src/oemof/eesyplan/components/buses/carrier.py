@@ -4,8 +4,7 @@ from oemof.solph.components import Sink
 from oemof.solph.components import Source
 
 
-class CarrierBus(Bus):  # todo add shortage source and excess sink with costs
-    """Bus mit Medium-Attribut"""
+class CarrierBus(Bus):
 
     def __init__(
         self,
@@ -28,7 +27,7 @@ class CarrierBus(Bus):  # todo add shortage source and excess sink with costs
             |balanced|
         excess_cost : float
             |excess_cost|
-        shortage_cost: float
+        shortage_cost : float
             |shortage_cost|
 
         Examples

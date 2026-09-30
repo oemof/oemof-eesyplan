@@ -31,12 +31,14 @@ class Electrolyzer(Converter):
             The efficiency parameter determines the conversion rate
             from electricity to hydrogen.
 
-        :Structure:
+        Structure
+        ---------
           *input*
             1. el_bus : Electricity
           *output*
             1. heat_bus : Heat
             2. h2_bus : H2
+
         Parameters
         ----------
         name : str

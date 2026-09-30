@@ -29,8 +29,9 @@ class DSO(Node):
             The renewable share affects the overall system renewable
             factor calculation.
 
-        :Structure:
-          *input* & *output*
+        Structure
+        ---------
+        *input* & *output*
             bus : Electricity
 
         Parameters

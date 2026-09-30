@@ -27,6 +27,7 @@ class Sink(SolphSink):
         custom_properties=None,
     ):
         """
+        General Sink.
 
         Parameters
         ----------

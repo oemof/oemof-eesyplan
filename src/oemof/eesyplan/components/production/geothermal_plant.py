@@ -28,7 +28,8 @@ class GeothermalPlant(Source):
             This is a renewable energy source that provides consistent
             baseload heat generation.
 
-        :Structure:
+        Structure
+        ---------
           *output*
             1. to_bus : Heat
 

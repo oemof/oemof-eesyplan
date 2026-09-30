@@ -28,13 +28,15 @@ class Boiler(Converter):
             The efficiency parameter determines the conversion rate
             from gas to thermal output.
 
-        :Structure:
+        Structure
+        ---------
           *input*
             1. from_bus : Gas
           *output*
             1. to_bus : Heat
 
-        :Optimization:
+        Optimization
+        -------------
           The characteristic quantity of the optimization is the *maximum
           power-output* of the Boiler given in kW
 

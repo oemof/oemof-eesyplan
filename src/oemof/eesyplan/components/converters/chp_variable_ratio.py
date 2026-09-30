@@ -32,14 +32,16 @@ class ChpVariableRatio(ExtractionTurbineCHP):
             CHP systems achieve higher overall efficiency by utilising
             waste heat for useful purposes.
 
-        :Structure:
+        Structure
+        ---------
           *input*
             1. bus_in_fuel : Gas
           *output*
             1. bus_out_heat : Heat
             2. bus_out_electricity : Electricity
 
-        :Optimization:
+        Optimisation
+        ------------
           The characteristic quantity of the optimization is the
           *maximum electricity
           power-output (active power)* of the CHP given in kW
@@ -74,7 +76,7 @@ class ChpVariableRatio(ExtractionTurbineCHP):
             |variable_costs|
         lifetime : int, default=20
             |lifetime|
-        project_data: project_data
+        project_data : project_data
             |project_data|
 
         Examples

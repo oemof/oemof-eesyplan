@@ -33,11 +33,12 @@ class ElectricalStorage(EnergyStorage):
            This is a simplified representation of a complete BESS
            including all necessary components.
 
-        :Structure:
-         *input*
-           1. charge : Electricity
-         *output*
-           1. discharge : Electricity
+        Structure
+        ---------
+        *input*
+            charge : Electricity
+        *output*
+            discharge : Electricity
 
         Parameters
         ----------

@@ -12,6 +12,7 @@ class HeatingNetwork(CarrierBus):
         absolute_losses=None,  # ToDo: wie werden die angegeben: pro timestep?
     ):
         """
+        Heating Network Bus
 
         Parameters
         ----------
@@ -47,6 +48,7 @@ class HeatingPipe(Node):
         return_pipe=True,
     ):
         """
+        Bidirectional Heating Pipe.
 
         Parameters
         ----------

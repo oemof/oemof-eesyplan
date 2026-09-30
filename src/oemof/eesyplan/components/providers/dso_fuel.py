@@ -24,8 +24,9 @@ class DsoFuel(DSO):
             The renewable share affects the overall system renewable
             factor calculation.
 
-        :Structure:
-          *input* & *output*
+        Structure
+        ---------
+        *input* & *output*
             bus : Fuel
 
         Parameters

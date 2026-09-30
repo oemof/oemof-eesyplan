@@ -34,11 +34,11 @@ class ThermalStorage(EnergyStorage):
            This is a simplified representation of a complete HESS
            including all necessary components.
 
-        :Structure:
-         *input*
-           1. charge : Heat
-         *output*
-           1. discharge : Heat
+        Structure
+        *input*
+            charge : Heat
+        *output*
+            discharge : Heat
 
         Parameters
         ----------

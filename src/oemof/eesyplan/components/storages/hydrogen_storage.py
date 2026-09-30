@@ -33,11 +33,12 @@ class HydrogenStorage(EnergyStorage):
             This system requires specialized storage technology for
             hydrogen handling and safety.
 
-        :Structure:
-          *input*
-            1. charge : H2
-          *output*
-            1. discharge : H2
+        Structure
+        ---------
+        *input*
+            charge : H2
+        *output*
+            discharge : H2
 
         Parameters
         ----------

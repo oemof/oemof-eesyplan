@@ -28,7 +28,8 @@ class FuelCell(Converter):
             The efficiency of fuel cells is typically higher than
             combustion-based generators.
 
-        :Structure:
+        Structure
+        ---------
           *input*
             1. bus_in_h2 : H2
           *output*

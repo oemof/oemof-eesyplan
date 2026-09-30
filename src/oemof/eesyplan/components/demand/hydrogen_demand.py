@@ -11,9 +11,9 @@ class H2Demand(Demand):
         This class represents a hydrogen demand that consumes hydrogen
         according to a specified time series pattern.
 
-        :Structure:
-            *input:*
-                1. from_bus : Hydrogen
+        Structure
+        *input:*
+            1. from_bus : Hydrogen
 
         Parameters
         ----------

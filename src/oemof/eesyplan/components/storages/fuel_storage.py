@@ -33,11 +33,12 @@ class FuelStorage(EnergyStorage):
             This system can store various types of fuel including natural
             gas and biogas.
 
-        :Structure:
-          *input*
-            1. bus_in_fuel : Gas
-          *output*
-            1. bus_out_fuel : Gas
+        Structure
+        ---------
+        *input*
+            bus_in_fuel : Gas
+        *output*
+            bus_out_fuel : Gas
 
         Parameters
         ----------
