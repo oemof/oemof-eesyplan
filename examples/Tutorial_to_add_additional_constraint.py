@@ -1,10 +1,12 @@
 from oemof.network import Node
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph import Investment
+from oemof.solph import Model
 from oemof.solph.components import Converter
 from pyomo.core.base.block import ScalarBlock
-from pyomo.environ import Constraint, Var
-from oemof.solph import Model
+from pyomo.environ import Constraint
+from pyomo.environ import Var
 
 
 class ExtraPricingBlock(ScalarBlock):
@@ -82,11 +84,13 @@ class ExtraPricing(Node):
         know what you are doing.
     maximum_capacity : float, default: float("inf")
         Maximum capacity.
+    block_limited_path : list, default: None
+        Time series, where the
 
     Examples
     --------
     >>> from oemof.solph import Bus
-    >>> from oemof.eesyplan.components.virtual import ExtraPricing
+    >>> from oemof.eesyplan.components.virtual.virtual import ExtraPricing
     >>> bus_in = Bus(label="bus_in")
     >>> bus_out = Bus(label="bus_out")
     >>> my_extra_pricing = ExtraPricing(
@@ -128,11 +132,15 @@ class ExtraPricing(Node):
         full_load_time_limit=None,
         basic_amount=0,
         maximum_capacity=float("inf"),
+        block_unlimited_path=None,
+        block_limited_path=None,
     ):
         super().__init__(label=name)
 
         self.fix_cost = basic_amount
         self.full_load_time_limit = full_load_time_limit
+
+        internal_bus = self.subnode(Bus)
 
         self.subnode(
             Converter,

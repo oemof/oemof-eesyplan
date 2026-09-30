@@ -52,7 +52,8 @@ from oemof.eesyplan.components.storages.storage import EnergyStorage
 from oemof.eesyplan.components.storages.thermal_storage import ThermalStorage
 from oemof.eesyplan.components.transport.heat import HeatingNetwork
 from oemof.eesyplan.components.transport.heat import HeatingPipe
-from oemof.eesyplan.components.virtual.virtual import ExtraPricing
+from oemof.eesyplan.components.virtual.pricing import PeakPricing
+from oemof.eesyplan.components.virtual.pricing import FlowPricing
 from oemof.eesyplan.datapackage.results import export_results
 from oemof.eesyplan.datapackage.results import import_results
 from oemof.eesyplan.model import EnergySystem
@@ -85,7 +86,7 @@ __all__ = [
     "EnergyStorage",
     "EnergySystem",
     "Excess",
-    "ExtraPricing",
+    "FlowPricing",
     "FuelCell",
     "FuelDemand",
     "FuelStorage",
@@ -96,6 +97,7 @@ __all__ = [
     "HeatingNetwork",
     "HeatingPipe",
     "HydrogenStorage",
+    "PeakPricing",
     "Project",
     "PvPlant",
     "Results",
