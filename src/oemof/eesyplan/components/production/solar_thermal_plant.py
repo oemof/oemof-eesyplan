@@ -28,7 +28,8 @@ class SolarThermalPlant(Source):
             This is a renewable energy source that provides heat directly
             from solar radiation.
 
-        :Structure:
+        Structure
+        ---------
           *output*
             1. to_bus : Heat
 

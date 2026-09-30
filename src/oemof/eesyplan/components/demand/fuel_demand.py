@@ -9,7 +9,8 @@ class FuelDemand(Demand):
         This class represents a gas demand that consumes gas according
         to a specified time series pattern.
 
-        :Structure:
+        Structure
+        ---------
             *input*
                 1. bus_in_fuel : Gas
 

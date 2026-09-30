@@ -27,13 +27,15 @@ class ElectricalTransformator(Converter):
             The efficiency parameter determines the conversion rate
             from gas to electrical output.
 
-        :Structure:
+        Structure
+        ---------
           *input*
             1. from_bus : Electricity
           *output*
             1. to_bus : Electricity
 
-        :Optimization:
+        Optimisation
+        ------------
           The characteristic quantity of the optimization is the *maximum
           power-output* of the Transformer given in kW
 

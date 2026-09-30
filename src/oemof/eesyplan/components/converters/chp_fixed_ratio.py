@@ -31,14 +31,15 @@ class ChpFixedRatio(Converter):
             The fixed ratio constraint limits operational flexibility
             but ensures consistent heat-to-power ratios.
 
-        :Structure:
+        Structure
+        ---------
           *input*
             1. fuel : Gas
           *output*
             1. heat_bus : Heat
             2. electricity_bus : Electricity
 
-        :Optimization:
+        Optimisation
           The characteristic quantity of the optimization is the
           *maximum electricity
           power-output (active power)* of the CHP given in kW
@@ -69,7 +70,7 @@ class ChpFixedRatio(Converter):
             |variable_costs|
         lifetime : int, default=20
             |lifetime|
-        project_data: project_data
+        project_data : project_data
             |project_data|
 
         Examples

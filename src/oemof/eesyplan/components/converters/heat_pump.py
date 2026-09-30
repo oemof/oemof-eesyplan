@@ -32,7 +32,8 @@ class HeatPump(Converter):
             Heat pumps typically achieve efficiencies (COP) greater
             than 1.0, making them very efficient heating systems.
 
-        :Structure:
+        Structure
+        ---------
           *input*
             1. electricity_bus : Electricity
             2. heat_bus : Heat

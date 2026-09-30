@@ -28,13 +28,15 @@ class DieselGenerator(Converter):
             The efficiency parameter determines the conversion rate
             from fuel to electrical power.
 
-        :Structure:
+        Structure
+        ---------
           *input*
             1. from_bus : Fuel
           *output*
             1. to_bus : Electricity
 
-        :Optimization:
+        Optimisation
+        ------------
           The characteristic quantity of the optimization is the *maximum
           power-output* of the Generator given in kW
 

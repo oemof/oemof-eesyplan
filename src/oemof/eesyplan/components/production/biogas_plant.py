@@ -28,11 +28,13 @@ class BiogasPlant(Source):
             This is a renewable energy source that produces carbon-neutral
             gas fuel.
 
-        :Structure:
+        Structure
+        ---------
           *output*
             1. to_bus : Fuel
 
-        :Optimization:
+        Optimisation
+        ------------
           The characteristic quantity of the optimization is the *nominal
           power-output* of the biogas power plant given in kW
 

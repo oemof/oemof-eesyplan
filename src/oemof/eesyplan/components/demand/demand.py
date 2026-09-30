@@ -10,9 +10,10 @@ class Demand(Sink):
         This class represents a demand that consumes energy according to a
         specified time series pattern.
 
-        :Structure:
-            *input*
-                1. from_bus : Electricity
+        Structure
+        ---------
+        *input*
+            1. from_bus : Electricity
 
         Parameters
         ----------

@@ -13,6 +13,7 @@ class Commodity(Source):
         variable_cost=0,
     ):
         """
+        General Commodity.
 
         Parameters
         ----------

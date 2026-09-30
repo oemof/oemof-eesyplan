@@ -28,11 +28,13 @@ class PvPlant(Source):
             This is a renewable energy source that contributes to the
             renewable share of the system.
 
-        :Structure:
+        Structure
+        ---------
           *output*
             1. to_bus : Electricity
 
-        :Optimization:
+        Optimisation
+        ------------
           The characteristic quantity of the optimization is the *nominal
           power-output* of the PV-plant given in kWp
 

@@ -11,9 +11,10 @@ class ElectricityDemand(Demand):
         This class represents an electricity demand that consumes
         electrical energy according to a specified time series pattern.
 
-        :Structure:
-            *input*
-                1. from_bus : Electricity
+        Structure
+        ---------
+        *input*
+            1. from_bus : Electricity
 
         Parameters
         ----------

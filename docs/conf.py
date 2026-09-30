@@ -22,11 +22,18 @@ templates_path = ["."]
 extlinks = {
     "issue": ("https://github.com/oemof/oemof-eesyplan/issues/%s", "#%s"),
     "pr": ("https://github.com/oemof/oemof-eesyplan/pull/%s", "PR #%s"),
+    "code": (
+        "https://github.com/oemof/oemof-eesyplan/blob/main/"
+        "src/oemof/eesyplan/%s",
+        "%s",
+    ),
 }
 
 html_theme = "furo"
 html_theme_options = {
-    "githuburl": "https://github.com/oemof/oemof-eesyplan/",
+    "source_repository": "https://github.com/oemof/oemof-eesyplan/",
+    "source_branch": "main",
+    "source_directory": "docs/",
 }
 
 html_use_smartypants = True
