@@ -27,8 +27,6 @@ recursive-include examples *.json
 recursive-include examples *.png
 recursive-include examples *.py
 
-prune examples/results
-
 recursive-exclude examples *.graphml
 recursive-exclude ci *
 
