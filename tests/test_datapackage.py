@@ -1,3 +1,4 @@
+import argparse
 import shutil
 import warnings
 import zipfile
@@ -12,6 +13,56 @@ from oemof.eesyplan.datapackage import energy_system as es
 from oemof.tools.debugging import ExperimentalFeatureWarning
 
 warnings.filterwarnings("ignore", category=ExperimentalFeatureWarning)
+
+
+@patch("oemof.eesyplan.datapackage.energy_system.solve_energy_system_from_dp")
+@patch("oemof.eesyplan.datapackage.energy_system.argparse.ArgumentParser")
+def test_cli_json_file(mock_parser, mock_solve):
+    mock_parser.return_value.parse_args.return_value = argparse.Namespace(
+        filename="some/datapackage.json",
+        plot="graph",
+        output=None,
+    )
+    es.cli()
+    call_kwargs = mock_solve.call_args.kwargs
+    assert call_kwargs["path"] == Path("some/datapackage.json")
+    assert mock_solve.call_args.kwargs["plot"] == "graph"
+    assert mock_solve.call_args.kwargs["results_path"] is None
+
+
+@patch("oemof.eesyplan.datapackage.energy_system.solve_energy_system_from_dp")
+@patch("oemof.eesyplan.datapackage.energy_system.argparse.ArgumentParser")
+def test_cli_folder_path(mock_parser, mock_solve):
+    mock_parser.return_value.parse_args.return_value = argparse.Namespace(
+        filename="some/folder",
+        plot="graph",
+        output="out",
+    )
+    es.cli()
+    assert mock_solve.call_args.kwargs["path"] == Path(
+        "some", "folder", "datapackage.json"
+    )
+    assert mock_solve.call_args.kwargs["results_path"] == Path("out")
+
+
+@patch("oemof.eesyplan.datapackage.energy_system.EnergySystem")
+def test_create_es_from_folder(mock_es_class):
+    mock_es_class.from_datapackage.return_value = "mock_es"
+    path = Path("test_data/openPlan_package")
+    result = es.create_energy_system_from_dp(path)
+    assert result == "mock_es"
+    # check it appended datapackage.json
+    called_path = mock_es_class.from_datapackage.call_args.args[0]
+    assert called_path.name == "datapackage.json"
+
+
+@patch("oemof.eesyplan.datapackage.energy_system.optimise")
+@patch("oemof.eesyplan.datapackage.energy_system.plot_es")
+@patch("oemof.eesyplan.datapackage.energy_system.create_energy_system_from_dp")
+def test_solve_with_visio_plot(mock_create, mock_plot, mock_optimise):
+    mock_create.return_value = None
+    es.solve_energy_system_from_dp("x", plot="visio")
+    mock_plot.assert_called_once()
 
 
 def test_simple_datapackage():
