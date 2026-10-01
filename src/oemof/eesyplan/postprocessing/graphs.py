@@ -15,8 +15,7 @@ def sankey(
 ) -> tuple[go.Figure, pd.DataFrame]:
     """
     Create a Plotly Sankey diagram from a DataFrame whose columns are a
-    2-level MultiIndex:
-        columns = MultiIndex[(source, target), ...]
+    2-level MultiIndex: columns = MultiIndex[(source, target), ...]
 
     Parameters
     ----------
