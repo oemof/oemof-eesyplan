@@ -32,7 +32,7 @@ Balancing elements for energy excess and energy shortage.
 
 .. dropdown:: Shortage (Energy Deficit)
 
-    .. automodule:: oemof.eesyplan.components.compansation.shortage
+    .. automodule:: oemof.eesyplan.components.compensation.shortage
         :members:
         :undoc-members:
         :show-inheritance:
