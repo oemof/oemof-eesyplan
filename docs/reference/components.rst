@@ -6,7 +6,8 @@ This page describes all solph-related building blocks, organised by category.
 Buses
 -----
 
-Buses connect components within a single energy carrier (e.g. electricity, heat, gas).
+Buses connect components within a single energy carrier (e.g. electricity,
+heat, gas).
 
 .. dropdown:: Carrier Bus
 
@@ -16,14 +17,14 @@ Buses connect components within a single energy carrier (e.g. electricity, heat,
         :show-inheritance:
 
 
-Compansation
+Compensation
 ------------
 
 Balancing elements for energy excess and energy shortage.
 
 .. dropdown:: Excess (Energy Surplus)
 
-    .. automodule:: oemof.eesyplan.components.compansation.excess
+    .. automodule:: oemof.eesyplan.components.compensation.excess
         :members:
         :undoc-members:
         :show-inheritance:
@@ -40,7 +41,8 @@ Balancing elements for energy excess and energy shortage.
 Converters
 ----------
 
-Converters between energy carriers, e.g. boilers, heat pumps, electrolysers and CHP units.
+Converters between energy carriers, e.g. boilers, heat pumps, electrolysers
+and CHP units.
 
 .. dropdown:: Auxiliary Heat
 
@@ -223,7 +225,8 @@ Generation components such as PV, wind, biogas and geothermal plants.
 Providers
 ---------
 
-Connection to upstream supply networks (DSO) for electricity, gas, heat and hydrogen.
+Connection to upstream supply networks (DSO) for electricity, gas, heat and
+hydrogen.
 
 .. dropdown:: DSO (Base Class)
 

@@ -1,16 +1,10 @@
 Datapackage I/O
 ===============
 
+Energy System and Datapackage
+------------------------------
+
 Building, solving and visualising an energy system from a datapackage.
-
-.. autosummary::
-    :nosignatures:
-
-    ~oemof.eesyplan.datapackage.energy_system.cli
-    ~oemof.eesyplan.datapackage.energy_system.create_energy_system_from_dp
-    ~oemof.eesyplan.datapackage.energy_system.es_to_graphml
-    ~oemof.eesyplan.datapackage.energy_system.plot_es
-    ~oemof.eesyplan.datapackage.energy_system.solve_energy_system_from_dp
 
 .. dropdown:: Energy System ↔ Datapackage
 
@@ -20,13 +14,10 @@ Building, solving and visualising an energy system from a datapackage.
         :show-inheritance:
 
 
+Results Export and Import
+---------------------------
+
 Export and import of optimisation results.
-
-.. autosummary::
-    :nosignatures:
-
-    ~oemof.eesyplan.datapackage.results.export_results
-    ~oemof.eesyplan.datapackage.results.import_results
 
 .. dropdown:: Results Export/Import
 

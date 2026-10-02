@@ -1,6 +1,9 @@
 Postprocessing
 ==============
 
+Balances
+--------
+
 Calculation of input/output balances of the components.
 
 .. dropdown:: Input/Output Balances
@@ -11,13 +14,10 @@ Calculation of input/output balances of the components.
         :show-inheritance:
 
 
+Diagrams
+--------
+
 Creation of Sankey diagrams and capacity graphs.
-
-.. autosummary::
-    :nosignatures:
-
-    ~oemof.eesyplan.postprocessing.graphs.capacities_graph
-    ~oemof.eesyplan.postprocessing.graphs.sankey
 
 .. dropdown:: Sankey & Capacity Diagrams
 
