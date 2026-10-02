@@ -3,8 +3,8 @@
 __version__ = "0.0.1"
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
-from oemof.eesyplan.components.compansation.excess import Excess
-from oemof.eesyplan.components.compansation.shortage import Shortage
+from oemof.eesyplan.components.compensation.excess import Excess
+from oemof.eesyplan.components.compensation.shortage import Shortage
 from oemof.eesyplan.components.converters.auxiliary_heat import AuxiliaryHeat
 from oemof.eesyplan.components.converters.boiler import Boiler
 from oemof.eesyplan.components.converters.chp_fixed_ratio import ChpFixedRatio
