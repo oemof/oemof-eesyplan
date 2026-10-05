@@ -64,6 +64,8 @@ TYPEMAP = {
     "j": HeatingPipe,
     "Battery": ElectricalStorage,
     "CarrierBus": CarrierBus,
+    "HeatingNetwork": HeatingNetwork,
+    "heating_network": HeatingNetwork,
     "demand": ElectricityDemand,
     "Source": Source,
     "project": Project,
@@ -96,4 +98,5 @@ TYPEMAP = {
     "hess": ThermalStorage,
     "chp": ChpVariableRatio,
     "chp_fixed_ratio": ChpFixedRatio,
+    "heating_pipe": HeatingPipe,
 }
