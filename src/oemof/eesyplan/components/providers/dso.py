@@ -1,3 +1,5 @@
+import numpy as np
+
 from oemof.network import Node
 from oemof.solph import Bus
 from oemof.solph import Flow
@@ -37,9 +39,9 @@ class DSO(Node):
         ----------
         name : str
             |name|
-        energy_price : float, default=0.3
+        energy_price : float or array-like, default=0.3
             |energy_prices|
-        feedin_tariff : float, default=0.1
+        feedin_tariff : float or array-like, default=0.1
             |feedin_tariff|
         peak_demand_pricing : float, default=0
             |peak_demand_pricing|
@@ -64,7 +66,11 @@ class DSO(Node):
         """
         self.name = name
         self.bus = bus
+        if isinstance(energy_price, list):
+            energy_price = np.array(energy_price)
         self.energy_price = energy_price
+        if isinstance(energy_price, list):
+            feedin_tariff = np.array(feedin_tariff)
         self.feedin_tariff = feedin_tariff
         self.peak_demand_pricing = peak_demand_pricing
         self.peak_demand_pricing_period = peak_demand_pricing_period

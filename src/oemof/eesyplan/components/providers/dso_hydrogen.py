@@ -32,9 +32,9 @@ class DsoHydrogen(DSO):
         ----------
         name : str
             |name|
-        energy_price : float, default=0.3
+        energy_price : float or array-like, default=0.3
             |energy_prices|
-        feedin_tariff : float, default=0.1
+        feedin_tariff : float or array-like, default=0.1
             |feedin_tariff|
         peak_demand_pricing : float, default=0
             |peak_demand_pricing|
