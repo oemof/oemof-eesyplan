@@ -99,4 +99,8 @@ TYPEMAP = {
     "chp": ChpVariableRatio,
     "chp_fixed_ratio": ChpFixedRatio,
     "heating_pipe": HeatingPipe,
+    "sink": Sink,
+    "excess": Excess,
+    "shortage": Shortage,
+    "auxiliary_heat": AuxiliaryHeat,
 }
