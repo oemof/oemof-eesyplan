@@ -70,11 +70,7 @@ class EnergySystem(SolphES):
         else:
             timeindex = kwargs.get("timeindex")
 
-        super().__init__(
-            timeindex=timeindex,
-            infer_last_interval=False,
-            periods=kwargs.get("periods"),
-        )
+        super().__init__(timeindex=timeindex, infer_last_interval=False)
 
 
 class Results(SolphResults):

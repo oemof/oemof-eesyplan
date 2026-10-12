@@ -30,7 +30,7 @@ dependencies = [
   "oemof-datapackage",
   "oemof-demand",
   "oemof-network",
-  "oemof-solph",
+  "oemof-solph[solver]",
 ]
 dynamic = ["version"]
 
