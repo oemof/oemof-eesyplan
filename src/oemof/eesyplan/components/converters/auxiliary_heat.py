@@ -122,17 +122,53 @@ class AuxiliaryHeat(Converter):
         temp_in_heat = np.array(temp_in_heat)
         temp_low_source_component = np.array(temp_low_source_component)
 
-        energy_top = (temp_out_heat - temp_in_heat) / (
-            temp_in_heat - temp_low_source_component
+        # Default conversion factors
+        conversion_source_to_out = (
+            (temp_low_source_component - temp_in_heat)
+            / (temp_out_heat - temp_in_heat)
         )
-        energy_total = energy_top + 1
+
+        conversion_aux_to_out = (
+            (temp_out_heat - temp_low_source_component)
+            / (temp_out_heat - temp_in_heat)
+        )
+
+        # Source temperature is too low: auxiliary heat supplies all output
+        conversion_source_to_out = np.where(
+            temp_low_source_component <= temp_in_heat,
+            0,
+            conversion_source_to_out,
+        )
+
+        conversion_aux_to_out = np.where(
+            temp_low_source_component <= temp_in_heat,
+            1,
+            conversion_aux_to_out,
+        )
+
+        # Source temperature is high enough: no auxiliary heat needed
+        conversion_source_to_out = np.where(
+            temp_low_source_component >= temp_out_heat,
+            1,
+            conversion_source_to_out,
+        )
+
+        conversion_aux_to_out = np.where(
+            temp_low_source_component >= temp_out_heat,
+            0,
+            conversion_aux_to_out,
+        )
+
+
 
         super().__init__(
             label=name,
             inputs=inputs,
             outputs=outputs,
             conversion_factors={
-                bus_in_heat: 1 / energy_total,
-                bus_in_heat_auxiliary: energy_top / energy_total,
+                bus_in_heat: conversion_source_to_out,
+                bus_in_heat_auxiliary: conversion_aux_to_out,
             },
         )
+
+
