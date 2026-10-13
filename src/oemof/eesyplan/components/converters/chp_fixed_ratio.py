@@ -1,24 +1,27 @@
 from oemof.solph import Flow
 from oemof.solph.components import Converter
+from oemof.solph import Bus
+from collections.abc import Iterable
+from oemof.eesyplan.project import Project
 
 
 class ChpFixedRatio(Converter):
     def __init__(
         self,
-        name,
-        bus_in_fuel,
-        bus_out_electricity,
-        bus_out_heat,
-        efficiency_electricity_chp,
-        efficiency_heat_chp,
-        project_data,
-        age_installed=0,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=1000,
-        opex_spec=10,
-        variable_costs=0,
-        lifetime=20,
+        name: str,
+        bus_in_fuel: Bus,
+        bus_out_electricity: Bus,
+        bus_out_heat: Bus,
+        efficiency_electricity_chp: float | int | Iterable[float | int],
+        efficiency_heat_chp: float | int | Iterable[float | int],
+        project_data: Project,
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 1000,
+        opex_spec: float | int | Iterable[float | int] = 10,
+        variable_costs: float | int | Iterable[float | int] = 0,
+        lifetime: float | int = 20,
     ):
         """
         Combined Heat and Power plant with fixed heat-to-power ratio.
