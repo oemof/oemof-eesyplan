@@ -62,7 +62,6 @@ def simple_script():
         )
     )
 
-
     energy_system.add(
         AuxiliaryHeat(
             name="auxilary_mixer",
