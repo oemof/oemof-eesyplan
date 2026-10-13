@@ -47,7 +47,7 @@ solve_dp = "oemof.eesyplan.datapackage.energy_system:cli"
 docs = ["sphinx", "sphinx_rtd_theme"]
 dummy = ["oemof"]
 examples = []
-importer = ["pyproj", "oemof-demand"]
+importer = ["pyproj", "oemof-demand", "tespy"]
 test = [
   "pytest",
   "tespy",
