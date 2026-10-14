@@ -89,7 +89,7 @@ def calculate_fluid_mixture(
     temperature_difference_source = np.array(temperature_difference_source)
     temperature_difference_supply = np.array(temperature_difference_aux)
     # ToDo: Check equation!
-    if any((temperature_source - temperature_aux)>=0):
+    if any((temperature_source - temperature_aux) >= 0):
         msg = "The auxiliary temperature must be above the source temperature."
         raise ValueError(msg)
     top_up_fraction = (
