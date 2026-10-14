@@ -51,8 +51,9 @@ def calculate_top_up_fraction(
 
 def calculate_fluid_mixture(
     temperature_supply: float | int | ArrayLike,
+    temperature_aux: float | int | ArrayLike,
     temperature_source: float | int | ArrayLike,
-    temperature_difference_supply: float | int | ArrayLike,
+    temperature_difference_aux: float | int | ArrayLike,
     temperature_difference_source: float | int | ArrayLike,
 ):
     """
@@ -61,7 +62,8 @@ def calculate_fluid_mixture(
     Parameters
     ----------
     temperature_difference_source
-    temperature_difference_supply
+    temperature_difference_aux
+    temperature_aux
     temperature_source
     temperature_supply
 
@@ -73,22 +75,26 @@ def calculate_fluid_mixture(
     >>> a=5
     >>> top_frac = calculate_fluid_mixture(
     ...     temperature_difference_source=[40, 40, 40],
-    ...     temperature_difference_supply=[80, 80, 80],
+    ...     temperature_difference_aux=[80, 80, 80],
     ...     temperature_source=[60, 80, 100],
     ...     temperature_supply=[80, 80, 80],
+    ...     temperature_aux=[120, 120, 120],
     ... )
     >>> [round(float(t), 2) for t in top_frac]
-    [0.26, 0.28, 0.3]
+    [0.38, 0.4, 0.42]
 
     """
     temperature_supply = np.array(temperature_supply)
     temperature_source = np.array(temperature_source)
+    temperature_aux = np.array(temperature_aux)
     temperature_difference_source = np.array(temperature_difference_source)
-    temperature_difference_supply = np.array(temperature_difference_supply)
+    temperature_difference_supply = np.array(temperature_difference_aux)
+    # ToDo: Replace Dummy equation!!!!!!!!!!!!!!!!
     top_up_fraction = (
         temperature_difference_source
         + temperature_difference_supply
         + temperature_supply
         + temperature_source
-    )/1000
+        + temperature_aux
+    ) / 1000
     return top_up_fraction

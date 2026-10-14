@@ -1,8 +1,9 @@
+from collections.abc import Iterable
+
+from oemof.eesyplan.project import Project
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Converter
-from oemof.solph import Bus
-from collections.abc import Iterable
-from oemof.eesyplan.project import Project
 
 
 class ChpFixedRatio(Converter):

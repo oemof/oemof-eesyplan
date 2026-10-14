@@ -17,24 +17,18 @@ def extract_parameters(
         *node.args.args,
     ]
 
-    defaults_offset = len(positional_arguments) - len(
-        node.args.defaults
-    )
+    defaults_offset = len(positional_arguments) - len(node.args.defaults)
 
     for index, argument in enumerate(positional_arguments):
         annotation = (
-            ast.unparse(argument.annotation)
-            if argument.annotation
-            else "Any"
+            ast.unparse(argument.annotation) if argument.annotation else "Any"
         )
 
         default = "Mandatory"
         default_index = index - defaults_offset
 
         if default_index >= 0:
-            default = ast.unparse(
-                node.args.defaults[default_index]
-            )
+            default = ast.unparse(node.args.defaults[default_index])
 
         if argument.arg not in {"self", "cls"}:
             parameters.append(
@@ -48,17 +42,14 @@ def extract_parameters(
     for argument, default_node in zip(
         node.args.kwonlyargs,
         node.args.kw_defaults,
+        strict=False,
     ):
         annotation = (
-            ast.unparse(argument.annotation)
-            if argument.annotation
-            else "Any"
+            ast.unparse(argument.annotation) if argument.annotation else "Any"
         )
 
         default = (
-            "Mandatory"
-            if default_node is None
-            else ast.unparse(default_node)
+            "Mandatory" if default_node is None else ast.unparse(default_node)
         )
 
         parameters.append(
@@ -189,9 +180,7 @@ def parse_rst_parameters(
         while index < len(lines):
             line = lines[index]
 
-            if line.strip() and not line.startswith(
-                (" ", "\t")
-            ):
+            if line.strip() and not line.startswith((" ", "\t")):
                 break
 
             if line.strip():
@@ -229,8 +218,7 @@ def merge_records(
     ]
 
     descriptions = {
-        record["Parameter"]: record["Text"]
-        for record in description_records
+        record["Parameter"]: record["Text"] for record in description_records
     }
 
     code_parameters = set()
@@ -242,10 +230,7 @@ def merge_records(
         code_parameters.add(parameter_name)
 
         merged_records.append(
-            {
-                field: record.get(field, "")
-                for field in output_fields[:-1]
-            }
+            {field: record.get(field, "") for field in output_fields[:-1]}
             | {"Text": descriptions.get(parameter_name, "")}
         )
 
@@ -301,9 +286,7 @@ def main() -> None:
     Create one merged CSV report.
     """
     script_directory = Path(__file__).resolve().parent
-    project_directory = (
-        script_directory.parent / "src"
-    )
+    project_directory = script_directory.parent / "src"
     rst_file = (
         script_directory.parent
         / "docs"
