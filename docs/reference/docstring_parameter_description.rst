@@ -1,6 +1,3 @@
-.. |<Parameter>| replace:: <Description> [<Unit>]
-    (<Restriction>).
-
 .. |absolute_losses| replace:: Absolute heat losses of the device per
     timestep [:unit:] (Acceptable values are either a non-negative real
     number or None).
