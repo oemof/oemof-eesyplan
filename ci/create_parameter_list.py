@@ -96,7 +96,7 @@ def extract_from_class(
     for node in class_node.body:
         is_method = isinstance(
             node,
-            (ast.FunctionDef, ast.AsyncFunctionDef),
+            (ast.FunctionDef | ast.AsyncFunctionDef),
         )
 
         if is_method and node.name == "__init__":
@@ -131,7 +131,7 @@ def extract_from_file(filepath: Path) -> list[dict[str, str]]:
             records.extend(extract_from_class(node))
         elif isinstance(
             node,
-            (ast.FunctionDef, ast.AsyncFunctionDef),
+            (ast.FunctionDef | ast.AsyncFunctionDef),
         ):
             records.extend(extract_from_function(node))
 

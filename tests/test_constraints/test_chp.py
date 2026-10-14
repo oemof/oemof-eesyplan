@@ -67,9 +67,10 @@ def test_chp_variable_dispatch():
         bus_out_heat=heat_bus,
         bus_out_electricity=el_bus,
         installed_capacity=300,
-        efficiency_electricity_full_condensation=0.55,
-        efficiency_electricity_chp=0.32,
-        efficiency_heat_chp=0.58,
+        efficiency_electricity_state_a=0.55,
+        efficiency_heat_state_a=0,
+        efficiency_electricity_state_b=0.32,
+        efficiency_heat_state_b=0.58,
         variable_costs=-1,
         project_data=Project(
             name="Project_X",
@@ -89,6 +90,6 @@ def test_chp_variable_dispatch():
     assert flow_sum[chp_var, heat_bus] == 0
     assert flow_sum[
         chp_var, el_bus
-    ] / chp_var.efficiency_electricity_full_condensation == (
+    ] / chp_var.efficiency_electricity_state_a == (
         pytest.approx(flow_sum[gas_bus, chp_var], 0.00001)
     )

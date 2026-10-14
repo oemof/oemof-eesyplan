@@ -67,6 +67,8 @@ class AuxiliaryHeat(Converter):
         >>> import numpy as np
         >>> from oemof.eesyplan import Project
         >>> from oemof.eesyplan import CarrierBus
+        >>> from oemof.eesyplan.importer.auxiliary_heat_fraction import (
+        ...     calculate_top_up_fraction)
         >>> heat_bus = CarrierBus(name="heat_bus")
         >>> heat_bus_aux = CarrierBus(name="heat_bus_auxiliary")
         >>> heat_supply = CarrierBus(name="heat_supply")
