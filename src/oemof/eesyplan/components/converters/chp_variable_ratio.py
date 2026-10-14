@@ -1,17 +1,18 @@
 from oemof.solph import Flow
-from oemof.solph.components import ExtractionTurbineCHP
+from oemof.solph.components import VariableSplitConverter
 
 
-class ChpVariableRatio(ExtractionTurbineCHP):
+class ChpVariableRatio(VariableSplitConverter):
     def __init__(
         self,
         name,
         bus_in_fuel,
         bus_out_electricity,
         bus_out_heat,
-        efficiency_electricity_full_condensation,
-        efficiency_electricity_chp,
-        efficiency_heat_chp,
+        efficiency_electricity_state_a,
+        efficiency_electricity_state_b,
+        efficiency_heat_state_a,
+        efficiency_heat_state_b,
         project_data,
         age_installed=0,
         installed_capacity=None,
@@ -42,7 +43,7 @@ class ChpVariableRatio(ExtractionTurbineCHP):
 
         Optimisation
         ------------
-          The characteristic quantity of the optimization is the
+          The characteristic quantity of the optimisation is the
           *maximum electricity
           power-output (active power)* of the CHP given in kW
 
@@ -54,12 +55,14 @@ class ChpVariableRatio(ExtractionTurbineCHP):
             |bus_out_electricity|
         bus_out_heat:  bus-object
             |bus_out_heat|
-        efficiency_electricity_full_condensation : float
-            |efficiency_electricity_full_condensation|
-        efficiency_electricity_chp : float
-            |efficiency_electricity_chp|
-        efficiency_heat_chp : float
-            |efficiency_heat_chp|
+        efficiency_electricity_state_a : float
+            |efficiency_electricity_state_a|
+        efficiency_electricity_state_b : float
+            |efficiency_electricity_state_b|
+        efficiency_heat_state_a : float
+            |efficiency_heat_state_a|
+        efficiency_heat_state_b : float
+            |efficiency_heat_state_b|
         maximum_capacity : float or None, default=None
             |maximum_capacity|
         age_installed : int, default=0
@@ -92,9 +95,10 @@ class ChpVariableRatio(ExtractionTurbineCHP):
         ...     bus_out_heat=heat_bus,
         ...     bus_out_electricity=el_bus,
         ...     maximum_capacity=1000,
-        ...     efficiency_electricity_full_condensation=0.3,
-        ...     efficiency_electricity_chp=0.3,
-        ...     efficiency_heat_chp=0.5,
+        ...     efficiency_electricity_state_a=0.5,
+        ...     efficiency_heat_state_a = 0,
+        ...     efficiency_electricity_state_b=0.3,
+        ...     efficiency_heat_state_b=0.5,
         ...     capex_spec=1500,
         ...     opex_spec=15,
         ...     lifetime=20,
@@ -106,8 +110,10 @@ class ChpVariableRatio(ExtractionTurbineCHP):
 
         """
 
-        if efficiency_electricity_chp + efficiency_heat_chp >= 1.0:
-            raise ValueError("Total efficiency is above 100%.")
+        if efficiency_electricity_state_a + efficiency_heat_state_a > 1.0:
+            raise ValueError("Total efficiency at state a is above 100%.")
+        if efficiency_electricity_state_b + efficiency_heat_state_b > 1.0:
+            raise ValueError("Total efficiency at state b is above 100%.")
 
         nv = project_data.create_invest_if_wanted(
             capex_spec=capex_spec,
@@ -135,20 +141,21 @@ class ChpVariableRatio(ExtractionTurbineCHP):
         self.lifetime = lifetime
 
         self.maximum_capacity = maximum_capacity
-        self.efficiency_electricity_chp = efficiency_electricity_chp
-        self.efficiency_heat_chp = efficiency_heat_chp
-        self.efficiency_electricity_full_condensation = (
-            efficiency_electricity_full_condensation
-        )
+        self.efficiency_electricity_state_a = efficiency_electricity_state_a
+        self.efficiency_heat_state_a = efficiency_heat_state_a
+        self.efficiency_electricity_state_b = efficiency_electricity_state_b
+        self.efficiency_heat_state_b = efficiency_heat_state_b
+
         super().__init__(
             label=name,
             outputs=outputs,
             inputs=inputs,
             conversion_factors={
-                bus_out_electricity: efficiency_electricity_chp,
-                bus_out_heat: efficiency_heat_chp,
+                bus_out_electricity: efficiency_electricity_state_a,
+                bus_out_heat: efficiency_heat_state_a,
             },
-            conversion_factor_full_condensation={
-                bus_out_electricity: efficiency_electricity_full_condensation
+            conversion_factors_secondary_state={
+                bus_out_electricity: efficiency_electricity_state_b,
+                bus_out_heat: efficiency_heat_state_b,
             },
         )
