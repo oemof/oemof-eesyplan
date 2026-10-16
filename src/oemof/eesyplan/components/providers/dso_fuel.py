@@ -7,11 +7,7 @@ class DsoFuel(DSO):
         name,
         bus_fuel,
         energy_price=0.3,
-        feedin_tariff=0.1,
-        peak_demand_pricing=0,
-        peak_demand_pricing_period=1,
         renewable_share=0.44,
-        feedin_cap=None,
     ):
         """
         Energy provider for electricity distribution.
@@ -35,16 +31,8 @@ class DsoFuel(DSO):
             |name|
         energy_price : float or array-like, default=0.3
             |energy_prices|
-        feedin_tariff : float or array-like, default=0.1
-            |feedin_tariff|
-        peak_demand_pricing : float, default=0
-            |peak_demand_pricing|
-        peak_demand_pricing_period : int, default=1
-            |peak_demand_period|
         renewable_share : float, default=0.44
             |renewable_share|
-        feedin_cap : float or None, default=None
-            |feedin_cap|
 
         Examples
         --------
@@ -62,9 +50,5 @@ class DsoFuel(DSO):
             name=name,
             bus=bus_fuel,
             energy_price=energy_price,
-            feedin_tariff=feedin_tariff,
-            peak_demand_pricing=peak_demand_pricing,
-            peak_demand_pricing_period=peak_demand_pricing_period,
             renewable_share=renewable_share,
-            feedin_cap=feedin_cap,
         )
