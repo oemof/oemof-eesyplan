@@ -1,8 +1,10 @@
+import numpy as np
+
 from oemof.solph import Flow
-from oemof.solph.components import ExtractionTurbineCHP
+from oemof.solph.components import VariableSplitConverter
 
 
-class ChpVariableRatio(ExtractionTurbineCHP):
+class ChpVariableRatio(VariableSplitConverter):
     def __init__(
         self,
         name,
@@ -106,8 +108,24 @@ class ChpVariableRatio(ExtractionTurbineCHP):
 
         """
 
-        if efficiency_electricity_chp + efficiency_heat_chp >= 1.0:
-            raise ValueError("Total efficiency is above 100%.")
+        efficiency_heat_chp = np.array(efficiency_heat_chp, dtype=float)
+        efficiency_electricity_chp = np.array(
+            efficiency_electricity_chp, dtype=float
+        )
+        efficiency_electricity_full_condensation = np.array(
+            efficiency_electricity_full_condensation, dtype=float
+        )
+
+        if (
+            np.nansum(
+                np.vstack([efficiency_electricity_chp, efficiency_heat_chp]),
+                axis=0,
+            )
+            > 1.0
+        ).any():
+            raise ValueError(
+                "Total efficiency of ChpVariableRatio is above 100%."
+            )
 
         nv = project_data.create_invest_if_wanted(
             capex_spec=capex_spec,
@@ -148,7 +166,8 @@ class ChpVariableRatio(ExtractionTurbineCHP):
                 bus_out_electricity: efficiency_electricity_chp,
                 bus_out_heat: efficiency_heat_chp,
             },
-            conversion_factor_full_condensation={
-                bus_out_electricity: efficiency_electricity_full_condensation
+            conversion_factors_secondary_state={
+                bus_out_electricity: efficiency_electricity_full_condensation,
+                bus_out_heat: 0,
             },
         )
