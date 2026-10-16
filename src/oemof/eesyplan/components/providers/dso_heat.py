@@ -10,11 +10,7 @@ class DsoHeat(DSO):
         name: str,
         bus_heat: CarrierBus,
         energy_price: float | int | npt.ArrayLike = 0.3,
-        feedin_tariff: float | int | npt.ArrayLike = 0.1,
-        peak_demand_pricing: float | int = 0,
-        peak_demand_pricing_period: int = 1,
         renewable_share: float | int = 0.44,
-        feedin_cap: float | int | None = None,
     ):
         """
         Energy provider for heat distribution.
@@ -40,16 +36,8 @@ class DsoHeat(DSO):
             |bus|
         energy_price : float or array-like, default=0.3
             |energy_price|
-        feedin_tariff : float or array-like, default=0.1
-            |feedin_tariff|
-        peak_demand_pricing : float, default=0
-            |peak_demand_pricing|
-        peak_demand_pricing_period : int, default=1
-            |peak_demand_pricing_period|
         renewable_share : float, default=0.44
             |renewable_share|
-        feedin_cap : float or None, default=None
-            |feedin_cap|
 
         Examples
         --------
@@ -59,7 +47,6 @@ class DsoHeat(DSO):
         ...     name="main_grid",
         ...     bus_heat=hbus,
         ...     energy_price=0.25,
-        ...     feedin_tariff=0.08,
         ... )
 
         """
@@ -67,9 +54,5 @@ class DsoHeat(DSO):
             name=name,
             bus=bus_heat,
             energy_price=energy_price,
-            feedin_tariff=feedin_tariff,
-            peak_demand_pricing=peak_demand_pricing,
-            peak_demand_pricing_period=peak_demand_pricing_period,
             renewable_share=renewable_share,
-            feedin_cap=feedin_cap,
         )

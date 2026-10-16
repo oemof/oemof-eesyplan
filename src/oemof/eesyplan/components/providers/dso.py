@@ -18,9 +18,7 @@ class DSO(Node):
         energy_price: float
         | int
         | npt.ArrayLike = 0.3,  # TODO: check if default is intended here (base class)
-        feedin_tariff: float
-        | int
-        | npt.ArrayLike = 0.1,  # TODO: check if default is intended here (base class)
+        feedin_tariff: float | int | npt.ArrayLike = 0,
         peak_demand_pricing: float | int = 0,
         peak_demand_pricing_period: int = 1,
         renewable_share: float | int = 0.44,
@@ -50,7 +48,7 @@ class DSO(Node):
             |bus|
         energy_price : float or array-like, default=0.3
             |energy_price|
-        feedin_tariff : float or array-like, default=0.1
+        feedin_tariff : float or array-like, default=0
             |feedin_tariff|
         peak_demand_pricing : float, default=0
             |peak_demand_pricing|
