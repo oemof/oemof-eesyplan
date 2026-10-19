@@ -15,7 +15,7 @@ class Project:
         self.economic_period = economic_period
         self.discount_factor = float(discount_factor)
 
-    def calculate_annuity(self, capex_spec, asset_lifetime):
+    def calculate_annuity(self, capex_spec, asset_lifetime,first_year=0):
         """
         Calculate the annuity of investment..
 

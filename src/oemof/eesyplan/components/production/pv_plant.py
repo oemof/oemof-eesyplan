@@ -101,6 +101,8 @@ class PvPlant(Source):
             maximum_capacity=maximum_capacity,
         )
 
+
+
         self.bus_out_electricity = bus_out_electricity
         self.input_timeseries = input_timeseries
         self.name = name
@@ -120,4 +122,16 @@ class PvPlant(Source):
             )
         }
 
-        super().__init__(label=name, outputs=outputs)
+        #Additional Costs for postprocessing // Necessary because not part of optimization
+        if installed_capacity > 0:
+            self.capex_for_installed_capacity=project_data.calculate_annuity(
+                capex_spec=capex_spec,
+                asset_lifetime=lifetime,
+                first_year=lifetime-age_installed,
+            )*installed_capacity
+            self.opex_for_installed_capacity=opex_spec*installed_capacity
+
+            super().__init__(label=name, outputs=outputs)
+        else:
+            self.capex_for_installed_capacity=0
+            self.opex_for_installed_capacity=0
