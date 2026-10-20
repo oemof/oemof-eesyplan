@@ -140,13 +140,15 @@
     independent of the state of charge between two consecutive timesteps,
     relative to the nominal storage capacity [-] (between 0 and 1).
 
-.. |full_load_time_max| replace:: Maximum allowed annual full load hours of
-    the asset [-] (acceptable values are either a non-negative real number
-    or None).
+.. |full_load_time_max| replace:: Maximum number of full load hours the
+    asset may accumulate over the optimisation horizon, used e.g. to
+    represent licensing or resource limits [h] (acceptable values are
+    either a non-negative real number or None).
 
-.. |full_load_time_min| replace:: Minimum required annual full load hours of
-    the asset [-] (acceptable values are either a non-negative real number
-    or None).
+.. |full_load_time_min| replace:: Minimum number of full load hours the
+    asset has to accumulate over the optimisation horizon, e.g. due to
+    contractual take-or-pay obligations [h] (acceptable values are either
+    a non-negative real number or None).
 
 .. |input_timeseries| replace:: Time series in :unit:.
 
@@ -188,10 +190,11 @@
 .. |opex_spec| replace:: Specific operational and maintenance costs of the
     asset related to the installed capacity (opex_spec), in €/(:unit: • a).
 
-.. |variable_costs| replace:: Costs associated with a flow through/from the
-    asset (variable costs or fuel costs). These could be fuel costs for fuel
-    sources such as biogas or oil, or operational costs for thermal power
-    plants, which only occur when operating the plant, in €/kWh.
+.. |variable_costs| replace:: Costs associated with a flow through or out of the
+    asset (variable costs or fuel costs), e.g. fuel costs for sources such as biogas or oil, or
+    operation-dependent costs of a thermal power plant [€/kWh] (acceptable
+    values are either a non-negative real number or a series of
+    non-negative real numbers).
 
 .. |optimize_cap| replace:: Choose whether capacity optimisation should be
     performed for this asset. [-] (acceptable values are either Yes or No).
