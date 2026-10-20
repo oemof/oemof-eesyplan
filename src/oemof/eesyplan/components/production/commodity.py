@@ -9,7 +9,7 @@ class Commodity(Source):
         bus_out,
         commodity=None,
         capacity=None,
-        full_load_hours_max=None,
+        full_load_time_max=None,
         variable_cost=0,
     ):
         """
@@ -25,8 +25,8 @@ class Commodity(Source):
             |commodity|
         capacity : float
             |capacity|
-        full_load_hours_max : float, optional
-            |full_load_hours_max|
+        full_load_time_max : float, optional
+            |full_load_time_max|
         variable_cost : float, optional
             |variable_cost|
 
@@ -41,7 +41,7 @@ class Commodity(Source):
         ...     bus_out=gas_bus,
         ...     commodity="natural_gas",
         ...     capacity=10,
-        ...     full_load_hours_max=8760
+        ...     full_load_time_max=8760
         ... )
         >>> # Limited by the amount of energy. The total energy can be used in
         >>> # one timestep or can be used in 10 units in every time step. And
@@ -54,14 +54,14 @@ class Commodity(Source):
         ...     bus_out=wood_bus,
         ...     commodity="wood",
         ...     capacity=87600,
-        ...     full_load_hours_max=1
+        ...     full_load_time_max=1
         ... )
         """
         self.name = name
         self.bus_out = bus_out
         self.commodity = commodity
         self.capacity = capacity
-        self.full_load_hours_max = full_load_hours_max
+        self.full_load_time_max = full_load_time_max
         self.variable_cost = variable_cost
 
         super().__init__(
@@ -69,7 +69,7 @@ class Commodity(Source):
             outputs={
                 bus_out: Flow(
                     nominal_capacity=capacity,
-                    full_load_time_max=full_load_hours_max,
+                    full_load_time_max=full_load_time_max,
                     variable_costs=variable_cost,
                 )
             },

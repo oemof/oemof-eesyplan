@@ -140,10 +140,6 @@
     independent of the state of charge between two consecutive timesteps,
     relative to the nominal storage capacity [-] (between 0 and 1).
 
-.. |full_load_hours_max| replace:: Maximum allowed annual full load
-    hours of the component [-] (acceptable values are either a
-    non-negative real number or None).
-
 .. |full_load_time_max| replace:: Maximum allowed annual full load hours of
     the asset [-] (acceptable values are either a non-negative real number
     or None).
