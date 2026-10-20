@@ -71,7 +71,7 @@ class FuelStorage(EnergyStorage):
         c_rate_charge : float, optional (default: 1.0)
             |c_rate_charge|
         c_rate_discharge : float, optional (default: None)
-            |c_rate_charge|
+            |c_rate_discharge|
         efficiency_charge : float, optional (default: 1.0)
             |efficiency_charge|
         efficiency_discharge : float, optional (default: 1.0)
