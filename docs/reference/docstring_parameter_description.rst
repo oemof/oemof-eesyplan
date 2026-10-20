@@ -190,8 +190,8 @@
 .. |opex_spec| replace:: Specific operational and maintenance costs of the
     asset related to the installed capacity (opex_spec), in €/(:unit: • a).
 
-.. |variable_costs| replace:: Costs associated with a flow through or out of the
-    asset (variable costs or fuel costs), e.g. fuel costs for sources such as biogas or oil, or
+.. |variable_costs| replace:: Costs associated with a flow through or out of
+    the asset, e.g. fuel costs for sources such as biogas or oil, or
     operation-dependent costs of a thermal power plant [€/kWh] (acceptable
     values are either a non-negative real number or a series of
     non-negative real numbers).
