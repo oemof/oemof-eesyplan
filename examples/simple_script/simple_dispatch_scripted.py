@@ -88,7 +88,7 @@ def simple_script():
             lifetime=10.0,
             soc_max=1,
             soc_min=0,
-            crate=1.0,
+            c_rate_charge=1.0,
             efficiency=0.99,
             project_data=project,
             self_discharge=0.000,

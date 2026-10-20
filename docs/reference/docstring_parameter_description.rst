@@ -71,14 +71,15 @@
 .. |cop| replace:: Coefficient of performance. Ratio of energy output to
     energy input.
 
-.. |crate| replace:: Maximum permissible power at which the storage can be
-    charged or discharged relative to the nominal capacity of the storage.
-    The C-rate indicates the reciprocal of the time for which a battery of
-    the specified capacity can be charged or discharged with the maximum
-    charge or discharge current. A C-rate of 1 implies that the battery can
-    be fully charged or discharged in a single timestep. A C-rate of 0.5
-    implies that the battery needs at least two timesteps to be fully
-    charged or discharged [-] (Real number between 0 and 1).
+.. |c_rate_charge| replace:: Maximum charging power of the storage relative
+    to its nominal storage capacity, e.g. 0.5 for a storage that needs two
+    hours to charge completely [1/h] (acceptable values are either a
+    positive real number or None).
+
+.. |c_rate_discharge| replace:: Maximum discharging power of the storage
+    relative to its nominal storage capacity, e.g. 1.0 for a storage that
+    can be emptied within one hour [1/h] (acceptable values are either a
+    positive real number or None).
 
 .. |custom_properties| replace:: Additional custom properties attached to the
     component. [-] (dict or None).
