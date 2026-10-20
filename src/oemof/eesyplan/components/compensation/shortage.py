@@ -20,7 +20,7 @@ class Shortage(Source):
         bus_out : CarrierBus
             |bus_in|
         cost : float or array-like
-            |energy_prices|
+            |energy_price|
 
         Examples
         --------

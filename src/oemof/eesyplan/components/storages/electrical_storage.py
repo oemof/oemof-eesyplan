@@ -77,9 +77,9 @@ class ElectricalStorage(EnergyStorage):
         efficiency_discharge : float, optional (default: 1.0)
             |efficiency_discharge|
         c_rate_charge : float, optional (default: 1.0)
-            |crate|
+            |c_rate_charge|
         c_rate_discharge : float, optional (default: None)
-            |crate|
+            |c_rate_discharge|
 
         Examples
         --------

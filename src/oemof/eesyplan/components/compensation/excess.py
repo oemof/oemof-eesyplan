@@ -20,7 +20,7 @@ class Excess(Sink):
         bus_in : CarrierBus
             |bus_in|
         cost : float or array-like
-            |energy_prices|
+            |energy_price|
 
         Examples
         --------
