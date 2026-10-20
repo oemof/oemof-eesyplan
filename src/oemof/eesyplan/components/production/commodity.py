@@ -10,7 +10,7 @@ class Commodity(Source):
         commodity=None,
         capacity=None,
         full_load_time_max=None,
-        variable_cost=0,
+        variable_costs=0,
     ):
         """
         General Commodity.
@@ -27,8 +27,8 @@ class Commodity(Source):
             |capacity|
         full_load_time_max : float, optional
             |full_load_time_max|
-        variable_cost : float, optional
-            |variable_cost|
+        variable_costs : float, optional
+            |variable_costs|
 
         Examples
         --------
@@ -62,7 +62,7 @@ class Commodity(Source):
         self.commodity = commodity
         self.capacity = capacity
         self.full_load_time_max = full_load_time_max
-        self.variable_cost = variable_cost
+        self.variable_costs = variable_costs
 
         super().__init__(
             label=name,
@@ -70,7 +70,7 @@ class Commodity(Source):
                 bus_out: Flow(
                     nominal_capacity=capacity,
                     full_load_time_max=full_load_time_max,
-                    variable_costs=variable_cost,
+                    variable_costs=variable_costs,
                 )
             },
         )

@@ -265,6 +265,3 @@
 
 .. |thermal_loss_rate| replace:: Definition of the thermal loss rate. [-]
     (numeric).
-
-.. |variable_cost| replace:: Variable operating costs of the component,
-    in €/[:unit:] (non-negative real number).
