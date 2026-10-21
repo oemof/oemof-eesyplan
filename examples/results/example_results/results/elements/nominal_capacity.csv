@@ -1,4 +1,4 @@
-,wind,electricity,battery_storage,pv,bus_heat,heat_storage,gas_storage,pp_gas,natural_gas
-,electricity,battery_storage,electricity,electricity,heat_storage,bus_heat,natural_gas,electricity,gas_storage
-index,,,,,,,,,
-0,488094.52,21974412.0,21974412.0,0.0,0.0,0.0,0.0,46440.912,0.0
+,Solarkollektor,BHKW,Gas_boiler
+,Wärme_bus,Strom_bus,Wärme_bus
+index,,,
+0,3.2618304,10.747451,110.00124

@@ -1,8 +1,44 @@
+import re
+
 import pandas as pd
 import plotly.graph_objects as go
 
 from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import EnergySystem
+from oemof.eesyplan.postprocessing.KPIs import clean_label
+
+
+def _label_of(part):
+    """Return the component label of one results column element."""
+    label = getattr(part, "label", None)
+    if label is not None:
+        return str(label)
+    text = str(part)
+    match = re.search(r":\s*'([^']*)'", text)
+    if match is None:
+        match = re.search(r"<\w+\s+'([^']*)'", text)
+    if match:
+        return match.group(1)
+    return text
+
+
+def _rgba(color, alpha):
+    """Return ``color`` as an rgba string with the given opacity."""
+    red, green, blue = (
+        int(color.lstrip("#")[index : index + 2], 16)
+        for index in (0, 2, 4)
+    )
+    return f"rgba({red}, {green}, {blue}, {alpha})"
+
+
+def _facade_label(part):
+    """Return the label without an internal component prefix.
+
+    Internal components carry tuple labels such as
+    ``("consumption_converter", "Gasversorger")``.  Only the facade part
+    is relevant for the legend.
+    """
+    return clean_label(part).rsplit(" | ", 1)[-1]
 
 
 def sankey(
@@ -203,10 +239,13 @@ def capacities_graph(
         optimized capacities for each component.
     """
 
-    optimized_map = pd.Series(
-        invest.iloc[0].values,
-        index=invest.columns.get_level_values(0).astype(str),
-    ).to_dict()
+    optimized_map = {}
+    for column, value in invest.iloc[0].items():
+        parts = column if isinstance(column, tuple) else (column,)
+        for part in parts:
+            label = _label_of(part)
+            if label not in optimized_map or value > optimized_map[label]:
+                optimized_map[label] = value
 
     components = []
     installed_capacities = []
@@ -250,6 +289,177 @@ def capacities_graph(
         yaxis_title="Capacity",
         margin={"b": 150},
         title="Installed vs Optimized Capacity",
+    )
+
+    return fig
+
+
+def plot_timeseries(results, es, threshold=0.01, unit="kWh"):
+    """Plot the input and output time series of every bus.
+
+    A dropdown switches between the buses of ``es``.  Incoming flows are
+    drawn as filled stacked areas, outgoing flows as lines.  Flows whose
+    total is not larger than ``threshold`` are omitted, so only buses
+    and edges that actually carry energy are shown.  Only ``CarrierBus``
+    nodes are offered, internal buses are skipped.
+
+    Parameters
+    ----------
+    results : ImportResults or pandas.DataFrame
+        Imported results object, whose ``"flow"`` entry is used, or the
+        flow DataFrame itself.
+    es : EnergySystem
+        Energy system the results belong to.  Its buses define the
+        dropdown entries.
+    threshold : float, optional
+        Flows with a total sum smaller than or equal to this value are
+        omitted.  Defaults to 0.01.
+    unit : str, optional
+        Unit shown in the axis title and the hover labels.  Defaults to
+        "kWh".
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Figure with one dropdown entry per bus that carries a flow.
+    """
+    flows = results if isinstance(results, pd.DataFrame) else results["flow"]
+
+    color_template = [
+        "#1f77b4",
+        "#ff7f0e",
+        "#2ca02c",
+        "#d62728",
+        "#9467bd",
+        "#8c564b",
+        "#e377c2",
+        "#7f7f7f",
+        "#bcbd22",
+        "#17becf",
+    ]
+
+    edges = []
+    for column in flows.columns:
+        parts = column if isinstance(column, tuple) else (column,)
+        if len(parts) != 2:
+            continue
+        start, end = (_facade_label(part) for part in parts)
+        if start == end:
+            continue
+        series = flows[column]
+        if series.sum() <= threshold:
+            continue
+        edges.append((start, end, series))
+
+    colors = {
+        (start, end): color_template[index % len(color_template)]
+        for index, (start, end, _) in enumerate(edges)
+    }
+
+    fig = go.Figure()
+    traces_per_bus = {}
+
+    for bus in (node for node in es.nodes if isinstance(node, CarrierBus)):
+        bus_label = _facade_label(bus)
+        inputs = [
+            (start, end, series)
+            for start, end, series in edges
+            if end == bus_label
+        ]
+        outputs = [
+            (start, end, series)
+            for start, end, series in edges
+            if start == bus_label
+        ]
+        if not inputs and not outputs:
+            continue
+
+        trace_indices = []
+        for start, end, series in inputs:
+            color = colors[(start, end)]
+            fig.add_trace(
+                go.Scatter(
+                    x=series.index,
+                    y=series.clip(lower=0),
+                    mode="none",
+                    stackgroup=f"{bus_label}-inputs",
+                    name=f"from {start}",
+                    fillcolor=_rgba(color, 0.3),
+                    line={"color": color},
+                    visible=False,
+                    hovertemplate=(
+                        f"from {start}: %{{y:.1f}} {unit}<extra></extra>"
+                    ),
+                    hoverlabel={"align": "left"},
+                )
+            )
+            trace_indices.append(len(fig.data) - 1)
+
+        for start, end, series in outputs:
+            color = colors[(start, end)]
+            fig.add_trace(
+                go.Scatter(
+                    x=series.index,
+                    y=series.clip(lower=0),
+                    mode="lines",
+                    stackgroup=f"{bus_label}-outputs",
+                    name=f"to {end}",
+                    line={"color": color, "width": 2},
+                    fill="none",
+                    visible=False,
+                    hovertemplate=(
+                        f"to {end}: %{{y:.1f}} {unit}<extra></extra>"
+                    ),
+                    hoverlabel={"align": "left"},
+                )
+            )
+            trace_indices.append(len(fig.data) - 1)
+
+        traces_per_bus[bus_label] = trace_indices
+
+    if not traces_per_bus:
+        raise ValueError(
+            "No bus flows above the threshold of "
+            f"{threshold} were found."
+        )
+
+    buttons = []
+    for bus_label, trace_indices in traces_per_bus.items():
+        visible = [False] * len(fig.data)
+        for index in trace_indices:
+            visible[index] = True
+        buttons.append(
+            {
+                "label": bus_label,
+                "method": "update",
+                "args": [
+                    {"visible": visible},
+                    {"title": {"text": f"Energy flows in {bus_label}"}},
+                ],
+            }
+        )
+
+    first_bus = next(iter(traces_per_bus))
+    for index in traces_per_bus[first_bus]:
+        fig.data[index].visible = True
+
+    fig.update_layout(
+        title={"text": f"Energy flows in {first_bus}"},
+        xaxis_title="",
+        yaxis_title=f"Energy flow [{unit}]",
+        hovermode="x unified",
+        legend_title="Time series",
+        legend={"x": 1.02, "y": 0.9, "xanchor": "left", "yanchor": "top"},
+        updatemenus=[
+            {
+                "active": 0,
+                "buttons": buttons,
+                "x": 1.02,
+                "y": 1.0,
+                "xanchor": "left",
+                "yanchor": "top",
+            }
+        ],
     )
 
     return fig

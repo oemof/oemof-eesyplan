@@ -42,6 +42,7 @@ from oemof.eesyplan.postprocessing import balance
 from oemof.tools.debugging import ExperimentalFeatureWarning
 from oemof.tools.logger import define_logging
 from oemof.eesyplan.postprocessing import graphs
+from oemof.eesyplan.postprocessing.graphs import capacities_graph
 
 from oemof.eesyplan.postprocessing.KPIs import LCOE
 from oemof.eesyplan.postprocessing.KPIs import clean_label
@@ -277,6 +278,9 @@ if __name__ == "__main__":
     fig, df = graphs.sankey(imported_results["flow"])
     fig.show()
 
+    fig2 = capacities_graph(results["invest"], es)
+    fig2.show()
+
     # --- 3. walk through the object key by key -------------------------------
     #     keys()            -> all keys (set)
     #     result_keys(...)  -> without empty Problem/Solution/Solver
@@ -328,5 +332,6 @@ if __name__ == "__main__":
     #   imported_results["flow"].stack([0, 1])
     # all values of a storage:
     #   imported_results["storage_content"][some_column].tolist()
+
 
 

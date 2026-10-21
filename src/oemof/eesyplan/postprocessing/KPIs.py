@@ -349,11 +349,11 @@ def yearly_project_costs(results, es):
 
     with ``opex = opex_spec * capacity``.  The columns are:
 
-    component      readable label of every top-level component
-    capex          annualised investment cost (annuity of the capacity)
-    opex           fixed operation & maintenance cost of the capacity
-    variable_cost  sum of the variable costs of all flows of the
-                   component over the whole horizon
+    component                   readable label of every top-level component
+    annualized investment cost  annualised investment cost (annuity)
+    fix operational costs       fixed operation & maintenance cost
+    dispatch costs              sum of the variable costs of all flows of the
+                                component over the whole horizon
 
     Returns
     -------
@@ -373,13 +373,20 @@ def yearly_project_costs(results, es):
         rows.append(
             {
                 "component": _norm_label(node.label),
-                "capex": component_capex,
-                "opex": component_opex,
-                "variable_cost": variable.get(node, 0.0),
+                "annualized investment cost": component_capex,
+                "fix operational costs": component_opex,
+                "dispatch costs": variable.get(node, 0.0),
             }
         )
 
-    return _cost_table(rows, ["capex", "opex", "variable_cost"])
+    return _cost_table(
+        rows,
+        [
+            "annualized investment cost",
+            "fix operational costs",
+            "dispatch costs",
+        ],
+    )
 
 
 def project_cost_table(results, es, project_duration=20):
@@ -389,9 +396,12 @@ def project_cost_table(results, es, project_duration=20):
     spans the whole project duration (``economic_period``):
 
     component          readable label of every top-level component
-    investment_cost    one-time investment ``capex_spec * capacity``
-    operational_cost   ``opex_spec * capacity * project_duration``
-    variable_cost      yearly variable costs * ``project_duration``
+    investment cost in year 0 (not including reinvestment)
+                       one-time investment ``capex_spec * capacity``
+    fix operational costs over project duration
+                       ``opex_spec * capacity * project_duration``
+    dispatch costs over project duration
+                       yearly variable costs * ``project_duration``
 
     The project duration is not part of the results or the energy
     system, so it has to be supplied by the caller.
@@ -414,28 +424,43 @@ def project_cost_table(results, es, project_duration=20):
         rows.append(
             {
                 "component": _norm_label(node.label),
-                "investment_cost": investment,
-                "operational_cost": operational,
-                "variable_cost": variable.get(node, 0.0) * project_duration,
+                "investment cost in year 0 (not including reinvestment)": (
+                    investment
+                ),
+                "fix operational costs over project duration": operational,
+                "dispatch costs over project duration": (
+                    variable.get(node, 0.0) * project_duration
+                ),
             }
         )
 
     return _cost_table(
-        rows, ["investment_cost", "operational_cost", "variable_cost"]
+        rows,
+        [
+            "investment cost in year 0 (not including reinvestment)",
+            "fix operational costs over project duration",
+            "dispatch costs over project duration",
+        ],
     )
 
 
 def print_cost_table(table, value_columns, title):
     """Print a cost table with a total column."""
-    width = 18
+    component_width = max(
+        26, max(len(str(value)) for value in table["component"]) + 2
+    )
+    width = max(18, max(len(column) for column in value_columns) + 2)
     print(title)
-    header = f"  {'component':<26}" + "".join(
+    header = f"  {'component':<{component_width}}" + "".join(
         f"{column:>{width}}" for column in value_columns
     )
     print(header + f"{'total':>{width}}")
-    print("  " + "-" * (26 + width * (len(value_columns) + 1)))
+    print(
+        "  "
+        + "-" * (component_width + width * (len(value_columns) + 1))
+    )
     for _, row in table.iterrows():
-        line = f"  {row['component']:<26}" + "".join(
+        line = f"  {row['component']:<{component_width}}" + "".join(
             f"{row[column]:>{width}.2f}" for column in value_columns
         )
         print(line + f"{row['total']:>{width}.2f}")

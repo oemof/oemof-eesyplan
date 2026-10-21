@@ -8,12 +8,12 @@ from oemof.datapackage import datapackage  # noqa
 from oemof.tools.debugging import ExperimentalFeatureWarning
 from oemof.tools.logger import define_logging
 
-from oemof.eesyplan import export_results  # noqa: F401
+from oemof.eesyplan import export_results
 from oemof.eesyplan import import_results
 from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
 )
-from oemof.eesyplan.model import optimise  # noqa: F401
+from oemof.eesyplan.model import optimise
 from oemof.eesyplan.postprocessing import balance
 from oemof.eesyplan.postprocessing import graphs
 from oemof.eesyplan.postprocessing.KPIs import LCOE
@@ -64,6 +64,8 @@ if __name__ == "__main__":
     print(balance.nodes_io(imported_results["flow"]))
     fig, df = graphs.sankey(imported_results["flow"])
     fig.show()
+    fig = graphs.plot_timeseries(imported_results, es)
+    fig.show()
 
     # --- 3. walk through the object key by key -------------------------------
     #     keys()            -> all keys (set)
@@ -91,7 +93,11 @@ if __name__ == "__main__":
     costs_table = yearly_project_costs(imported_results, es)
     print_cost_table(
         costs_table,
-        ["capex", "opex", "variable_cost"],
+        [
+            "annualized investment cost",
+            "fix operational costs",
+            "dispatch costs",
+        ],
         "Yearly project costs:",
     )
 
@@ -99,7 +105,11 @@ if __name__ == "__main__":
     project_table = project_cost_table(imported_results, es)
     print_cost_table(
         project_table,
-        ["investment_cost", "operational_cost", "variable_cost"],
+        [
+            "investment cost in year 0 (not including reinvestment)",
+            "fix operational costs over project duration",
+            "dispatch costs over project duration",
+        ],
         "Project costs (whole project duration):",
     )
 
