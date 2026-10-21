@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
     # --- 2. the existing checks ----------------------------------------------
     print(balance.nodes_io(imported_results["flow"]))
-    fig, df = graphs.sankey(imported_results["flow"])
+    fig, df = graphs.sankey_2(imported_results, es,collapse_fascades=True)
     fig.show()
     fig = graphs.plot_timeseries(imported_results, es)
     fig.show()

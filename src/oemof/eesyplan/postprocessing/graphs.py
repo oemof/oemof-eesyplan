@@ -1,5 +1,6 @@
 import re
 
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from oemof.solph.components import Source
@@ -41,6 +42,24 @@ def _facade_label(part):
     is relevant for the legend.
     """
     return clean_label(part).rsplit(" | ", 1)[-1]
+
+
+def _raw_label(part):
+    """Return the raw label of a node, internal components keep their tuple."""
+    return getattr(part, "label", part)
+
+
+def _facade_of(part):
+    """Return the facade of a node, internal components are folded in.
+
+    A node of a facade carries a tuple label such as
+    ``("internal_bus", "Gasversorger")``.  For the diagram only the
+    facade itself is of interest.
+    """
+    label = _raw_label(part)
+    if isinstance(label, tuple):
+        return str(label[-1])
+    return str(label)
 
 
 def sankey(
@@ -204,6 +223,221 @@ def sankey(
                 "color": node_colors,
             },
             link={
+                "source": links_df["source"].map(node_map).tolist(),
+                "target": links_df["target"].map(node_map).tolist(),
+                "value": links_df["value"].tolist(),
+                "customdata": customdata,
+                "hovertemplate": hovertemplate,
+            },
+        )
+    )
+
+    fig.update_layout(title_text=title, font_size=12)
+    return fig, links_df
+
+
+def sankey_2(
+    results,
+    es: EnergySystem = None,
+    title: str = "Sankey Diagram",
+    row: int | str | pd.Timestamp | None = None,
+    agg: str = "sum",
+    drop_zero_links: bool = True,
+    collapse_fascades: bool = True,
+) -> tuple[go.Figure, pd.DataFrame]:
+    """
+    Create a Plotly Sankey diagram from an imported results object.
+
+    This is a copy of :func:`sankey` that works on the results object
+    instead of the flow DataFrame.  The flow DataFrame is taken from the
+    ``"flow"`` key of the results.
+
+    Parameters
+    ----------
+    results : ImportResults or pd.DataFrame
+        Imported results object, whose ``"flow"`` entry is used, or the
+        flow DataFrame itself.
+    es : EnergySystem
+        Energy system object from eesyplan.EnergySystem.
+    title : str
+        Figure title.
+    row : int | str | pd.Timestamp | None
+        If None, aggregate across rows using `agg`.
+        If provided, use only that row (by integer position or index label).
+    agg : str
+        Aggregation across rows when row is None. One of: "sum", "mean", "max".
+    drop_zero_links : bool
+        Whether to remove links with value == 0.
+    collapse_fascades : bool
+        Whether the internal components of a facade (e.g. the internal
+        bus and the converters of a DSO) are folded into the facade
+        itself.  Links of the same facade are merged, links inside a
+        facade are dropped.  Defaults to True.
+
+    Returns
+    -------
+    fig : go.Figure
+        Plotly Sankey figure.
+    links_df : pd.DataFrame
+        Parsed links table with columns: source, target, value, max,
+        aggregate.
+    """
+    flows = results if isinstance(results, pd.DataFrame) else results["flow"]
+
+    if not isinstance(flows.columns, pd.MultiIndex):
+        raise TypeError("flows.columns must be a pandas MultiIndex.")
+
+    if flows.columns.nlevels != 2:
+        raise ValueError(
+            "This function expects exactly 2 column levels: (source, target)."
+        )
+
+    if flows.empty:
+        raise ValueError("Input DataFrame is empty.")
+
+    numeric_df = flows
+
+    # Statistics over the full time series
+    ts_max = numeric_df.max(axis=0)
+
+    if agg == "sum":
+        ts_agg = numeric_df.sum(axis=0)
+    elif agg == "mean":
+        ts_agg = numeric_df.mean(axis=0)
+    elif agg == "max":
+        ts_agg = numeric_df.max(axis=0)
+    else:
+        raise ValueError("agg must be one of: 'sum', 'mean', or 'max'")
+
+    selected_label = None
+
+    # Value actually plotted
+    if row is None:
+        plotted_values = ts_agg.copy()
+    else:
+        if isinstance(row, int):
+            plotted_values = flows.iloc[row]
+            selected_label = flows.index[row]
+        else:
+            plotted_values = flows.loc[row]
+            selected_label = row
+
+    # Build link table
+    if collapse_fascades:
+        sources = [_facade_of(src) for src, _ in plotted_values.index]
+        targets = [_facade_of(tgt) for _, tgt in plotted_values.index]
+    else:
+        sources = [str(src) for src, _ in plotted_values.index]
+        targets = [str(tgt) for _, tgt in plotted_values.index]
+
+    links_df = pd.DataFrame(
+        {
+            "source": sources,
+            "target": targets,
+            "value": plotted_values.values,
+            "max": ts_max.values,
+            "aggregate": ts_agg.values,
+        }
+    )
+
+    if collapse_fascades:
+        links_df = (
+            links_df.groupby(["source", "target"], as_index=False, sort=False)[
+                ["value", "max", "aggregate"]
+            ]
+            .sum()
+        )
+        links_df = links_df[links_df["source"] != links_df["target"]].copy()
+
+    if drop_zero_links:
+        links_df = links_df[links_df["value"] != 0].copy()
+    else:
+        links_df["value"] = links_df["value"].replace(0, 1e-9)
+
+    if links_df.empty:
+        raise ValueError("No links remain after filtering.")
+
+    # Nodes are already collapsed to their facade when ``collapse_fascades``
+    # is set, so no further hiding of internal components is needed here.
+    # Build node mapping
+    nodes = (
+        pd.Index(links_df["source"])
+        .append(pd.Index(links_df["target"]))
+        .unique()
+    )
+    node_map = {node: i for i, node in enumerate(nodes)}
+
+    if row is None:
+        customdata = np.column_stack(
+            [
+                links_df["value"].to_numpy() / 1000.0,
+                links_df["max"].to_numpy(),
+                links_df["aggregate"].to_numpy() / 1000.0,
+            ]
+        )
+        hovertemplate = (
+            "Source: %{source.label}<br>"
+            "Target: %{target.label}<br>"
+            "Plotted value: %{customdata[0]:.1f} MWh<br>"
+            "Max: %{customdata[1]:.1f} kW<br>"
+            "Aggregate: %{customdata[2]:.1f} MWh"
+            "<extra></extra>"
+        )
+    else:
+        links_df["timestamp"] = str(selected_label)
+        customdata = np.column_stack(
+            [
+                links_df["value"].to_numpy() / 1000.0,
+                links_df["max"].to_numpy(),
+                links_df["aggregate"].to_numpy() / 1000.0,
+                links_df["timestamp"].to_numpy(),
+            ]
+        )
+        hovertemplate = (
+            "Source: %{source.label}<br>"
+            "Target: %{target.label}<br>"
+            "Timestamp: %{customdata[3]}<br>"
+            "Max: %{customdata[1]:.1f} kW<br>"
+            "Aggregate: %{customdata[2]:.1f} MWh"
+            "<extra></extra>"
+        )
+
+    node_colors = None
+    if es is not None:
+        node_colors = []
+        es_nodes = list(es.nodes)
+        es_node_labels = [str(n.label) for n in es.nodes]
+        es_facade_labels = [_facade_of(n) for n in es.nodes]
+        for n in nodes:
+            if n in es_node_labels:
+                es_node = es_nodes[es_node_labels.index(n)]
+            elif n in es_facade_labels:
+                es_node = es_nodes[es_facade_labels.index(n)]
+            else:
+                es_node = None
+            if es_node is None:
+                node_colors.append(None)
+            elif isinstance(es_node, CarrierBus):
+                node_colors.append("grey")
+            elif len(es_node.inputs) == 0:
+                node_colors.append("blue")
+            elif len(es_node.outputs) == 0:
+                node_colors.append("red")
+            else:
+                node_colors.append("green")
+
+    fig = go.Figure(
+        go.Sankey(
+            node={
+                "pad": 15,
+                "thickness": 20,
+                "line": {"color": "black", "width": 0.5},
+                "label": nodes.tolist(),
+                "color": node_colors,
+                "align": "left",
+            },
+            link={
+                "arrowlen": 15,
                 "source": links_df["source"].map(node_map).tolist(),
                 "target": links_df["target"].map(node_map).tolist(),
                 "value": links_df["value"].tolist(),
