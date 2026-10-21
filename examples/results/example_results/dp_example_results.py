@@ -8,12 +8,12 @@ from oemof.datapackage import datapackage  # noqa
 from oemof.tools.debugging import ExperimentalFeatureWarning
 from oemof.tools.logger import define_logging
 
-from oemof.eesyplan import export_results
+from oemof.eesyplan import export_results  # noqa: F401
 from oemof.eesyplan import import_results
 from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
 )
-from oemof.eesyplan.model import optimise
+from oemof.eesyplan.model import optimise  # noqa: F401
 from oemof.eesyplan.postprocessing import balance
 from oemof.eesyplan.postprocessing import graphs
 from oemof.eesyplan.postprocessing.KPIs import LCOE
@@ -65,6 +65,8 @@ if __name__ == "__main__":
     fig, df = graphs.sankey(imported_results["flow"])
     fig.show()
     fig = graphs.plot_timeseries(imported_results, es)
+    fig.show()
+    fig = graphs.plot_energy_mix(imported_results, es)
     fig.show()
 
     # --- 3. walk through the object key by key -------------------------------

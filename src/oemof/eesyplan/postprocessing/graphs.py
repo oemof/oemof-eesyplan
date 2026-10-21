@@ -2,9 +2,11 @@ import re
 
 import pandas as pd
 import plotly.graph_objects as go
+from oemof.solph.components import Source
 
 from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import EnergySystem
+from oemof.eesyplan import Shortage
 from oemof.eesyplan.postprocessing.KPIs import clean_label
 
 
@@ -460,6 +462,95 @@ def plot_timeseries(results, es, threshold=0.01, unit="kWh"):
                 "yanchor": "top",
             }
         ],
+    )
+
+    return fig
+
+
+def plot_energy_mix(results, es, threshold=0.1, unit="MWh"):
+    """Show the accumulated energy supply of the system as a donut chart.
+
+    The supply of a source is the sum of all its outgoing flows over the
+    whole time horizon.  Sources that do not supply a relevant amount of
+    energy are omitted.
+
+    Parameters
+    ----------
+    results : ImportResults or pandas.DataFrame
+        Imported results object, whose ``"flow"`` entry is used, or the
+        flow DataFrame itself.
+    es : EnergySystem
+        Energy system the results belong to.  Its sources define the
+        slices of the chart.
+    threshold : float, optional
+        Sources with a total supply smaller than or equal to this value
+        are omitted.  Defaults to 0.1.
+    unit : str, optional
+        Unit of the accumulated energy.  One of "Wh", "MWh" or "GWh".
+        Defaults to "MWh".
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Donut chart with one slice per source.
+    """
+    flows = results if isinstance(results, pd.DataFrame) else results["flow"]
+
+    divisor = {"Wh": 1.0, "MWh": 1000.0, "GWh": 1e6}[unit]
+
+    source_labels = {
+        clean_label(node): _facade_label(node)
+        for node in es.nodes
+        if isinstance(node, Source) and not isinstance(node, Shortage)
+    }
+
+    totals = {}
+    for column in flows.columns:
+        parts = column if isinstance(column, tuple) else (column,)
+        if len(parts) != 2:
+            continue
+        label = clean_label(parts[0])
+        if label not in source_labels:
+            continue
+        totals[label] = totals.get(label, 0.0) + float(flows[column].sum())
+
+    labels = []
+    values = []
+    for label, total in totals.items():
+        if total <= threshold:
+            continue
+        labels.append(source_labels[label])
+        values.append(total / divisor)
+
+    if not values:
+        raise ValueError("No energy supply found in the results.")
+
+    index = flows.index
+    if isinstance(index, pd.DatetimeIndex) and len(index):
+        period = f" from {index[0]:%Y-%m-%d} to {index[-1]:%Y-%m-%d}"
+    else:
+        period = ""
+
+    fig = go.Figure(
+        data=[
+            go.Pie(
+                labels=labels,
+                values=values,
+                hole=0.3,
+                textinfo="label+percent",
+                textposition="outside",
+                hoverinfo="label+value+percent",
+                hovertemplate=(
+                    f"%{{label}}: %{{value:.1f}} {unit} (%{{percent}})"
+                    "<extra></extra>"
+                ),
+            )
+        ]
+    )
+
+    fig.update_layout(
+        title=f"Accumulated energy supply of the system{period}",
+        legend_title="Energy source",
     )
 
     return fig
