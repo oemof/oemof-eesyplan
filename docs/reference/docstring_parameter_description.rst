@@ -106,15 +106,6 @@
 .. |efficiency_heat_chp| replace:: Thermal efficiency with maximal heat
     extraction [-] (positive real number).
 
-.. |energy_losses_absolute| replace:: Description text is missing [unit is
-    missing] (no restrictions).
-
-.. |energy_losses_absolute_investment| replace:: Description text is missing
-    [unit is missing] (no restrictions).
-
-.. |energy_losses_relative| replace:: Description text is missing [unit is
-    missing] (no restrictions).
-
 .. |energy_prices| replace:: Price of the energy carrier sourced from the
     utility grid. May also be a time series, in €/kWh.
 
@@ -140,15 +131,6 @@
     consecutive timesteps that are independent of the state of charge,
     relative to the nominal storage capacity [-] (real number between 0
     and 1).
-
-.. |fixed_thermal_losses_absolute| replace:: Thermal losses of the storage
-    independent of the state of charge and independent of the nominal
-    storage capacity between two consecutive timesteps [-] (between 0 and
-    1).
-
-.. |fixed_thermal_losses_relative| replace:: Thermal losses of the storage
-    independent of the state of charge between two consecutive timesteps,
-    relative to the nominal storage capacity [-] (between 0 and 1).
 
 .. |full_load_time_max| replace:: Maximum number of full load hours the
     asset may accumulate over the optimisation horizon, used e.g. to
