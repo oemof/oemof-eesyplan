@@ -1,15 +1,11 @@
 import logging
 from pathlib import Path
 
-import oemof.solph
 import pandas as pd
 from oemof.solph import EnergySystem
 from oemof.solph import Model
 from oemof.solph import Results
-from oemof.solph import buses
-from oemof.solph import components
 from oemof.solph import create_time_index
-from oemof.solph import flows
 from oemof.tools import logger
 
 import argparse
@@ -24,13 +20,19 @@ import pandas as pd
 
 from oemof.datapackage import datapackage  # noqa
 from oemof.eesyplan import CarrierBus
-from oemof.eesyplan import Demand
-from oemof.eesyplan import FuelDemand
-from oemof.eesyplan import H2Demand
-from oemof.eesyplan import HeatDemand
+from oemof.eesyplan import ChpFixedRatio
+from oemof.eesyplan import Commodity
+from oemof.eesyplan import ElectricalStorage
+from oemof.eesyplan import ElectricityDemand
+from oemof.eesyplan import Excess
 from oemof.eesyplan import export_results
+from oemof.eesyplan import FuelStorage
+from oemof.eesyplan import HeatDemand
 from oemof.eesyplan import import_results
-from oemof.solph.components import Source
+from oemof.eesyplan import Project
+from oemof.eesyplan import PvPlant
+from oemof.eesyplan import ThermalStorage
+from oemof.eesyplan import WindTurbine
 from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
 )
@@ -82,174 +84,144 @@ def create_energysystem():
         timeindex=date_time_index, infer_last_interval=False
     )
 
-    bus_gas = buses.Bus(label="natural_gas")
-    bus_electricity = buses.Bus(label="electricity")
-    bus_heat = buses.Bus(label="bus_heat")
+    project = Project(
+        name="own_example",
+        economic_period=20,
+        tax=0,
+        discount_factor=0,
+    )
+
+    bus_gas = CarrierBus(name="natural_gas", carrier="gas")
+    bus_electricity = CarrierBus(name="electricity", carrier="electricity")
+    bus_heat = CarrierBus(name="bus_heat", carrier="heat")
 
     energysystem.add(bus_gas, bus_electricity, bus_heat)
 
     energysystem.add(
-        components.Source(
-            label="rgas",
-            outputs={bus_gas: flows.Flow(variable_costs=0.1)},
+        Commodity(
+            name="rgas",
+            bus_out=bus_gas,
+            commodity="natural_gas",
+            variable_cost=0.1,
+        )
+    )
+
+    # eesyplan has no investable generic source facade, so the waste heat
+    # source is modelled as an unlimited commodity.
+    energysystem.add(
+        Commodity(
+            name="waste_heat",
+            bus_out=bus_heat,
+            commodity="waste_heat",
+            variable_cost=0.01,
         )
     )
 
     energysystem.add(
-        components.Source(
-            label="waste_heat",
-            outputs={bus_heat: flows.Flow(
-                nominal_capacity=oemof.solph.Investment(
-                    ep_costs=300 / 12),
-                variable_costs=0.01)},
+        WindTurbine(
+            name="wind",
+            bus_out_electricity=bus_electricity,
+            input_timeseries=data["wind"],
+            project_data=project,
+            capex_spec=1100,
+            opex_spec=0,
+            variable_costs=0.001,
+            lifetime=20,
         )
     )
 
     energysystem.add(
-        components.Source(
-            label="wind",
-            outputs={
-                bus_electricity: flows.Flow(
-                    max=data["wind"],
-                    nominal_capacity=oemof.solph.Investment(
-                        ep_costs=1100 / 12
-                    ),
-                    variable_costs=0.001,
-                )
-            },
+        PvPlant(
+            name="pv",
+            bus_out_electricity=bus_electricity,
+            input_timeseries=data["pv"],
+            project_data=project,
+            capex_spec=600,
+            opex_spec=0,
+            variable_costs=0.001,
+            lifetime=20,
+            maximum_capacity=1_000_000,
         )
     )
 
     energysystem.add(
-        components.Source(
-            label="pv",
-            outputs={
-                bus_electricity: flows.Flow(
-                    max=data["pv"],
-                    nominal_capacity=oemof.solph.Investment(ep_costs=600/20/12,maximum=1000000),
-                    variable_costs=0.001,
-                )
-            },
+        ElectricityDemand(
+            name="demand_el",
+            bus_in_electricity=bus_electricity,
+            input_timeseries=data["demand_el"],
         )
     )
 
     energysystem.add(
-        components.Sink(
-            label="demand_el",
-            inputs={
-                bus_electricity: flows.Flow(
-                    fix=data["demand_el"], nominal_capacity=1
-                )
-            },
+        HeatDemand(
+            name="demand_heat",
+            bus_in_heat=bus_heat,
+            input_timeseries=data["demand_heat"],
+        )
+    )
+
+    energysystem.add(Excess(name="heat_excess", bus_in=bus_heat, cost=0))
+
+    energysystem.add(
+        Excess(name="sold", bus_in=bus_electricity, cost=-0.1)
+    )
+
+    energysystem.add(
+        ChpFixedRatio(
+            name="pp_gas",
+            bus_in_fuel=bus_gas,
+            bus_out_electricity=bus_electricity,
+            bus_out_heat=bus_heat,
+            efficiency_electricity_chp=0.3,
+            efficiency_heat_chp=0.5,
+            project_data=project,
+            capex_spec=600,
+            opex_spec=0,
+            variable_costs=0.01,
+            lifetime=20,
         )
     )
 
     energysystem.add(
-        components.Sink(
-            label="demand_heat",
-            inputs={
-                bus_heat: flows.Flow(
-                    fix=data["demand_heat"], nominal_capacity=0.4
-                )
-            },
+        FuelStorage(
+            name="gas_storage",
+            project_data=project,
+            bus_in_fuel=bus_gas,
+            bus_out_fuel=bus_gas,
+            capex_spec=1,
+            opex_spec=0,
+            variable_costs=0,
+            lifetime=20,
+            maximum_capacity=100,
         )
     )
 
     energysystem.add(
-        components.Sink(
-            label="heat_excess",
-            inputs={bus_heat: flows.Flow()},
+        ElectricalStorage(
+            name="battery_storage",
+            project_data=project,
+            bus_in_electricity=bus_electricity,
+            bus_out_electricity=bus_electricity,
+            capex_spec=10,
+            opex_spec=0,
+            variable_costs=0.001,
+            lifetime=20,
         )
     )
 
     energysystem.add(
-        components.Sink(
-            label="sold",
-            inputs={bus_electricity: flows.Flow(variable_costs=-0.1)},
+        ThermalStorage(
+            name="heat_storage",
+            project_data=project,
+            bus_in_heat=bus_heat,
+            bus_out_heat=bus_heat,
+            capex_spec=1,
+            opex_spec=0,
+            variable_costs=0.001,
+            lifetime=20,
+            efficiency_discharge=0.9,
         )
     )
-
-    energysystem.add(
-        components.Converter(
-            label="pp_gas",
-            inputs={bus_gas: flows.Flow()},
-            outputs={
-                bus_electricity: flows.Flow(
-                    nominal_capacity=oemof.solph.Investment(ep_costs=600 / 12),
-                    variable_costs=0.01,
-                ),
-                bus_heat: flows.Flow(),
-            },
-            conversion_factors={bus_electricity: 0.3, bus_heat: 0.5},
-        )
-    )
-
-    energysystem.add(
-        components.Converter(
-            label="backwards",
-            inputs={bus_heat: flows.Flow()},
-            outputs={
-                bus_gas: flows.Flow(
-                    nominal_capacity=oemof.solph.Investment(
-                        ep_costs=60 / 12, maximum=100
-                    ),
-                    variable_costs=10,
-                )
-            },
-            conversion_factors={bus_gas: 1},
-        )
-    )
-
-    nominal_capacity = oemof.solph.Investment(ep_costs=1 / 12, maximum=100)
-    gas_storage = components.GenericStorage(
-        nominal_capacity=nominal_capacity,
-        label="gas_storage",
-        inputs={bus_gas: flows.Flow()},
-        outputs={
-            bus_gas: flows.Flow(
-                nominal_capacity=nominal_capacity, variable_costs=-1
-            )
-        },
-        loss_rate=0.00,
-        initial_storage_level=None,
-        inflow_conversion_factor=1,
-        outflow_conversion_factor=1,
-    )
-    energysystem.add(gas_storage)
-
-    nominal_capacity = oemof.solph.Investment(ep_costs=10 / 12)
-    battery_storage = components.GenericStorage(
-        nominal_capacity=nominal_capacity,
-        label="battery_storage",
-        inputs={bus_electricity: flows.Flow()},
-        outputs={
-            bus_electricity: flows.Flow(
-                nominal_capacity=nominal_capacity, variable_costs=0.001
-            )
-        },
-        loss_rate=0.00,
-        initial_storage_level=None,
-        inflow_conversion_factor=1,
-        outflow_conversion_factor=1,
-    )
-    energysystem.add(battery_storage)
-
-    nominal_capacity = oemof.solph.Investment(ep_costs=1 / 12)
-    heat_storage = components.GenericStorage(
-        nominal_capacity=nominal_capacity,
-        label="heat_storage",
-        inputs={bus_heat: flows.Flow()},
-        outputs={
-            bus_heat: flows.Flow(
-                nominal_capacity=nominal_capacity, variable_costs=0.001
-            )
-        },
-        loss_rate=0.00,
-        initial_storage_level=None,
-        inflow_conversion_factor=1,
-        outflow_conversion_factor=0.9,
-    )
-    energysystem.add(heat_storage)
 
     return energysystem
 
@@ -331,7 +303,7 @@ if __name__ == "__main__":
     costs_table = yearly_project_costs(imported_results, es)
     print_cost_table(
         costs_table,
-        ["capex", "opex", "variable_cost"],
+        ["annualized investment cost", "fix operational costs", "dispatch costs"],
         "Yearly project costs:",
     )
 
@@ -339,8 +311,8 @@ if __name__ == "__main__":
     project_table = project_cost_table(imported_results, es)
     print_cost_table(
         project_table,
-        ["investment_cost", "operational_cost", "variable_cost"],
-        "Project costs (whole project duration):",
+        ["investment cost in year 0 (not including reinvestment)", "fix operational costs over project duration", "dispatch costs over project duration"],
+        "Project costs:",
     )
 
     # --- 5. one-line access examples -----------------------------------------

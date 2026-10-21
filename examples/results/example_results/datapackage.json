@@ -3,21 +3,8 @@
   "profile": "tabular-data-package",
   "resources": [
     {
-      "name": "flow",
-      "path": "results/sequences/flow.csv",
-      "kind": "sequence",
-      "format": "csv",
-      "dialect": {
-        "header": true,
-        "headerRows": [
-          0,
-          1
-        ]
-      }
-    },
-    {
-      "name": "investment_costs",
-      "path": "results/elements/investment_costs.csv",
+      "name": "storage_capacity",
+      "path": "results/elements/storage_capacity.csv",
       "kind": "element",
       "format": "csv",
       "dialect": {
@@ -25,15 +12,6 @@
         "headerRows": [
           0
         ]
-      }
-    },
-    {
-      "name": "Problem",
-      "path": "results/elements/Problem.csv",
-      "kind": "element",
-      "format": "csv",
-      "dialect": {
-        "header": false
       }
     },
     {
@@ -46,8 +24,17 @@
       }
     },
     {
-      "name": "variable_costs",
-      "path": "results/sequences/variable_costs.csv",
+      "name": "Problem",
+      "path": "results/elements/Problem.csv",
+      "kind": "element",
+      "format": "csv",
+      "dialect": {
+        "header": false
+      }
+    },
+    {
+      "name": "flow",
+      "path": "results/sequences/flow.csv",
       "kind": "sequence",
       "format": "csv",
       "dialect": {
@@ -68,8 +55,8 @@
       }
     },
     {
-      "name": "invest",
-      "path": "results/elements/invest.csv",
+      "name": "nominal_capacity",
+      "path": "results/elements/nominal_capacity.csv",
       "kind": "element",
       "format": "csv",
       "dialect": {
@@ -81,15 +68,51 @@
       }
     },
     {
-      "name": "nominal_capacity",
-      "path": "results/elements/nominal_capacity.csv",
+      "name": "storage_content",
+      "path": "results/sequences/storage_content.csv",
+      "kind": "sequence",
+      "format": "csv",
+      "dialect": {
+        "header": true,
+        "headerRows": [
+          0
+        ]
+      }
+    },
+    {
+      "name": "investment_costs",
+      "path": "results/elements/investment_costs.csv",
       "kind": "element",
+      "format": "csv",
+      "dialect": {
+        "header": true,
+        "headerRows": [
+          0
+        ]
+      }
+    },
+    {
+      "name": "variable_costs",
+      "path": "results/sequences/variable_costs.csv",
+      "kind": "sequence",
       "format": "csv",
       "dialect": {
         "header": true,
         "headerRows": [
           0,
           1
+        ]
+      }
+    },
+    {
+      "name": "invest",
+      "path": "results/elements/invest.csv",
+      "kind": "element",
+      "format": "csv",
+      "dialect": {
+        "header": true,
+        "headerRows": [
+          0
         ]
       }
     }
