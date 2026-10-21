@@ -122,6 +122,7 @@ class BiogasPlant(Source):
             self.bus_out_fuel: Flow(
                 fix=input_timeseries,
                 nominal_capacity=nv,
+                variable_costs=variable_costs,
             )
         }
 

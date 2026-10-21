@@ -150,6 +150,9 @@ class EnergyStorage(GenericStorage):
         self.efficiency_charge = efficiency_charge
         self.efficiency_discharge = efficiency_discharge
         self.age_installed = age_installed
+        self.installed_capacity = installed_capacity
+        self.capex_spec = capex_spec
+        self.opex_spec = opex_spec
         self.initial_storage_level = initial_storage_level
         self.end_storage_level = end_storage_level
 

@@ -117,6 +117,7 @@ class GeothermalPlant(Source):
             self.bus_out_heat: Flow(
                 fix=input_timeseries,
                 nominal_capacity=nv,
+                variable_costs=variable_costs,
             )
         }
 

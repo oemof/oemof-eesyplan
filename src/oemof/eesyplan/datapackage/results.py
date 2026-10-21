@@ -15,7 +15,7 @@ def export_results(results, path):
         try:
             results[key]
         except KeyError:
-            results._variables.pop(key)
+            results._variables.pop(key, None)  # not all keys are variables
     # ToDo End of temporary fix
 
     write.export_results_to_datapackage(

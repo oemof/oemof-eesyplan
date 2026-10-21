@@ -1,0 +1,2 @@
+type,project_data,name,age_installed,installed_capacity,capex_spec,opex_spec,variable_costs,lifetime,maximum_capacity,efficiency_charge,efficiency_discharge,soc_max,soc_min,thermal_losses_variable,thermal_losses_fixed,initial_storage_level,end_storage_level,bus_in_heat,bus_out_heat
+hess,Wärmeversorgung eines Mehrfamilienhauses/Wohnkomplexes,Wärmespeicher,0.0,,20.0,0.2,0.001,20,,1.0,1.0,1.0,0.0,0.0,migration_thermalstorage_89973_thermal_losses_fixed,,True,Wärme_bus,Wärme_bus

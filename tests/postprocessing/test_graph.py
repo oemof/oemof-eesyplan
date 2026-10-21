@@ -336,7 +336,7 @@ class TestCapacitiesGraph:
 
         # Prüfe installed capacities
         installed_trace = fig.data[1]
-        assert "wind" == sorted(installed_trace.x)[1]
+        assert sorted(installed_trace.x) == ["Batterie", "pv", "wind"]
         assert 0 == installed_trace.y.min()
         assert 1.0107436 == round(installed_trace.y.max(), 7)
         assert 0 in installed_trace.y
@@ -522,7 +522,7 @@ class TestIntegration:
 
         # Prüfe, dass alle Komponenten enthalten sind
         components = fig.data[0].x
-        assert len(components) == 2  # component1, component2, component3
+        assert sorted(components) == ["Batterie", "pv", "wind"]
 
 
 # ============================================================================
