@@ -21,8 +21,17 @@ except ModuleNotFoundError:
 warnings.filterwarnings("ignore", category=ExperimentalFeatureWarning)
 
 
-def create_energy_system_from_dp(path):
-    """create energy system object from the datapackage"""
+def create_energy_system_from_dp(path, attributemap=None):
+    """create energy system object from the datapackage
+
+    Parameters
+    ----------
+    path : str or Path
+        Path to the datapackage (folder, ``datapackage.json`` or zip file).
+    attributemap : dict, optional
+        Renames attributes of the datapackage to the parameter names of the
+        components, e.g. ``{ThermalStorage: {"old_name": "loss_rate"}}``.
+    """
     path = Path(path)
 
     if path.suffix == ".zip":
@@ -42,7 +51,7 @@ def create_energy_system_from_dp(path):
             path = json_files[0]
         es = EnergySystem.from_datapackage(
             path,
-            attributemap={},
+            attributemap=attributemap or {},
             typemap=TYPEMAP,
         )
         ext_path.cleanup()
@@ -51,7 +60,7 @@ def create_energy_system_from_dp(path):
             path = path / "datapackage.json"
         es = EnergySystem.from_datapackage(
             path,
-            attributemap={},
+            attributemap=attributemap or {},
             typemap=TYPEMAP,
         )
 

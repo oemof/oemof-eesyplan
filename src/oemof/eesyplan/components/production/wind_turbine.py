@@ -117,11 +117,13 @@ class WindTurbine(Source):
         self.lifetime = lifetime
         self.maximum_capacity = maximum_capacity
         self.renewable_asset = renewable_asset
+        self.project_data = project_data
 
         outputs = {
             self.bus_out_electricity: Flow(
                 fix=input_timeseries,
                 nominal_capacity=nv,
+                variable_costs=variable_costs,
             )
         }
 
