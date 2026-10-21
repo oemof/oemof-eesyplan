@@ -132,6 +132,15 @@
     scalar or time series relative to the nominal capacity [-]
     (acceptable values are either a real number, an iterable, or None).
 
+.. |fixed_losses_absolute| replace:: Losses of the storage between two
+    consecutive timesteps that are independent of both the state of charge
+    and the nominal storage capacity [:unit:] (non-negative real number).
+
+.. |fixed_losses_relative| replace:: Losses of the storage between two
+    consecutive timesteps that are independent of the state of charge,
+    relative to the nominal storage capacity [-] (real number between 0
+    and 1).
+
 .. |fixed_thermal_losses_absolute| replace:: Thermal losses of the storage
     independent of the state of charge and independent of the nominal
     storage capacity between two consecutive timesteps [-] (between 0 and
@@ -163,6 +172,10 @@
 
 .. |lifetime| replace:: Number of operational years of the asset before it
     has to be replaced [a] (natural number).
+
+.. |loss_rate| replace:: Relative loss of the storage content between two
+    consecutive timesteps, applied to the current state of charge [-]
+    (real number between 0 and 1).
 
 .. |maximum| replace:: Maximum operation level of the flow as a factor of
     the nominal capacity [-] (acceptable values are either a real number

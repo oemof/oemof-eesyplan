@@ -21,7 +21,7 @@ class HydrogenStorage(EnergyStorage):
         c_rate_discharge=None,
         efficiency_charge=1.0,
         efficiency_discharge=1.0,
-        self_discharge=0.0,
+        loss_rate=0.0,
     ):
         """
         Hydrogen Energy Storage System (H2ESS).
@@ -76,8 +76,8 @@ class HydrogenStorage(EnergyStorage):
             |efficiency_charge|
         efficiency_discharge : float, optional (default: 1.0)
             |efficiency_discharge|
-        self_discharge : float, optional (default: 0.0)
-            |self_discharge|
+        loss_rate : float, optional (default: 0.0)
+            |loss_rate|
 
         Examples
         --------
@@ -97,7 +97,7 @@ class HydrogenStorage(EnergyStorage):
         ...     installed_capacity=10,
         ...     c_rate_charge=0.7,
         ...     c_rate_discharge=0.8,
-        ...     self_discharge=0.0001,
+        ...     loss_rate=0.0001,
         ... )
         >>> my_invest_storage = HydrogenStorage(
         ...     name="hydrogen_storage_system_extension",
@@ -115,7 +115,7 @@ class HydrogenStorage(EnergyStorage):
         ...     c_rate_discharge=0.8,
         ...     efficiency_charge=0.99,
         ...     project_data=my_project,
-        ...     self_discharge=0.0001,
+        ...     loss_rate=0.0001,
         ... )
         """
         super().__init__(
@@ -131,7 +131,7 @@ class HydrogenStorage(EnergyStorage):
             lifetime=lifetime,
             soc_max=soc_max,
             soc_min=soc_min,
-            energy_losses_variable=self_discharge,
+            loss_rate=loss_rate,
             efficiency_charge=efficiency_charge,
             efficiency_discharge=efficiency_discharge,
             theoretical_time_charge=c_rate_charge,  # hours

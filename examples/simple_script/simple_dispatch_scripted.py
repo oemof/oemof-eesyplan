@@ -91,7 +91,7 @@ def simple_script():
             c_rate_charge=1.0,
             efficiency=0.99,
             project_data=project,
-            self_discharge=0.000,
+            loss_rate=0.000,
         )
     )
 

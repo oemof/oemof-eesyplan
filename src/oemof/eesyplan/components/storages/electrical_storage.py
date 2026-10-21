@@ -17,7 +17,7 @@ class ElectricalStorage(EnergyStorage):
         lifetime=20,
         soc_max=1,
         soc_min=0,
-        self_discharge=0.0,
+        loss_rate=0.0,
         efficiency_charge=1.0,
         efficiency_discharge=1.0,
         c_rate_charge=1.0,
@@ -70,8 +70,8 @@ class ElectricalStorage(EnergyStorage):
             |soc_max|
         soc_min : float, optional (default: 0)
             |soc_min|
-        self_discharge : float, optional (default: 0.0)
-            |energy_losses_relative|
+        loss_rate : float, optional (default: 0.0)
+            |loss_rate|
         efficiency_charge : float, optional (default: 1.0)
             |efficiency_charge|
         efficiency_discharge : float, optional (default: 1.0)
@@ -99,7 +99,7 @@ class ElectricalStorage(EnergyStorage):
         ...     installed_capacity=10,
         ...     c_rate_charge=0.7,
         ...     c_rate_discharge=0.8,
-        ...     self_discharge=0.0001,
+        ...     loss_rate=0.0001,
         ... )
         >>> my_invest_bess = ElectricalStorage(
         ...     name="lithium_battery_extension_system",
@@ -117,7 +117,7 @@ class ElectricalStorage(EnergyStorage):
         ...     c_rate_discharge=0.8,
         ...     efficiency_charge=0.99,
         ...     project_data=my_project,
-        ...     self_discharge=0.0001,
+        ...     loss_rate=0.0001,
         ... )
         """
         super().__init__(
@@ -134,7 +134,7 @@ class ElectricalStorage(EnergyStorage):
             lifetime=lifetime,
             soc_max=soc_max,
             soc_min=soc_min,
-            energy_losses_variable=self_discharge,
+            loss_rate=loss_rate,
             efficiency_charge=efficiency_charge,
             efficiency_discharge=efficiency_discharge,
             theoretical_time_charge=c_rate_charge,  # hours

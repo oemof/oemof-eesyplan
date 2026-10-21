@@ -19,8 +19,9 @@ class EnergyStorage(GenericStorage):
         lifetime=20,
         soc_max=1,
         soc_min=0,
-        energy_losses_variable=0.0,
-        energy_losses_fixed=0.0,
+        loss_rate=0.0,
+        fixed_losses_relative=0.0,
+        fixed_losses_absolute=0.0,
         efficiency_charge=1.0,
         efficiency_discharge=1.0,
         theoretical_time_charge=1.0,  # hours
@@ -74,10 +75,12 @@ class EnergyStorage(GenericStorage):
             |soc_max|
         soc_min : float, optional (default: 0)
             |soc_min|
-        energy_losses_variable : float, optional (default: 0.0)
-            |energy_losses_relative|
-        energy_losses_fixed : float, optional (default: 0.0)
-            |energy_losses_absolute|
+        loss_rate : float, optional (default: 0.0)
+            |loss_rate|
+        fixed_losses_relative : float, optional (default: 0.0)
+            |fixed_losses_relative|
+        fixed_losses_absolute : float, optional (default: 0.0)
+            |fixed_losses_absolute|
         efficiency_charge : float, optional (default: 1.0)
             |efficiency_charge|
         efficiency_discharge : float, optional (default: 1.0)
@@ -121,8 +124,8 @@ class EnergyStorage(GenericStorage):
         ...     theoretical_time_discharge=1,  # hours
         ...     efficiency_charge=0.99,
         ...     project_data=my_project,
-        ...     energy_losses_variable=0.6,
-        ...     energy_losses_fixed=0.1,
+        ...     loss_rate=0.6,
+        ...     fixed_losses_relative=0.1,
         ... )
         """
 
@@ -136,8 +139,6 @@ class EnergyStorage(GenericStorage):
         if theoretical_time_discharge is None:
             theoretical_time_discharge = theoretical_time_charge
 
-        self.energy_losses_variable = energy_losses_variable
-        self.energy_losses_fixed = energy_losses_fixed
         self.efficiency_charge = efficiency_charge
         self.efficiency_discharge = efficiency_discharge
         self.age_installed = age_installed
@@ -179,8 +180,8 @@ class EnergyStorage(GenericStorage):
             inflow_conversion_factor=self.efficiency_charge,
             outflow_conversion_factor=self.efficiency_discharge,
             invest_relation_input_capacity=self.crate_charge,
-            invest_relation_output_capacity=self.crate_charge,
-            loss_rate=self.energy_losses_variable,
-            fixed_losses_absolute=0,
-            fixed_losses_relative=self.energy_losses_fixed,
+            invest_relation_output_capacity=self.crate_discharge,
+            loss_rate=loss_rate,
+            fixed_losses_relative=fixed_losses_relative,
+            fixed_losses_absolute=fixed_losses_absolute,
         )

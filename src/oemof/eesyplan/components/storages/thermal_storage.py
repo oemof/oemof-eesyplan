@@ -17,8 +17,9 @@ class ThermalStorage(EnergyStorage):
         lifetime=20,
         soc_max=1.0,
         soc_min=0.0,
-        thermal_losses_variable=0.0,
-        thermal_losses_fixed=0.0,
+        loss_rate=0.0,
+        fixed_losses_relative=0.0,
+        fixed_losses_absolute=0.0,
         efficiency_charge=1.0,
         efficiency_discharge=1.0,
         theoretical_time_charge=1.0,  # hours
@@ -71,10 +72,12 @@ class ThermalStorage(EnergyStorage):
             |soc_max|
         soc_min : float, optional (default: 0.0)
             |soc_min|
-        thermal_losses_variable : float, optional (default: 0.0)
-            |fixed_thermal_losses_relative|
-        thermal_losses_fixed : float, optional (default: 0.0)
-            |fixed_thermal_losses_absolute|
+        loss_rate : float, optional (default: 0.0)
+            |loss_rate|
+        fixed_losses_relative : float, optional (default: 0.0)
+            |fixed_losses_relative|
+        fixed_losses_absolute : float, optional (default: 0.0)
+            |fixed_losses_absolute|
         efficiency_charge : float, optional (default: 1.0)
             |efficiency_charge|
         efficiency_discharge : float, optional (default: 1.0)
@@ -117,12 +120,10 @@ class ThermalStorage(EnergyStorage):
         ...     theoretical_time_discharge=1,
         ...     efficiency_charge=0.99,
         ...     project_data=my_project,
-        ...     thermal_losses_variable=0.06,
-        ...     thermal_losses_fixed=0.02,
+        ...     loss_rate=0.06,
+        ...     fixed_losses_relative=0.02,
         ... )
         """
-        self.thermal_losses_variable = thermal_losses_variable
-        self.thermal_losses_fixed = thermal_losses_fixed
 
         super().__init__(
             name,
@@ -138,8 +139,9 @@ class ThermalStorage(EnergyStorage):
             lifetime=lifetime,
             soc_max=soc_max,
             soc_min=soc_min,
-            energy_losses_variable=thermal_losses_variable,
-            energy_losses_fixed=thermal_losses_fixed,
+            loss_rate=loss_rate,
+            fixed_losses_relative=fixed_losses_relative,
+            fixed_losses_absolute=fixed_losses_absolute,
             efficiency_charge=efficiency_charge,
             efficiency_discharge=efficiency_discharge,
             theoretical_time_charge=theoretical_time_charge,  # hours
