@@ -1,0 +1,2 @@
+type,name,energy_price,renewable_share,bus_fuel
+gas_dso,Gasversorger,0.15,0.44,Gas_bus

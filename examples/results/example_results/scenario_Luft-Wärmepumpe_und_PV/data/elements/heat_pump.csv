@@ -1,0 +1,2 @@
+type,project_data,name,age_installed,installed_capacity,capex_spec,opex_spec,variable_costs,lifetime,maximum_capacity,cop,bus_in_electricity,bus_in_heat,bus_out_heat
+heat_pump,my_tests,Luft-Wärmepumpe,0.0,,2200.0,10.0,0.0,20,,migration_heatpump_1232_cop,Strom_bus,Luftwaerme_bus,Wärme_bus

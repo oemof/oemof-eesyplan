@@ -1,0 +1,2 @@
+type,project_data,name,age_installed,installed_capacity,capex_spec,opex_spec,variable_costs,lifetime,maximum_capacity,renewable_asset,input_timeseries,bus_out_heat
+solar_thermal_plant,my_tests,Luftwaerme,0.0,,0.0,0.0,0.0,20,,True,1.xlsx,Luftwaerme_bus

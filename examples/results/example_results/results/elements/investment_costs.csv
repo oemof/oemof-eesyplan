@@ -1,0 +1,2 @@
+index,"(""<oemof.eesyplan.components.converters.chp_fixed_ratio.ChpFixedRatio: 'BHKW'>"", <CarrierBus 'Strom_bus', carrier='Electricity', shortage: None, excess: None>)","(""<oemof.eesyplan.components.converters.boiler.Boiler: 'Gas_boiler'>"", <CarrierBus 'Wärme_bus', carrier='Heat', shortage: None, excess: None>)","(""<oemof.eesyplan.components.production.solar_thermal_plant.SolarThermalPlant: 'Solarkollektor'>"", <CarrierBus 'Wärme_bus', carrier='Heat', shortage: None, excess: None>)"
+0,1336.9277970178225,1573.3640373850858,149.25441299771245

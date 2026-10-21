@@ -74,7 +74,11 @@ docs/_build
 .mypy_cache/
 
 */results/*
+!/examples/results/
+!/examples/results/**
 /examples/solve_any_datapackage
 *.graphml
 /.venv
 /test_cases/*
+examples/results/**/__pycache__/
+examples/results/**/*.pyc

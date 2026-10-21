@@ -1,0 +1,4 @@
+name,type,carrier,balanced,excess_cost,shortage_cost,absolute_losses
+Strom_bus,CarrierBus,Electricity,True,,,
+Wärme_bus,CarrierBus,Heat,True,,,
+Luftwaerme_bus,CarrierBus,Heat,True,,,

@@ -1,0 +1,2 @@
+type,project_data,name,age_installed,installed_capacity,capex_spec,opex_spec,variable_costs,lifetime,maximum_capacity,efficiency_charge,efficiency_discharge,soc_max,soc_min,thermal_losses_variable,thermal_losses_fixed,fixed_thermal_losses_absolute,initial_storage_level,end_storage_level,bus_in_heat,bus_out_heat
+hess,my_tests,Wärmespeicher,0.0,,20.0,0.2,0.001,20,,1.0,1.0,1.0,0.0,0.0,migration_thermalstorage_1229_thermal_losses_fixed,migration_thermalstorage_1229_fixed_thermal_losses_absolute,,True,Wärme_bus,Wärme_bus
