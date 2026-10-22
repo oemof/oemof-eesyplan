@@ -1,9 +1,16 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.demand.demand import Demand
 
 
 class ElectricityDemand(Demand):
     def __init__(
-        self, name, bus_in_electricity, input_timeseries, carrier="electricity"
+        self,
+        name: str,
+        bus_in_electricity: CarrierBus,
+        input_timeseries: npt.ArrayLike | str,  # CHECK: str (Dateiname) korrekt?
+        carrier: str = "electricity",
     ):
         """
         Electricity demand/consumption component.

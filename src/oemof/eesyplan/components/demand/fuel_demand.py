@@ -1,8 +1,17 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.demand.demand import Demand
 
 
 class FuelDemand(Demand):
-    def __init__(self, name, bus_in_fuel, input_timeseries, carrier="fuel"):
+    def __init__(
+        self,
+        name: str,
+        bus_in_fuel: CarrierBus,
+        input_timeseries: npt.ArrayLike | str,  # CHECK: str (Dateiname) korrekt?
+        carrier: str = "fuel",
+    ):
         """
         Gas demand/consumption component.
 
