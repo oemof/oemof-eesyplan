@@ -1,31 +1,35 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.storages.storage import EnergyStorage
+from oemof.eesyplan.project import Project
 
 
 class ThermalStorage(EnergyStorage):
     def __init__(
         self,
-        name,
-        project_data,
-        bus_in_heat,
-        bus_out_heat=None,
-        age_installed=0,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=0.0,
-        opex_spec=0.0,
-        variable_costs=0.0,
-        lifetime=20,
-        soc_max=1.0,
-        soc_min=0.0,
-        loss_rate=0.0,
-        fixed_losses_relative=0.0,
-        fixed_losses_absolute=0.0,
-        efficiency_charge=1.0,
-        efficiency_discharge=1.0,
-        c_rate_charge=1.0,
-        c_rate_discharge=None,
-        initial_storage_level=None,
-        end_storage_level=True,
+        name: str,
+        project_data: Project,
+        bus_in_heat: CarrierBus,
+        bus_out_heat: CarrierBus | None = None,
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 0.0,
+        opex_spec: float | int | npt.ArrayLike = 0.0,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0.0,
+        lifetime: float | int = 20,
+        soc_max: float | int | npt.ArrayLike = 1.0,  # CHECK
+        soc_min: float | int | npt.ArrayLike = 0.0,  # CHECK
+        loss_rate: float | int | npt.ArrayLike = 0.0,  # CHECK
+        fixed_losses_relative: float | int | npt.ArrayLike = 0.0,  # CHECK
+        fixed_losses_absolute: float | int | npt.ArrayLike = 0.0,  # CHECK
+        efficiency_charge: float | int | npt.ArrayLike = 1.0,  # CHECK
+        efficiency_discharge: float | int | npt.ArrayLike = 1.0,  # CHECK
+        c_rate_charge: float | int = 1.0,
+        c_rate_discharge: float | int | None = None,
+        initial_storage_level: float | int | None = None,
+        end_storage_level: bool = True,
     ):
         """
         Heat Energy Storage System (HESS).

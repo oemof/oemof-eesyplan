@@ -1,27 +1,31 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.storages.storage import EnergyStorage
+from oemof.eesyplan.project import Project
 
 
 class HydrogenStorage(EnergyStorage):
     def __init__(
         self,
-        name,
-        project_data,
-        bus_in_hydrogen,
-        bus_out_hydrogen=None,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=0,
-        opex_spec=0,
-        variable_costs=0,
-        lifetime=20,
-        age_installed=0,
-        soc_max=1.0,
-        soc_min=1.0,
-        c_rate_charge=1.0,
-        c_rate_discharge=None,
-        efficiency_charge=1.0,
-        efficiency_discharge=1.0,
-        loss_rate=0.0,
+        name: str,
+        project_data: Project,
+        bus_in_hydrogen: CarrierBus,
+        bus_out_hydrogen: CarrierBus | None = None,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 0,
+        opex_spec: float | int | npt.ArrayLike = 0,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0,
+        lifetime: float | int = 20,
+        age_installed: float | int = 0,
+        soc_max: float | int | npt.ArrayLike = 1.0,  # CHECK
+        soc_min: float | int | npt.ArrayLike = 1.0,  # CHECK
+        c_rate_charge: float | int = 1.0,
+        c_rate_discharge: float | int | None = None,
+        efficiency_charge: float | int | npt.ArrayLike = 1.0,  # CHECK
+        efficiency_discharge: float | int | npt.ArrayLike = 1.0,  # CHECK
+        loss_rate: float | int | npt.ArrayLike = 0.0,  # CHECK
     ):
         """
         Hydrogen Energy Storage System (H2ESS).
