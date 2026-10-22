@@ -1,17 +1,20 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.providers.dso import DSO
 
 
 class DsoElectricity(DSO):
     def __init__(
         self,
-        name,
-        bus_electricity,
-        energy_price=0.3,
-        feedin_tariff=0.1,
-        peak_demand_pricing=0,
-        peak_demand_pricing_period=1,
-        renewable_share=0.44,
-        feedin_cap=None,
+        name: str,
+        bus_electricity: CarrierBus,
+        energy_price: float | int | npt.ArrayLike = 0.3,
+        feedin_tariff: float | int | npt.ArrayLike = 0.1,
+        peak_demand_pricing: float | int = 0,
+        peak_demand_pricing_period: int = 1,
+        renewable_share: float | int = 0.44,
+        feedin_cap: float | int | None = None,
     ):
         """
         Energy provider for electricity distribution.

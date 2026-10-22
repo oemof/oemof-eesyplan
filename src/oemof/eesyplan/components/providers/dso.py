@@ -1,5 +1,7 @@
 import numpy as np
+import numpy.typing as npt
 
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.network import Node
 from oemof.solph import Bus
 from oemof.solph import Flow
@@ -11,14 +13,14 @@ from oemof.solph.components import Source
 class DSO(Node):
     def __init__(
         self,
-        name,
-        bus,
-        energy_price,
-        feedin_tariff,
-        peak_demand_pricing=0,
-        peak_demand_pricing_period=1,
-        renewable_share=0.44,
-        feedin_cap=None,
+        name: str,
+        bus: CarrierBus,
+        energy_price: float | int | npt.ArrayLike,
+        feedin_tariff: float | int | npt.ArrayLike,
+        peak_demand_pricing: float | int = 0,
+        peak_demand_pricing_period: int = 1,
+        renewable_share: float | int = 0.44,
+        feedin_cap: float | int | None = None,
     ):
         """
         Energy provider for electricity distribution.
