@@ -106,7 +106,7 @@
 .. |efficiency_heat_chp| replace:: Thermal efficiency with maximal heat
     extraction [-] (positive real number).
 
-.. |energy_prices| replace:: Price of the energy carrier sourced from the
+.. |energy_price| replace:: Price of the energy carrier sourced from the
     utility grid. May also be a time series, in €/kWh.
 
 .. |excess_cost| replace:: Description text is missing [unit is missing]
@@ -195,7 +195,7 @@
 .. |optimize_cap| replace:: Choose whether capacity optimisation should be
     performed for this asset. [-] (acceptable values are either Yes or No).
 
-.. |peak_demand_period| replace:: Number of reference periods in one year
+.. |peak_demand_pricing_period| replace:: Number of reference periods in one year
     for peak demand pricing, in times per year (only the following values
     are acceptable: 1 (yearly), 2, 3, 4, 6, 12 (monthly)).
 
