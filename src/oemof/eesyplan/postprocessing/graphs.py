@@ -1,3 +1,4 @@
+import os
 import re
 
 import numpy as np
@@ -9,6 +10,41 @@ from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import EnergySystem
 from oemof.eesyplan import Shortage
 from oemof.eesyplan.postprocessing.KPIs import clean_label
+
+
+_COMPONENT_TYPE_ORDER = [
+    "buses",
+    "compansation",
+    "compensation",
+    "converters",
+    "demand",
+    "production",
+    "providers",
+    "storages",
+    "transport",
+]
+
+_COMPONENT_TYPE_COLORS = [
+    "#7f7f7f",  # buses
+    "#8c564b",  # compansation
+    "#8c564b",  # compensation
+    "#ff7f0e",  # converters
+    "#d62728",  # demand
+    "#2ca02c",  # production
+    "#9467bd",  # providers
+    "#1f77b4",  # storages
+    "#17becf",  # transport
+]
+
+
+def _format_number(value, decimals=1):
+    """Format a number with space as thousands separator."""
+    if value is None or (isinstance(value, float) and pd.isna(value)):
+        return ""
+    try:
+        return f"{float(value):,.{decimals}f}".replace(",", " ")
+    except Exception:
+        return str(value)
 
 
 def _label_of(part):
@@ -60,6 +96,30 @@ def _facade_of(part):
     if isinstance(label, tuple):
         return str(label[-1])
     return str(label)
+
+
+def _component_type_index(node):
+    """Return index of component type based on components folder order."""
+    if node is None:
+        return None
+    module = getattr(type(node), "__module__", "") or ""
+    if ".components." not in module:
+        return None
+    try:
+        subpath = module.split(".components.", 1)[1]
+        type_name = subpath.split(".", 1)[0]
+    except Exception:
+        return None
+    if type_name in _COMPONENT_TYPE_ORDER:
+        return _COMPONENT_TYPE_ORDER.index(type_name)
+    return None
+
+
+def _node_type_color(node):
+    idx = _component_type_index(node)
+    if idx is None:
+        return None
+    return _COMPONENT_TYPE_COLORS[idx % len(_COMPONENT_TYPE_COLORS)]
 
 
 def sankey(
@@ -370,26 +430,26 @@ def sankey_2(
     if row is None:
         customdata = np.column_stack(
             [
-                links_df["value"].to_numpy() / 1000.0,
-                links_df["max"].to_numpy(),
-                links_df["aggregate"].to_numpy() / 1000.0,
+                [_format_number(v / 1000.0, 1) for v in links_df["value"].to_numpy()],
+                [_format_number(v, 1) for v in links_df["max"].to_numpy()],
+                [_format_number(v / 1000.0, 1) for v in links_df["aggregate"].to_numpy()],
             ]
         )
         hovertemplate = (
             "Source: %{source.label}<br>"
             "Target: %{target.label}<br>"
-            "Plotted value: %{customdata[0]:.1f} MWh<br>"
-            "Max: %{customdata[1]:.1f} kW<br>"
-            "Aggregate: %{customdata[2]:.1f} MWh"
+            "Plotted value: %{customdata[0]} MWh<br>"
+            "Max: %{customdata[1]} kW<br>"
+            "Aggregate: %{customdata[2]} MWh"
             "<extra></extra>"
         )
     else:
         links_df["timestamp"] = str(selected_label)
         customdata = np.column_stack(
             [
-                links_df["value"].to_numpy() / 1000.0,
-                links_df["max"].to_numpy(),
-                links_df["aggregate"].to_numpy() / 1000.0,
+                [_format_number(v / 1000.0, 1) for v in links_df["value"].to_numpy()],
+                [_format_number(v, 1) for v in links_df["max"].to_numpy()],
+                [_format_number(v / 1000.0, 1) for v in links_df["aggregate"].to_numpy()],
                 links_df["timestamp"].to_numpy(),
             ]
         )
@@ -397,8 +457,8 @@ def sankey_2(
             "Source: %{source.label}<br>"
             "Target: %{target.label}<br>"
             "Timestamp: %{customdata[3]}<br>"
-            "Max: %{customdata[1]:.1f} kW<br>"
-            "Aggregate: %{customdata[2]:.1f} MWh"
+            "Max: %{customdata[1]} kW<br>"
+            "Aggregate: %{customdata[2]} MWh"
             "<extra></extra>"
         )
 
@@ -417,14 +477,18 @@ def sankey_2(
                 es_node = None
             if es_node is None:
                 node_colors.append(None)
-            elif isinstance(es_node, CarrierBus):
-                node_colors.append("grey")
-            elif len(es_node.inputs) == 0:
-                node_colors.append("blue")
-            elif len(es_node.outputs) == 0:
-                node_colors.append("red")
             else:
-                node_colors.append("green")
+                type_color = _node_type_color(es_node)
+                if type_color is not None:
+                    node_colors.append(type_color)
+                elif isinstance(es_node, CarrierBus):
+                    node_colors.append("grey")
+                elif len(getattr(es_node, "inputs", [])) == 0:
+                    node_colors.append("blue")
+                elif len(getattr(es_node, "outputs", [])) == 0:
+                    node_colors.append("red")
+                else:
+                    node_colors.append("green")
 
     fig = go.Figure(
         go.Sankey(
@@ -617,6 +681,9 @@ def plot_timeseries(results, es, threshold=0.01, unit="kWh"):
                 go.Scatter(
                     x=series.index,
                     y=series.clip(lower=0),
+                    customdata=[
+                        _format_number(y, 1) for y in series.clip(lower=0)
+                    ],
                     mode="none",
                     stackgroup=f"{bus_label}-inputs",
                     name=f"from {start}",
@@ -624,7 +691,7 @@ def plot_timeseries(results, es, threshold=0.01, unit="kWh"):
                     line={"color": color},
                     visible=False,
                     hovertemplate=(
-                        f"from {start}: %{{y:.1f}} {unit}<extra></extra>"
+                        f"from {start}: %{{customdata}} {unit}<extra></extra>"
                     ),
                     hoverlabel={"align": "left"},
                 )
@@ -637,6 +704,9 @@ def plot_timeseries(results, es, threshold=0.01, unit="kWh"):
                 go.Scatter(
                     x=series.index,
                     y=series.clip(lower=0),
+                    customdata=[
+                        _format_number(y, 1) for y in series.clip(lower=0)
+                    ],
                     mode="lines",
                     stackgroup=f"{bus_label}-outputs",
                     name=f"to {end}",
@@ -644,7 +714,7 @@ def plot_timeseries(results, es, threshold=0.01, unit="kWh"):
                     fill="none",
                     visible=False,
                     hovertemplate=(
-                        f"to {end}: %{{y:.1f}} {unit}<extra></extra>"
+                        f"to {end}: %{{customdata}} {unit}<extra></extra>"
                     ),
                     hoverlabel={"align": "left"},
                 )
@@ -775,9 +845,10 @@ def plot_energy_mix(results, es, threshold=0.1, unit="MWh"):
                 textposition="outside",
                 hoverinfo="label+value+percent",
                 hovertemplate=(
-                    f"%{{label}}: %{{value:.1f}} {unit} (%{{percent}})"
+                    f"%{{label}}: %{{customdata}} {unit} (%{{percent}})"
                     "<extra></extra>"
                 ),
+                customdata=[_format_number(v, 1) for v in values],
             )
         ]
     )

@@ -1,4 +1,4 @@
-,heat_storage,wind,gas_storage,pp_gas,natural_gas,electricity,bus_heat,battery_storage
-,bus_heat,electricity,natural_gas,electricity,gas_storage,battery_storage,heat_storage,electricity
+,gas_storage,wind,electricity,pp_gas,natural_gas,battery_storage,heat_storage,bus_heat
+,natural_gas,electricity,battery_storage,electricity,gas_storage,electricity,bus_heat,heat_storage
 index,,,,,,,,
-0,2.8264716e-10,391414.85,0.0,185206.23,0.0,8506919.4,2.8264716e-10,8506919.4
+0,2.4909461e-10,391414.85,8506919.4,185206.23,2.4909461e-10,8506919.4,3.7828701e-10,3.7828701e-10

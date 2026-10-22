@@ -1,49 +1,36 @@
+import argparse
 import logging
+import warnings
 from pathlib import Path
 
 import pandas as pd
+from oemof.datapackage import datapackage  # noqa
 from oemof.solph import EnergySystem
 from oemof.solph import Model
 from oemof.solph import Results
 from oemof.solph import create_time_index
 from oemof.tools import logger
+from oemof.tools.debugging import ExperimentalFeatureWarning
+from oemof.tools.logger import define_logging
 
-import argparse
-import re
-import tempfile
-import tkinter as tk
-import warnings
-from pathlib import Path
-from tkinter import filedialog
-
-import pandas as pd
-
-from oemof.datapackage import datapackage  # noqa
 from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import ChpFixedRatio
 from oemof.eesyplan import Commodity
 from oemof.eesyplan import ElectricalStorage
 from oemof.eesyplan import ElectricityDemand
 from oemof.eesyplan import Excess
-from oemof.eesyplan import export_results
 from oemof.eesyplan import FuelStorage
 from oemof.eesyplan import HeatDemand
-from oemof.eesyplan import import_results
 from oemof.eesyplan import Project
 from oemof.eesyplan import PvPlant
 from oemof.eesyplan import ThermalStorage
 from oemof.eesyplan import WindTurbine
-from oemof.eesyplan.datapackage.energy_system import (
-    create_energy_system_from_dp,
-)
-from oemof.eesyplan.datapackage.energy_system import unzip_package
+from oemof.eesyplan import export_results
+from oemof.eesyplan import import_results
 from oemof.eesyplan.model import optimise
 from oemof.eesyplan.postprocessing import balance
-from oemof.tools.debugging import ExperimentalFeatureWarning
-from oemof.tools.logger import define_logging
 from oemof.eesyplan.postprocessing import graphs
 from oemof.eesyplan.postprocessing.graphs import capacities_graph
-
 from oemof.eesyplan.postprocessing.KPIs import LCOE
 from oemof.eesyplan.postprocessing.KPIs import clean_label
 from oemof.eesyplan.postprocessing.KPIs import demand_labels
@@ -164,9 +151,7 @@ def create_energysystem():
 
     energysystem.add(Excess(name="heat_excess", bus_in=bus_heat, cost=0))
 
-    energysystem.add(
-        Excess(name="sold", bus_in=bus_electricity, cost=-0.1)
-    )
+    energysystem.add(Excess(name="sold", bus_in=bus_electricity, cost=-0.1))
 
     energysystem.add(
         ChpFixedRatio(
@@ -275,9 +260,12 @@ if __name__ == "__main__":
 
     # --- 2. the existing checks ----------------------------------------------
     print(balance.nodes_io(imported_results["flow"]))
-    fig, df = graphs.sankey(imported_results["flow"])
+    fig, df = graphs.sankey_2(imported_results["flow"])
     fig.show()
-
+    fig = graphs.plot_timeseries(imported_results, es)
+    fig.show()
+    fig = graphs.plot_energy_mix(imported_results, es)
+    fig.show()
     fig2 = capacities_graph(results["invest"], es)
     fig2.show()
 
@@ -324,6 +312,3 @@ if __name__ == "__main__":
     #   imported_results["flow"].stack([0, 1])
     # all values of a storage:
     #   imported_results["storage_content"][some_column].tolist()
-
-
-

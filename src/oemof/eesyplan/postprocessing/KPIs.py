@@ -528,7 +528,7 @@ def print_cost_table(table, value_columns=None, title=""):
     component_width = max(
         26, max(len(str(value)) for value in table["component"]) + 2
     )
-    width = max(18, max(len(column) for column in value_columns) + 2)
+    width = max(20, max(len(column) for column in value_columns) + 2)
     if title:
         print(title)
     header = f"  {'component':<{component_width}}" + "".join(
@@ -541,9 +541,11 @@ def print_cost_table(table, value_columns=None, title=""):
     )
     for _, row in table.iterrows():
         line = f"  {row['component']:<{component_width}}" + "".join(
-            f"{row[column]:>{width}.2f}" for column in value_columns
+            f"{row[column]:>{width},.2f}".replace(",", " ")
+            for column in value_columns
         )
-        print(line + f"{row['total']:>{width}.2f}")
+        total_str = f"{row['total']:>{width},.2f}".replace(",", " ")
+        print(line + total_str)
     print()
 
 
