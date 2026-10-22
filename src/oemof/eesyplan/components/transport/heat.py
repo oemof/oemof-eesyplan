@@ -10,6 +10,7 @@ class HeatingNetwork(CarrierBus):
         self,
         name,
         absolute_losses=None,  # ToDo: wie werden die angegeben: pro timestep?
+        **kwargs,
     ):
         """
         Heating Network Bus
@@ -27,7 +28,7 @@ class HeatingNetwork(CarrierBus):
         """
         self.name = name
 
-        super().__init__(name=self.name, carrier="heat")
+        super().__init__(name=self.name, carrier="heat", **kwargs)
 
         if absolute_losses is not None:
             self.subnode(
