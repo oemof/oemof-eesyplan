@@ -106,6 +106,10 @@
 .. |efficiency_heat_chp| replace:: Thermal efficiency with maximal heat
     extraction [-] (positive real number).
 
+.. |end_storage_level| replace:: Choose whether the storage content of the
+    first and the last timestep of the optimisation horizon should be
+    equal [-] (acceptable values are either True or False).
+
 .. |energy_price| replace:: Price of the energy carrier sourced from the
     utility grid. May also be a time series, in €/kWh.
 
@@ -141,6 +145,11 @@
     asset has to accumulate over the optimisation horizon, e.g. due to
     contractual take-or-pay obligations [h] (acceptable values are either
     a non-negative real number or None).
+
+.. |initial_storage_level| replace:: Initial relative storage level at the
+    first timestep, as a factor of the nominal storage capacity [-]
+    (acceptable values are either a real number between 0 and 1, or None,
+    in which case the level is determined freely by the optimisation).
 
 .. |input_timeseries| replace:: Time series in :unit:.
 

@@ -31,7 +31,7 @@ class ThermalStorage(EnergyStorage):
         Heat Energy Storage System (HESS).
 
         This class represents a complete thermal energy storage system
-        for electrical energy storage and dispatch.
+        for thermal energy storage and dispatch.
 
         .. important ::
            This is a simplified representation of a complete HESS
@@ -86,6 +86,10 @@ class ThermalStorage(EnergyStorage):
             |c_rate_charge|
         c_rate_discharge : float, optional (default: None)
             |c_rate_discharge|
+        initial_storage_level : float or None, optional (default: None)
+            |initial_storage_level|
+        end_storage_level : bool, optional (default: True)
+            |end_storage_level|
 
         Examples
         --------

@@ -42,9 +42,9 @@ class EnergyStorage(GenericStorage):
         Structure
         ---------
         *input*
-            charge : Heat
+            charge : Energy
         *output*
-            discharge : Heat
+            discharge : Energy
 
         Parameters
         ----------
@@ -89,6 +89,10 @@ class EnergyStorage(GenericStorage):
             |c_rate_charge|
         c_rate_discharge : float, optional
             |c_rate_discharge|
+        initial_storage_level : float or None, optional (default: None)
+            |initial_storage_level|
+        end_storage_level : bool, optional (default: True)
+            |end_storage_level|
 
 
         Examples
@@ -113,7 +117,7 @@ class EnergyStorage(GenericStorage):
         ...     bus_in=heat_bus,
         ...     bus_out=heat_bus,
         ...     age_installed=0,
-        ...     maximum_capacity=0,
+        ...     maximum_capacity=1000,
         ...     capex_spec=3,
         ...     opex_spec=5,
         ...     variable_costs=0,
