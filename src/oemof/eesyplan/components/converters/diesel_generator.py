@@ -1,3 +1,7 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 
@@ -5,18 +9,18 @@ from oemof.solph.components import Converter
 class DieselGenerator(Converter):
     def __init__(
         self,
-        name,
-        bus_in_fuel,
-        bus_out_electricity,
-        project_data,
-        efficiency=0.3,
-        age_installed=0,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=1000,
-        opex_spec=10,
-        variable_costs=0,
-        lifetime=20,
+        name: str,
+        bus_in_fuel: CarrierBus,
+        bus_out_electricity: CarrierBus,
+        project_data: Project,
+        efficiency: float | int | npt.ArrayLike = 0.3,  # CHECK
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 1000,
+        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0,
+        lifetime: float | int = 20,
     ):
         """
          Diesel generator for electricity generation.
@@ -69,9 +73,9 @@ class DieselGenerator(Converter):
         --------
 
         >>> from oemof.eesyplan import Project
-        >>> from oemof.solph import Bus
-        >>> gas_bus = Bus(label="gas_bus")
-        >>> el_bus = Bus(label="el_bus")
+        >>> from oemof.eesyplan import CarrierBus
+        >>> gas_bus = CarrierBus(name="gas_bus")
+        >>> el_bus = CarrierBus(name="el_bus")
         >>> my_gas_boiler = DieselGenerator(
         ...     name="DieselGenerator",
         ...     bus_in_fuel=gas_bus,
