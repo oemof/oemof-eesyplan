@@ -15,7 +15,7 @@ class Project:
         self.economic_period = economic_period
         self.discount_factor = float(discount_factor)
 
-    def calculate_annuity(self, capex_spec, asset_lifetime):
+    def calculate_annuity(self, capex_spec, asset_lifetime,year_of_investment=0):
         """
         Calculate the annuity of investment..
 
@@ -23,6 +23,7 @@ class Project:
         ----------
         capex_spec
         asset_lifetime
+        first_year
 
         Returns
         -------
@@ -47,6 +48,8 @@ class Project:
             asset_lifetime=asset_lifetime,
             tax=self.tax,
             discount_factor=self.discount_factor,
+            year_of_investment=year_of_investment,
+            economic_period=self.economic_period,
         )
 
     def create_invest_if_wanted(
@@ -70,7 +73,7 @@ class Project:
 
         if installed_capacity is None:
             specific_annual_cost = (
-                self.calculate_annuity(capex_spec, lifetime) + opex_spec
+                self.calculate_annuity(capex_spec, lifetime,) + opex_spec
             )
             return Investment(
                 ep_costs=specific_annual_cost,

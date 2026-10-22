@@ -89,7 +89,7 @@ def create_energysystem():
         name="own_example",
         economic_period=20,
         tax=0,
-        discount_factor=0,
+        discount_factor=0.05,
     )
 
     bus_gas = CarrierBus(name="natural_gas", carrier="gas")
@@ -138,10 +138,11 @@ def create_energysystem():
             input_timeseries=data["pv"],
             project_data=project,
             capex_spec=600,
-            opex_spec=0,
+            opex_spec=10,
             variable_costs=0.001,
-            lifetime=20,
-            maximum_capacity=1_000_000,
+            lifetime=15,
+            installed_capacity=2,
+            age_installed=1,
         )
     )
 
@@ -264,7 +265,6 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--plot", default="graph", type=str)
 
     es = create_energysystem()
-    #es = create_energy_system_from_dp(Path(Path(__file__).parent / "scenario_Optimization_with_CHP"))
     results = optimise(es)
     export_results(results, path=Path(__file__).parent)
     imported_results = import_results(path=Path(__file__).parent, es=es)
@@ -305,19 +305,11 @@ if __name__ == "__main__":
 
     # --- 4b. yearly project costs per component ------------------------------
     costs_table = yearly_project_costs(imported_results, es)
-    print_cost_table(
-        costs_table,
-        ["annualized investment cost", "fix operational costs", "dispatch costs"],
-        "Yearly project costs:",
-    )
+    print_cost_table(costs_table, title="Yearly project costs:")
 
     # --- 4c. total project costs over the project duration -------------------
     project_table = project_cost_table(imported_results, es)
-    print_cost_table(
-        project_table,
-        ["investment cost in year 0 (not including reinvestment)", "fix operational costs over project duration", "dispatch costs over project duration"],
-        "Project costs:",
-    )
+    print_cost_table(project_table, title="Project costs:")
 
     # --- 5. one-line access examples -----------------------------------------
     # one edge as a time series:

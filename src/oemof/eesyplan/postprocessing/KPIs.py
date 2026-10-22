@@ -338,6 +338,56 @@ def _cost_table(rows, value_columns):
     return pd.concat([table, total_row], ignore_index=True)
 
 
+def _effective_capacity(node, capacity):
+    """Capacity of a component that is relevant for its costs.
+
+    Optimised components use their optimised capacity.  Components with
+    an ``installed_capacity`` are not optimised, so their installed
+    capacity is used instead.
+    """
+    installed = getattr(node, "installed_capacity", None)
+    if installed and node not in capacity:
+        return float(installed)
+    return capacity.get(node, 0.0)
+
+
+def _component_costs(node, capacity, investment_cost):
+    """Annualised investment and fixed operational costs of a component.
+
+    For optimised components the model bundles investment and fixed
+    operation costs into a single annual ``investment_costs`` value.  The
+    annuity is therefore reconstructed as ``investment_costs - opex``.
+
+    Component Costs with an ``installed_capacity`` are not part of the
+    optimisation.  They carry no investment in the model, so their
+    replacement within the project duration is missing in the results.
+    They provide the annualised capex of that replacement as
+    ``installed_capex_spec_annualized``.
+
+    Returns
+    -------
+    tuple
+        ``(annualised investment cost, fixed operational costs)``
+    """
+    installed = getattr(node, "installed_capacity", None)
+    opex_spec = getattr(node, "opex_spec", None) or 0.0
+    cap = _effective_capacity(node, capacity)
+
+    component_opex = opex_spec * cap
+
+    if installed and node not in capacity:
+        # existing component: not optimised, so the model contains no
+        # investment costs for it.  Only the replacement within the
+        # project duration is left to be accounted for.
+        component_capex = (
+            getattr(node, "installed_capex_spec_annualized", None) or 0.0
+        ) * cap
+    else:
+        component_capex = investment_cost.get(node, 0.0) - component_opex
+
+    return component_capex, component_opex
+
+
 def yearly_project_costs(results, es):
     """Yearly project costs per component as a table.
 
@@ -355,6 +405,11 @@ def yearly_project_costs(results, es):
     dispatch costs              sum of the variable costs of all flows of the
                                 component over the whole horizon
 
+    Components with an ``installed_capacity`` are not optimised and
+    therefore carry no investment cost in the model.  Their replacement
+    within the project duration is added as annualised investment cost
+    (see :func:`_component_costs`).
+
     Returns
     -------
     pandas.DataFrame
@@ -367,9 +422,9 @@ def yearly_project_costs(results, es):
 
     rows = []
     for node in components:
-        cap = capacity.get(node, 0.0)
-        component_opex = (getattr(node, "opex_spec", None) or 0.0) * cap
-        component_capex = investment_cost.get(node, 0.0) - component_opex
+        component_capex, component_opex = _component_costs(
+            node, capacity, investment_cost
+        )
         rows.append(
             {
                 "component": _norm_label(node.label),
@@ -398,10 +453,18 @@ def project_cost_table(results, es, project_duration=20):
     component          readable label of every top-level component
     investment cost in year 0 (not including reinvestment)
                        one-time investment ``capex_spec * capacity``
+    investment cost over the full project (including reinvestments)
+                       ``annualized investment cost * project_duration``
     fix operational costs over project duration
                        ``opex_spec * capacity * project_duration``
     dispatch costs over project duration
                        yearly variable costs * ``project_duration``
+
+    Components with an ``installed_capacity`` are not optimised.  They
+    were built before the project, so they have no investment cost in
+    year 0, but their operational costs are accounted for over the
+    project duration.  Reinvestments for installed components are
+    included based on their annualized replacement cost.
 
     The project duration is not part of the results or the energy
     system, so it has to be supplied by the caller.
@@ -412,20 +475,27 @@ def project_cost_table(results, es, project_duration=20):
         One row per component that carries a cost plus a final ``total``
         row.  Components without any cost are omitted.
     """
-    components, capacity, _, variable = _component_cost_data(results, es)
+    components, capacity, investment_cost, variable = _component_cost_data(
+        results, es
+    )
 
     rows = []
     for node in components:
         cap = capacity.get(node, 0.0)
-        investment = (getattr(node, "capex_spec", None) or 0.0) * cap
-        operational = (
-            getattr(node, "opex_spec", None) or 0.0
-        ) * cap * project_duration
+        component_capex_ann, component_opex_ann = _component_costs(
+            node, capacity, investment_cost
+        )
+        investment_year0 = (getattr(node, "capex_spec", None) or 0.0) * cap
+        investment_full = component_capex_ann * project_duration
+        operational = component_opex_ann * project_duration
         rows.append(
             {
                 "component": _norm_label(node.label),
                 "investment cost in year 0 (not including reinvestment)": (
-                    investment
+                    investment_year0
+                ),
+                "investment cost over the full project (including reinvestments)": (
+                    investment_full
                 ),
                 "fix operational costs over project duration": operational,
                 "dispatch costs over project duration": (
@@ -438,19 +508,29 @@ def project_cost_table(results, es, project_duration=20):
         rows,
         [
             "investment cost in year 0 (not including reinvestment)",
+            "investment cost over the full project (including reinvestments)",
             "fix operational costs over project duration",
             "dispatch costs over project duration",
         ],
     )
 
 
-def print_cost_table(table, value_columns, title):
-    """Print a cost table with a total column."""
+def print_cost_table(table, value_columns=None, title=""):
+    """Print a cost table with a total column.
+
+    If ``value_columns`` is not given, all columns except ``component``
+    and ``total`` are used.  ``title`` may be omitted.
+    """
+    if value_columns is None:
+        value_columns = [
+            column for column in table.columns if column not in ("component", "total")
+        ]
     component_width = max(
         26, max(len(str(value)) for value in table["component"]) + 2
     )
     width = max(18, max(len(column) for column in value_columns) + 2)
-    print(title)
+    if title:
+        print(title)
     header = f"  {'component':<{component_width}}" + "".join(
         f"{column:>{width}}" for column in value_columns
     )

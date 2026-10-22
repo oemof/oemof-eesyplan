@@ -113,6 +113,11 @@ class PvPlant(Source):
         self.maximum_capacity = maximum_capacity
         self.renewable_asset = renewable_asset
 
+        self.installed_capex_spec_annualized =  project_data.calculate_annuity(
+            capex_spec,
+            lifetime,
+            year_of_investment=lifetime - age_installed)
+
         outputs = {
             self.bus_out_electricity: Flow(
                 fix=input_timeseries,

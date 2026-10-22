@@ -3,12 +3,37 @@
   "profile": "tabular-data-package",
   "resources": [
     {
-      "name": "Solution",
-      "path": "results/elements/Solution.csv",
+      "name": "nominal_capacity",
+      "path": "results/elements/nominal_capacity.csv",
+      "kind": "element",
+      "format": "csv",
+      "dialect": {
+        "header": true,
+        "headerRows": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "name": "Problem",
+      "path": "results/elements/Problem.csv",
       "kind": "element",
       "format": "csv",
       "dialect": {
         "header": false
+      }
+    },
+    {
+      "name": "storage_content",
+      "path": "results/sequences/storage_content.csv",
+      "kind": "sequence",
+      "format": "csv",
+      "dialect": {
+        "header": true,
+        "headerRows": [
+          0
+        ]
       }
     },
     {
@@ -25,15 +50,26 @@
       }
     },
     {
-      "name": "nominal_capacity",
-      "path": "results/elements/nominal_capacity.csv",
+      "name": "storage_capacity",
+      "path": "results/elements/storage_capacity.csv",
       "kind": "element",
       "format": "csv",
       "dialect": {
         "header": true,
         "headerRows": [
-          0,
-          1
+          0
+        ]
+      }
+    },
+    {
+      "name": "investment_costs",
+      "path": "results/elements/investment_costs.csv",
+      "kind": "element",
+      "format": "csv",
+      "dialect": {
+        "header": true,
+        "headerRows": [
+          0
         ]
       }
     },
@@ -51,20 +87,8 @@
       }
     },
     {
-      "name": "investment_costs",
-      "path": "results/elements/investment_costs.csv",
-      "kind": "element",
-      "format": "csv",
-      "dialect": {
-        "header": true,
-        "headerRows": [
-          0
-        ]
-      }
-    },
-    {
-      "name": "Solver",
-      "path": "results/elements/Solver.csv",
+      "name": "Solution",
+      "path": "results/elements/Solution.csv",
       "kind": "element",
       "format": "csv",
       "dialect": {
@@ -79,14 +103,13 @@
       "dialect": {
         "header": true,
         "headerRows": [
-          0,
-          1
+          0
         ]
       }
     },
     {
-      "name": "Problem",
-      "path": "results/elements/Problem.csv",
+      "name": "Solver",
+      "path": "results/elements/Solver.csv",
       "kind": "element",
       "format": "csv",
       "dialect": {
