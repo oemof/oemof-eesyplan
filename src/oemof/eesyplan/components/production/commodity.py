@@ -1,3 +1,6 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.solph import Flow
 from oemof.solph.components import Source
 
@@ -5,12 +8,12 @@ from oemof.solph.components import Source
 class Commodity(Source):
     def __init__(
         self,
-        name,
-        bus_out,
-        commodity=None,
-        capacity=None,
-        full_load_time_max=None,
-        variable_costs=0,
+        name: str,
+        bus_out: CarrierBus,
+        commodity: str | None = None,
+        capacity: float | int | None = None,
+        full_load_time_max: float | int | None = None,
+        variable_costs: float | int | npt.ArrayLike = 0,
     ):
         """
         General Commodity.
