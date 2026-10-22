@@ -256,11 +256,5 @@
     heat pump, it would be the temperature of the incoming water (not the
     temperature of the heat source). [°C] (real number above 0).
 
-.. |theoretical_time_charge| replace:: Description text is missing
-    [h] (no restrictions).
-
-.. |theoretical_time_discharge| replace:: Description text is missing
-    [h] (no restrictions).
-
 .. |thermal_loss_rate| replace:: Definition of the thermal loss rate. [-]
     (numeric).

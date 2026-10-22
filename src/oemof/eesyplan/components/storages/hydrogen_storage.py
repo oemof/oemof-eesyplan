@@ -134,7 +134,7 @@ class HydrogenStorage(EnergyStorage):
             loss_rate=loss_rate,
             efficiency_charge=efficiency_charge,
             efficiency_discharge=efficiency_discharge,
-            theoretical_time_charge=c_rate_charge,  # hours
-            theoretical_time_discharge=c_rate_discharge,  # hours
+            c_rate_charge=c_rate_charge,
+            c_rate_discharge=c_rate_discharge,
             maximum_capacity=maximum_capacity,
         )

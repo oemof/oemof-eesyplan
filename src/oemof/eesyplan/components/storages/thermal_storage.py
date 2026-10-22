@@ -22,8 +22,8 @@ class ThermalStorage(EnergyStorage):
         fixed_losses_absolute=0.0,
         efficiency_charge=1.0,
         efficiency_discharge=1.0,
-        theoretical_time_charge=1.0,  # hours
-        theoretical_time_discharge=None,  # hours
+        c_rate_charge=1.0,
+        c_rate_discharge=None,
         initial_storage_level=None,
         end_storage_level=True,
     ):
@@ -82,10 +82,10 @@ class ThermalStorage(EnergyStorage):
             |efficiency_charge|
         efficiency_discharge : float, optional (default: 1.0)
             |efficiency_discharge|
-        theoretical_time_charge : float, optional (default: 1.0)
-            |theoretical_time_charge|
-        theoretical_time_discharge : float, optional (default: None)
-            |theoretical_time_discharge|
+        c_rate_charge : float, optional (default: 1.0)
+            |c_rate_charge|
+        c_rate_discharge : float, optional (default: None)
+            |c_rate_discharge|
 
         Examples
         --------
@@ -116,8 +116,8 @@ class ThermalStorage(EnergyStorage):
         ...     lifetime=10,
         ...     soc_max=1,
         ...     soc_min=0,
-        ...     theoretical_time_charge=1,
-        ...     theoretical_time_discharge=1,
+        ...     c_rate_charge=1,
+        ...     c_rate_discharge=1,
         ...     efficiency_charge=0.99,
         ...     project_data=my_project,
         ...     loss_rate=0.06,
@@ -144,8 +144,8 @@ class ThermalStorage(EnergyStorage):
             fixed_losses_absolute=fixed_losses_absolute,
             efficiency_charge=efficiency_charge,
             efficiency_discharge=efficiency_discharge,
-            theoretical_time_charge=theoretical_time_charge,  # hours
-            theoretical_time_discharge=theoretical_time_discharge,  # hours
+            c_rate_charge=c_rate_charge,
+            c_rate_discharge=c_rate_discharge,
             initial_storage_level=initial_storage_level,
             end_storage_level=end_storage_level,
         )

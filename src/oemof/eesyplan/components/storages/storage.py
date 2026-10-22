@@ -24,8 +24,8 @@ class EnergyStorage(GenericStorage):
         fixed_losses_absolute=0.0,
         efficiency_charge=1.0,
         efficiency_discharge=1.0,
-        theoretical_time_charge=1.0,  # hours
-        theoretical_time_discharge=None,  # hours
+        c_rate_charge=1.0,
+        c_rate_discharge=None,
         initial_storage_level=None,
         end_storage_level=True,
     ):
@@ -85,10 +85,10 @@ class EnergyStorage(GenericStorage):
             |efficiency_charge|
         efficiency_discharge : float, optional (default: 1.0)
             |efficiency_discharge|
-        theoretical_time_charge : float, optional (default: 1.0)
-            |theoretical_time_charge|
-        theoretical_time_discharge : float, optional
-            |theoretical_time_discharge|
+        c_rate_charge : float, optional (default: 1.0)
+            |c_rate_charge|
+        c_rate_discharge : float, optional
+            |c_rate_discharge|
 
 
         Examples
@@ -120,8 +120,8 @@ class EnergyStorage(GenericStorage):
         ...     lifetime=10,
         ...     soc_max=1,
         ...     soc_min=0,
-        ...     theoretical_time_charge=1,  # hours
-        ...     theoretical_time_discharge=1,  # hours
+        ...     c_rate_charge=1,
+        ...     c_rate_discharge=1,
         ...     efficiency_charge=0.99,
         ...     project_data=my_project,
         ...     loss_rate=0.6,
@@ -136,8 +136,8 @@ class EnergyStorage(GenericStorage):
             installed_capacity=installed_capacity,
             maximum_capacity=maximum_capacity,
         )
-        if theoretical_time_discharge is None:
-            theoretical_time_discharge = theoretical_time_charge
+        if c_rate_discharge is None:
+            c_rate_discharge = c_rate_charge
 
         self.efficiency_charge = efficiency_charge
         self.efficiency_discharge = efficiency_discharge
@@ -146,15 +146,15 @@ class EnergyStorage(GenericStorage):
         self.end_storage_level = end_storage_level
 
         if installed_capacity:
-            self.capacity_charge = nv * theoretical_time_charge
-            self.capacity_discharge = nv * theoretical_time_discharge
+            self.capacity_charge = nv * c_rate_charge
+            self.capacity_discharge = nv * c_rate_discharge
             self.crate_charge = None
             self.crate_discharge = None
         else:
             self.capacity_charge = Investment()
             self.capacity_discharge = Investment()
-            self.crate_charge = theoretical_time_charge
-            self.crate_discharge = theoretical_time_discharge
+            self.crate_charge = c_rate_charge
+            self.crate_discharge = c_rate_discharge
 
         if bus_out is None:
             bus_out = bus_in
