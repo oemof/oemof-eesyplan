@@ -226,10 +226,6 @@
     in the representation of the heating pipe [-] (acceptable values are
     either Yes or No).
 
-.. |self_discharge| replace:: Self-discharge refers to the loss of energy in
-    a storage device in relation to its state of charge (SOC) [-]
-    (real number between 0 and 1).
-
 .. |shortage_cost| replace:: Description text is missing [unit is missing]
     (no restrictions).
 
@@ -255,6 +251,3 @@
     tank, this refers to the cold temperature of the tank. In the case of a
     heat pump, it would be the temperature of the incoming water (not the
     temperature of the heat source). [°C] (real number above 0).
-
-.. |thermal_loss_rate| replace:: Definition of the thermal loss rate. [-]
-    (numeric).
