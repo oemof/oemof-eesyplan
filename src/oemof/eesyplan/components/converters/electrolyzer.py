@@ -15,7 +15,10 @@ class Electrolyzer(Converter):
         project_data: Project,
         bus_out_heat: CarrierBus | None = None,
         efficiency: float | int | npt.ArrayLike = 0.3,  # CHECK
-        efficiency_heat: float | int | npt.ArrayLike = 0.6,  # CHECK
+        # CHECK: sequence ok? Naming still open - originally flagged in
+        # docstring as "TODO find a good attribute name"; description
+        # text added in Pass 3, parameter name itself not decided yet.
+        efficiency_heat: float | int | npt.ArrayLike = 0.6,
         age_installed: float | int = 0,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
@@ -68,7 +71,7 @@ class Electrolyzer(Converter):
         efficiency : float, default=0.8
             Ratio of energy output to energy input.
         efficiency_heat : float, default=0.6
-            TODO find a good attribute name and description
+            |efficiency_heat|
 
         Examples
         --------
@@ -149,6 +152,20 @@ class Electrolyzer(Converter):
             inputs=inputs,
             conversion_factors={
                 bus_out_hydrogen: efficiency,
+                # TODO BUG: bus_out_heat is optional (see "outputs" dict
+                # above, which only adds bus_out_heat conditionally via
+                # "if bus_out_heat is not None"). This conversion_factors
+                # entry, however, is ALWAYS added, even when bus_out_heat
+                # is None. Likely consequence: oemof.solph either raises
+                # an error because a conversion factor is defined for a
+                # bus that is not an input/output of this node, or (worse)
+                # silently accepts it without effect - behaviour not yet
+                # verified. Fix: wrap this entry in the same
+                # "if bus_out_heat is not None" condition as "outputs"
+                # above. Needs its
+                # own dedicated bugfix commit with a regression test
+                # (instantiate Electrolyzer with bus_out_heat=None and
+                # verify no error / correct conversion_factors dict).
                 bus_out_heat: efficiency_heat,
             },
         )

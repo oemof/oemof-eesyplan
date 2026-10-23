@@ -103,8 +103,27 @@
 .. |efficiency_electricity_chp| replace:: Electrical efficiency with maximal
     heat extraction [-] (positive real number).
 
-.. |efficiency_electricity_full_condensation| replace:: Electrical efficiency
-    with no heat extraction [-] (positive real number).
+.. |efficiency_electricity_state_a| replace:: Electrical efficiency of
+    the CHP at operating state a (full condensation operation), i.e.
+    the conversion ratio from fuel to electricity when no heat is
+    extracted [-] (real number between 0 and 1).
+
+.. |efficiency_electricity_state_b| replace:: Electrical efficiency of
+    the CHP at operating state b (maximal heat extraction operation),
+    i.e. the conversion ratio from fuel to electricity when heat
+    extraction is at its maximum [-] (real number between 0 and 1).
+
+.. |efficiency_heat| replace:: Ratio of waste heat recovered to
+    electricity consumed by the electrolyzer [-] (real number between
+    0 and 1).
+
+.. |efficiency_heat_state_a| replace:: Thermal efficiency of the CHP at
+    operating state a (full condensation operation); typically 0, as no
+    heat is extracted in this state [-] (real number between 0 and 1).
+
+.. |efficiency_heat_state_b| replace:: Thermal efficiency of the CHP at
+    operating state b (maximal heat extraction operation) [-] (real
+    number between 0 and 1).
 
 .. |efficiency_heat_chp| replace:: Thermal efficiency with maximal heat
     extraction [-] (positive real number).
