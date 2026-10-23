@@ -13,22 +13,32 @@ class Shortage(Source):
         cost: float | int | npt.ArrayLike,
     ):
         """
-        Short description
+        Source for energy shortage.
 
-        Long description about the facade and how to use it.
+        This class represents a flexible source that supplies missing
+        energy into a bus at a given cost. It is typically used to
+        avoid an infeasible optimisation problem when demand exceeds
+        the available supply in the system, by allowing the model to
+        cover the deficit at a cost.
 
         .. important ::
-            Some important information about this facade.
+            The cost parameter should usually be set high enough to
+            discourage the optimisation from relying on this source,
+            so that it only supplies energy when strictly necessary.
 
+        Structure
+        ---------
+          *output*
+            1. bus_out : Any
 
         Parameters
         ----------
         name : str
             |name|
         bus_out : CarrierBus
-            |bus_in|
+            |bus_out|
         cost : float or array-like
-            |energy_price|
+            |shortage_cost|
 
         Examples
         --------

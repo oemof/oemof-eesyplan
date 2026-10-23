@@ -13,13 +13,24 @@ class Excess(Sink):
         cost: float | int | npt.ArrayLike,
     ):
         """
-        Short description
+        Sink for excess energy.
 
-        Long description about the facade and how to use it.
+        This class represents a flexible sink that absorbs surplus
+        energy from a bus at a given cost. It is typically used to
+        avoid an infeasible optimisation problem when more energy is
+        available in the system than can be consumed or stored, by
+        allowing the model to dispose of excess energy at a cost.
 
         .. important ::
-            Some important information about this facade.
+            The cost parameter should usually be set high enough to
+            discourage the optimisation from relying on this sink,
+            unless it is deliberately used to represent a cost-free
+            energy outlet (e.g. curtailment).
 
+        Structure
+        ---------
+          *input*
+            1. bus_in : Any
 
         Parameters
         ----------
@@ -28,7 +39,7 @@ class Excess(Sink):
         bus_in : CarrierBus
             |bus_in|
         cost : float or array-like
-            |energy_price|
+            |excess_cost|
 
         Examples
         --------

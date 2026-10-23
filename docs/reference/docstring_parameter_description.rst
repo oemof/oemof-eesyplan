@@ -135,8 +135,12 @@
 .. |energy_price| replace:: Price of the energy carrier sourced from the
     utility grid. May also be a time series, in €/kWh.
 
-.. |excess_cost| replace:: Description text is missing [unit is missing]
-    (no restrictions).
+.. |excess_cost| replace:: Cost incurred per unit of energy absorbed by
+    the excess sink. Typically set to a high value to penalise and
+    thus avoid excess energy in the optimisation results, unless
+    deliberately used to model a cost-free energy outlet (e.g.
+    curtailment) [currency/unit] (acceptable values are either a real
+    number or a series of real numbers).
 
 .. |feedin_cap| replace:: Maximum flow for feeding electricity into the grid
     at any given timestep, in kW (acceptable values are either a positive
@@ -257,8 +261,12 @@
     in the representation of the heating pipe [-] (acceptable values are
     either Yes or No).
 
-.. |shortage_cost| replace:: Description text is missing [unit is missing]
-    (no restrictions).
+.. |shortage_cost| replace:: Cost incurred per unit of energy supplied
+    by the shortage source to cover an otherwise infeasible energy
+    deficit. Typically set to a high value to penalise and thus avoid
+    shortage energy in the optimisation results [currency/unit]
+    (acceptable values are either a real number or a series of real
+    numbers).ja vereinheitliche das mit den polygonflächen.
 
 .. |soc_max| replace:: The maximum permissible level of charge of the storage
     as a factor of the nominal capacity. When the battery is filled to its
