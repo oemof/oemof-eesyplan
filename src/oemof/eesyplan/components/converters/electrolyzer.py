@@ -1,3 +1,7 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 
@@ -5,20 +9,20 @@ from oemof.solph.components import Converter
 class Electrolyzer(Converter):
     def __init__(
         self,
-        name,
-        bus_in_electricity,
-        bus_out_hydrogen,
-        project_data,
-        bus_out_heat=None,
-        efficiency=0.3,
-        efficiency_heat=0.6,
-        age_installed=0,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=1000,
-        opex_spec=10,
-        variable_costs=0,
-        lifetime=20,
+        name: str,
+        bus_in_electricity: CarrierBus,
+        bus_out_hydrogen: CarrierBus,
+        project_data: Project,
+        bus_out_heat: CarrierBus | None = None,
+        efficiency: float | int | npt.ArrayLike = 0.3,  # CHECK
+        efficiency_heat: float | int | npt.ArrayLike = 0.6,  # CHECK
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 1000,
+        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0,
+        lifetime: float | int = 20,
     ):
         """
         Electrolyzer for hydrogen production.
@@ -70,10 +74,10 @@ class Electrolyzer(Converter):
         --------
 
         >>> from oemof.eesyplan import Project
-        >>> from oemof.solph import Bus
-        >>> el_bus_in = Bus(label="el_bus_in")
-        >>> heat_bus_out = Bus(label="heat_bus_out")
-        >>> h2_bus_out = Bus(label="h2_bus_out")
+        >>> from oemof.eesyplan import CarrierBus
+        >>> el_bus_in = CarrierBus(name="el_bus_in")
+        >>> heat_bus_out = CarrierBus(name="heat_bus_out")
+        >>> h2_bus_out = CarrierBus(name="h2_bus_out")
         >>> my_electrolyzer = Electrolyzer(
         ...     name="Electrolyzer",
         ...     bus_in_electricity=el_bus_in,

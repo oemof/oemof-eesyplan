@@ -1,5 +1,7 @@
-from numpy.typing import ArrayLike
+import numpy.typing as npt
 
+from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 
@@ -7,19 +9,19 @@ from oemof.solph.components import Converter
 class AuxiliaryHeat(Converter):
     def __init__(
         self,
-        name,
-        bus_in_heat,
-        bus_in_heat_auxiliary,
-        bus_out_heat,
-        project_data,
-        auxiliary_heat_fraction: float | int | ArrayLike,
-        installed_capacity=None,
-        maximum_capacity=None,
-        age_installed=0,
-        capex_spec=0,
-        opex_spec=0,
-        variable_costs=0,
-        lifetime=20,
+        name: str,
+        bus_in_heat: CarrierBus,
+        bus_in_heat_auxiliary: CarrierBus,
+        bus_out_heat: CarrierBus,
+        project_data: Project,
+        auxiliary_heat_fraction: float | int | npt.ArrayLike,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        age_installed: float | int = 0,
+        capex_spec: float | int = 0,
+        opex_spec: float | int | npt.ArrayLike = 0,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0,
+        lifetime: float | int = 20,
     ):
         """
         This component can be used for heat sources whose temperature is too
@@ -39,7 +41,7 @@ class AuxiliaryHeat(Converter):
             |bus_out_heat|
         project_data : Project object
             |project_data|
-        auxiliary_heat_fraction : float or int or ArrayLike
+        auxiliary_heat_fraction : float or int or npt.ArrayLike
             |auxiliary_heat_fraction|
         temp_in_heat : float or array-like
             |temp_in_heat|

@@ -1,9 +1,17 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.solph import Flow
 from oemof.solph.components import Sink
 
 
 class Excess(Sink):
-    def __init__(self, name, bus_in, cost):
+    def __init__(
+        self,
+        name: str,
+        bus_in: CarrierBus,
+        cost: float | int | npt.ArrayLike,
+    ):
         """
         Short description
 
@@ -20,7 +28,7 @@ class Excess(Sink):
         bus_in : CarrierBus
             |bus_in|
         cost : float or array-like
-            |energy_prices|
+            |energy_price|
 
         Examples
         --------

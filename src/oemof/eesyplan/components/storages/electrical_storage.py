@@ -1,29 +1,33 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.storages.storage import EnergyStorage
+from oemof.eesyplan.project import Project
 
 
 class ElectricalStorage(EnergyStorage):
     def __init__(
         self,
-        name,
-        project_data,
-        bus_in_electricity,
-        bus_out_electricity=None,
-        installed_capacity=None,
-        maximum_capacity=None,
-        age_installed=0,
-        capex_spec=0,
-        opex_spec=0,
-        variable_costs=0,
-        lifetime=20,
-        soc_max=1,
-        soc_min=0,
-        self_discharge=0.0,
-        efficiency_charge=1.0,
-        efficiency_discharge=1.0,
-        c_rate_charge=1.0,
-        c_rate_discharge=None,
-        initial_storage_level=None,
-        end_storage_level=True,
+        name: str,
+        project_data: Project,
+        bus_in_electricity: CarrierBus,
+        bus_out_electricity: CarrierBus | None = None,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        age_installed: float | int = 0,
+        capex_spec: float | int = 0,
+        opex_spec: float | int | npt.ArrayLike = 0,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0,
+        lifetime: float | int = 20,
+        soc_max: float | int | npt.ArrayLike = 1,  # CHECK
+        soc_min: float | int | npt.ArrayLike = 0,  # CHECK
+        loss_rate: float | int | npt.ArrayLike = 0.0,  # CHECK
+        efficiency_charge: float | int | npt.ArrayLike = 1.0,  # CHECK
+        efficiency_discharge: float | int | npt.ArrayLike = 1.0,  # CHECK
+        c_rate_charge: float | int = 1.0,
+        c_rate_discharge: float | int | None = None,
+        initial_storage_level: float | int | None = None,
+        end_storage_level: bool = True,
     ):
         """
         Battery Energy Storage System (BESS).
@@ -70,16 +74,16 @@ class ElectricalStorage(EnergyStorage):
             |soc_max|
         soc_min : float, optional (default: 0)
             |soc_min|
-        self_discharge : float, optional (default: 0.0)
-            |energy_losses_relative|
+        loss_rate : float, optional (default: 0.0)
+            |loss_rate|
         efficiency_charge : float, optional (default: 1.0)
             |efficiency_charge|
         efficiency_discharge : float, optional (default: 1.0)
             |efficiency_discharge|
         c_rate_charge : float, optional (default: 1.0)
-            |crate|
+            |c_rate_charge|
         c_rate_discharge : float, optional (default: None)
-            |crate|
+            |c_rate_discharge|
 
         Examples
         --------
@@ -99,7 +103,7 @@ class ElectricalStorage(EnergyStorage):
         ...     installed_capacity=10,
         ...     c_rate_charge=0.7,
         ...     c_rate_discharge=0.8,
-        ...     self_discharge=0.0001,
+        ...     loss_rate=0.0001,
         ... )
         >>> my_invest_bess = ElectricalStorage(
         ...     name="lithium_battery_extension_system",
@@ -117,7 +121,7 @@ class ElectricalStorage(EnergyStorage):
         ...     c_rate_discharge=0.8,
         ...     efficiency_charge=0.99,
         ...     project_data=my_project,
-        ...     self_discharge=0.0001,
+        ...     loss_rate=0.0001,
         ... )
         """
         super().__init__(
@@ -134,11 +138,11 @@ class ElectricalStorage(EnergyStorage):
             lifetime=lifetime,
             soc_max=soc_max,
             soc_min=soc_min,
-            energy_losses_variable=self_discharge,
+            loss_rate=loss_rate,
             efficiency_charge=efficiency_charge,
             efficiency_discharge=efficiency_discharge,
-            theoretical_time_charge=c_rate_charge,  # hours
-            theoretical_time_discharge=c_rate_discharge,  # hours
+            c_rate_charge=c_rate_charge,
+            c_rate_discharge=c_rate_discharge,
             initial_storage_level=initial_storage_level,
             end_storage_level=end_storage_level,
         )

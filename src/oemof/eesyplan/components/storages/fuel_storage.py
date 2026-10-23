@@ -1,27 +1,31 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.storages.storage import EnergyStorage
+from oemof.eesyplan.project import Project
 
 
 class FuelStorage(EnergyStorage):
     def __init__(
         self,
-        name,
-        project_data,
-        bus_in_fuel,
-        bus_out_fuel=None,
-        age_installed=0,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=0,
-        opex_spec=0,
-        variable_costs=0,
-        lifetime=20,
-        soc_max=1,
-        soc_min=0,
-        c_rate_charge=1.0,
-        c_rate_discharge=None,
-        efficiency_charge=1.0,
-        efficiency_discharge=1.0,
-        energy_losses_variable=0.0,
+        name: str,
+        project_data: Project,
+        bus_in_fuel: CarrierBus,
+        bus_out_fuel: CarrierBus | None = None,
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 0,
+        opex_spec: float | int | npt.ArrayLike = 0,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0,
+        lifetime: float | int = 20,
+        soc_max: float | int | npt.ArrayLike = 1,  # CHECK
+        soc_min: float | int | npt.ArrayLike = 0,  # CHECK
+        c_rate_charge: float | int = 1.0,
+        c_rate_discharge: float | int | None = None,
+        efficiency_charge: float | int | npt.ArrayLike = 1.0,  # CHECK
+        efficiency_discharge: float | int | npt.ArrayLike = 1.0,  # CHECK
+        loss_rate: float | int | npt.ArrayLike = 0.0,  # CHECK
     ):
         """
         Fuel Energy Storage System (FESS).
@@ -69,15 +73,15 @@ class FuelStorage(EnergyStorage):
         soc_min : float, optional (default: 0)
             |soc_min|
         c_rate_charge : float, optional (default: 1.0)
-            |crate|
+            |c_rate_charge|
         c_rate_discharge : float, optional (default: None)
-            |crate|
+            |c_rate_discharge|
         efficiency_charge : float, optional (default: 1.0)
             |efficiency_charge|
         efficiency_discharge : float, optional (default: 1.0)
             |efficiency_discharge|
-        energy_losses_variable : float, optional (default: 0.0)
-            |energy_losses_relative|
+        loss_rate : float, optional (default: 0.0)
+            |loss_rate|
 
 
         Examples
@@ -98,7 +102,7 @@ class FuelStorage(EnergyStorage):
         ...     installed_capacity=10,
         ...     c_rate_charge=0.7,
         ...     c_rate_discharge=0.8,
-        ...     energy_losses_variable=0.0001,
+        ...     loss_rate=0.0001,
         ... )
         >>> my_invest_bess = FuelStorage(
         ...     name="gas storage tank extension",
@@ -116,7 +120,7 @@ class FuelStorage(EnergyStorage):
         ...     c_rate_discharge=0.8,
         ...     efficiency_charge=0.99,
         ...     project_data=my_project,
-        ...     energy_losses_variable=0.0001,
+        ...     loss_rate=0.0001,
         ... )
         """
         super().__init__(
@@ -133,9 +137,9 @@ class FuelStorage(EnergyStorage):
             lifetime=lifetime,
             soc_max=soc_max,
             soc_min=soc_min,
-            energy_losses_variable=energy_losses_variable,
+            loss_rate=loss_rate,
             efficiency_charge=efficiency_charge,
             efficiency_discharge=efficiency_discharge,
-            theoretical_time_charge=c_rate_charge,  # hours
-            theoretical_time_discharge=c_rate_discharge,  # hours
+            c_rate_charge=c_rate_charge,
+            c_rate_discharge=c_rate_discharge,
         )

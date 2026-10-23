@@ -1,3 +1,7 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 
@@ -5,18 +9,18 @@ from oemof.solph.components import Converter
 class FuelCell(Converter):
     def __init__(
         self,
-        name,
-        bus_in_hydrogen,
-        bus_out_electricity,
-        age_installed=0,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=1000,
-        opex_spec=10,
-        variable_costs=0,
-        lifetime=20,
-        efficiency=0.8,
-        project_data=None,
+        name: str,
+        bus_in_hydrogen: CarrierBus,
+        bus_out_electricity: CarrierBus,
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 1000,
+        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0,
+        lifetime: float | int = 20,
+        efficiency: float | int | npt.ArrayLike = 0.8,  # CHECK
+        project_data: Project | None = None,
     ):
         """
         Fuel cell for electricity generation.
@@ -63,9 +67,9 @@ class FuelCell(Converter):
         Examples
         --------
         >>> from oemof.eesyplan import Project
-        >>> from oemof.solph import Bus
-        >>> h2_bus = Bus(label="hydrogen_bus")
-        >>> el_bus = Bus(label="electricity_bus")
+        >>> from oemof.eesyplan import CarrierBus
+        >>> h2_bus = CarrierBus(name="hydrogen_bus")
+        >>> el_bus = CarrierBus(name="electricity_bus")
         >>> my_fuel_cell = FuelCell(
         ...     name="hydrogen_fuel_cell",
         ...     bus_in_hydrogen=h2_bus,

@@ -7,11 +7,11 @@ from oemof.solph.components import Source
 class CarrierBus(Bus):
     def __init__(
         self,
-        name,
-        carrier=None,
-        balanced=True,
-        excess_cost=None,
-        shortage_cost=None,
+        name: str | tuple,
+        carrier: str | None = None,
+        balanced: bool = True,
+        excess_cost: float | int | None = None,
+        shortage_cost: float | int | None = None,
     ):
         """
         Bus mit Energieträger-Information

@@ -1,3 +1,7 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 
@@ -5,18 +9,18 @@ from oemof.solph.components import Converter
 class Boiler(Converter):
     def __init__(
         self,
-        name,
-        bus_in_fuel,
-        bus_out_heat,
-        project_data,
-        efficiency=0.8,
-        age_installed=0,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=1000,
-        opex_spec=10,
-        variable_costs=0,
-        lifetime=20,
+        name: str,
+        bus_in_fuel: CarrierBus,
+        bus_out_heat: CarrierBus,
+        project_data: Project,
+        efficiency: float | int | npt.ArrayLike = 0.8,  # CHECK
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 1000,
+        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0,
+        lifetime: float | int = 20,
     ):
         """
         Boiler for heat generation.
@@ -69,9 +73,9 @@ class Boiler(Converter):
         --------
 
         >>> from oemof.eesyplan import Project
-        >>> from oemof.solph import Bus
-        >>> gas_bus = Bus(label="gas_bus")
-        >>> heat_bus = Bus(label="heat_bus")
+        >>> from oemof.eesyplan import CarrierBus
+        >>> gas_bus = CarrierBus(name="gas_bus")
+        >>> heat_bus = CarrierBus(name="heat_bus")
         >>> my_gas_boiler = Boiler(
         ...     name="central_gas_boiler",
         ...     bus_in_fuel=gas_bus,

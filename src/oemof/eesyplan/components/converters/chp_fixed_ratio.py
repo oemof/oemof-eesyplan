@@ -1,7 +1,7 @@
-from collections.abc import Iterable
+import numpy.typing as npt
 
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
-from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 
@@ -10,18 +10,18 @@ class ChpFixedRatio(Converter):
     def __init__(
         self,
         name: str,
-        bus_in_fuel: Bus,
-        bus_out_electricity: Bus,
-        bus_out_heat: Bus,
-        efficiency_electricity_chp: float | int | Iterable[float | int],
-        efficiency_heat_chp: float | int | Iterable[float | int],
+        bus_in_fuel: CarrierBus,
+        bus_out_electricity: CarrierBus,
+        bus_out_heat: CarrierBus,
+        efficiency_electricity_chp: float | int | npt.ArrayLike,
+        efficiency_heat_chp: float | int | npt.ArrayLike,
         project_data: Project,
         age_installed: float | int = 0,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
         capex_spec: float | int = 1000,
-        opex_spec: float | int | Iterable[float | int] = 10,
-        variable_costs: float | int | Iterable[float | int] = 0,
+        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0,
         lifetime: float | int = 20,
     ):
         """

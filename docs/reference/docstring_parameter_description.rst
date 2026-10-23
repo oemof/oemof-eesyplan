@@ -15,6 +15,9 @@
 .. |beta| replace:: Power loss index for CHPs, usually known as the beta
     coefficient [-] (Between 0 and 1).
 
+.. |bus| replace:: Connected Bus component through which energy is
+    exchanged with the utility grid (DSO). [object].
+
 .. |bus_1_heat| replace:: Connected Bus component for the first heat
     connection of the pipe. [object].
 
@@ -71,14 +74,15 @@
 .. |cop| replace:: Coefficient of performance. Ratio of energy output to
     energy input.
 
-.. |crate| replace:: Maximum permissible power at which the storage can be
-    charged or discharged relative to the nominal capacity of the storage.
-    The C-rate indicates the reciprocal of the time for which a battery of
-    the specified capacity can be charged or discharged with the maximum
-    charge or discharge current. A C-rate of 1 implies that the battery can
-    be fully charged or discharged in a single timestep. A C-rate of 0.5
-    implies that the battery needs at least two timesteps to be fully
-    charged or discharged [-] (Real number between 0 and 1).
+.. |c_rate_charge| replace:: Maximum charging power of the storage relative
+    to its nominal storage capacity, e.g. 0.5 for a storage that needs two
+    hours to charge completely [1/h] (acceptable values are either a
+    positive real number or None).
+
+.. |c_rate_discharge| replace:: Maximum discharging power of the storage
+    relative to its nominal storage capacity, e.g. 1.0 for a storage that
+    can be emptied within one hour [1/h] (acceptable values are either a
+    positive real number or None).
 
 .. |custom_properties| replace:: Additional custom properties attached to the
     component. [-] (dict or None).
@@ -105,16 +109,11 @@
 .. |efficiency_heat_chp| replace:: Thermal efficiency with maximal heat
     extraction [-] (positive real number).
 
-.. |energy_losses_absolute| replace:: Description text is missing [unit is
-    missing] (no restrictions).
+.. |end_storage_level| replace:: Choose whether the storage content of the
+    first and the last timestep of the optimisation horizon should be
+    equal [-] (acceptable values are either True or False).
 
-.. |energy_losses_absolute_investment| replace:: Description text is missing
-    [unit is missing] (no restrictions).
-
-.. |energy_losses_relative| replace:: Description text is missing [unit is
-    missing] (no restrictions).
-
-.. |energy_prices| replace:: Price of the energy carrier sourced from the
+.. |energy_price| replace:: Price of the energy carrier sourced from the
     utility grid. May also be a time series, in €/kWh.
 
 .. |excess_cost| replace:: Description text is missing [unit is missing]
@@ -131,26 +130,29 @@
     scalar or time series relative to the nominal capacity [-]
     (acceptable values are either a real number, an iterable, or None).
 
-.. |fixed_thermal_losses_absolute| replace:: Thermal losses of the storage
-    independent of the state of charge and independent of the nominal
-    storage capacity between two consecutive timesteps [-] (between 0 and
-    1).
+.. |fixed_losses_absolute| replace:: Losses of the storage between two
+    consecutive timesteps that are independent of both the state of charge
+    and the nominal storage capacity [:unit:] (non-negative real number).
 
-.. |fixed_thermal_losses_relative| replace:: Thermal losses of the storage
-    independent of the state of charge between two consecutive timesteps,
-    relative to the nominal storage capacity [-] (between 0 and 1).
+.. |fixed_losses_relative| replace:: Losses of the storage between two
+    consecutive timesteps that are independent of the state of charge,
+    relative to the nominal storage capacity [-] (real number between 0
+    and 1).
 
-.. |full_load_hours_max| replace:: Maximum allowed annual full load
-    hours of the component [-] (acceptable values are either a
-    non-negative real number or None).
+.. |full_load_time_max| replace:: Maximum number of full load hours the
+    asset may accumulate over the optimisation horizon, used e.g. to
+    represent licensing or resource limits [h] (acceptable values are
+    either a non-negative real number or None).
 
-.. |full_load_time_max| replace:: Maximum allowed annual full load hours of
-    the asset [-] (acceptable values are either a non-negative real number
-    or None).
+.. |full_load_time_min| replace:: Minimum number of full load hours the
+    asset has to accumulate over the optimisation horizon, e.g. due to
+    contractual take-or-pay obligations [h] (acceptable values are either
+    a non-negative real number or None).
 
-.. |full_load_time_min| replace:: Minimum required annual full load hours of
-    the asset [-] (acceptable values are either a non-negative real number
-    or None).
+.. |initial_storage_level| replace:: Initial relative storage level at the
+    first timestep, as a factor of the nominal storage capacity [-]
+    (acceptable values are either a real number between 0 and 1, or None,
+    in which case the level is determined freely by the optimisation).
 
 .. |input_timeseries| replace:: Time series in :unit:.
 
@@ -164,6 +166,10 @@
 
 .. |lifetime| replace:: Number of operational years of the asset before it
     has to be replaced [a] (natural number).
+
+.. |loss_rate| replace:: Relative loss of the storage content between two
+    consecutive timesteps, applied to the current state of charge [-]
+    (real number between 0 and 1).
 
 .. |maximum| replace:: Maximum operation level of the flow as a factor of
     the nominal capacity [-] (acceptable values are either a real number
@@ -192,15 +198,16 @@
 .. |opex_spec| replace:: Specific operational and maintenance costs of the
     asset related to the installed capacity (opex_spec), in €/(:unit: • a).
 
-.. |variable_costs| replace:: Costs associated with a flow through/from the
-    asset (variable costs or fuel costs). These could be fuel costs for fuel
-    sources such as biogas or oil, or operational costs for thermal power
-    plants, which only occur when operating the plant, in €/kWh.
+.. |variable_costs| replace:: Costs associated with a flow through or out of
+    the asset, e.g. fuel costs for sources such as biogas or oil, or
+    operation-dependent costs of a thermal power plant [€/kWh] (acceptable
+    values are either a non-negative real number or a series of
+    non-negative real numbers).
 
 .. |optimize_cap| replace:: Choose whether capacity optimisation should be
     performed for this asset. [-] (acceptable values are either Yes or No).
 
-.. |peak_demand_period| replace:: Number of reference periods in one year
+.. |peak_demand_pricing_period| replace:: Number of reference periods in one year
     for peak demand pricing, in times per year (only the following values
     are acceptable: 1 (yearly), 2, 3, 4, 6, 12 (monthly)).
 
@@ -231,10 +238,6 @@
     in the representation of the heating pipe [-] (acceptable values are
     either Yes or No).
 
-.. |self_discharge| replace:: Self-discharge refers to the loss of energy in
-    a storage device in relation to its state of charge (SOC) [-]
-    (real number between 0 and 1).
-
 .. |shortage_cost| replace:: Description text is missing [unit is missing]
     (no restrictions).
 
@@ -260,15 +263,3 @@
     tank, this refers to the cold temperature of the tank. In the case of a
     heat pump, it would be the temperature of the incoming water (not the
     temperature of the heat source). [°C] (real number above 0).
-
-.. |theoretical_time_charge| replace:: Description text is missing
-    [h] (no restrictions).
-
-.. |theoretical_time_discharge| replace:: Description text is missing
-    [h] (no restrictions).
-
-.. |thermal_loss_rate| replace:: Definition of the thermal loss rate. [-]
-    (numeric).
-
-.. |variable_cost| replace:: Variable operating costs of the component,
-    in €/[:unit:] (non-negative real number).

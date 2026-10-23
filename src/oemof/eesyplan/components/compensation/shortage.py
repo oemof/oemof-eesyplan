@@ -1,9 +1,17 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.solph.components import Source
 from oemof.solph.flows import Flow
 
 
 class Shortage(Source):
-    def __init__(self, name, bus_out, cost):
+    def __init__(
+        self,
+        name: str,
+        bus_out: CarrierBus,
+        cost: float | int | npt.ArrayLike,
+    ):
         """
         Short description
 
@@ -20,7 +28,7 @@ class Shortage(Source):
         bus_out : CarrierBus
             |bus_in|
         cost : float or array-like
-            |energy_prices|
+            |energy_price|
 
         Examples
         --------

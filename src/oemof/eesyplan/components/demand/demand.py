@@ -1,9 +1,18 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.solph import Flow
 from oemof.solph.components import Sink
 
 
 class Demand(Sink):
-    def __init__(self, name, bus_in, input_timeseries, carrier=None):
+    def __init__(
+        self,
+        name: str,
+        bus_in: CarrierBus,
+        input_timeseries: npt.ArrayLike | str,  # CHECK: str (Dateiname) korrekt - TODO Docstring anpassen?
+        carrier: str | None = None,
+    ):
         """
         Demand/consumption component.
 
