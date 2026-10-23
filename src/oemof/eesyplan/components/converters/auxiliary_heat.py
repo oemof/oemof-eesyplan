@@ -43,6 +43,14 @@ class AuxiliaryHeat(Converter):
             |project_data|
         auxiliary_heat_fraction : float or int or npt.ArrayLike
             |auxiliary_heat_fraction|
+        # CHECK: docstring/code mismatch - temp_in_heat, temp_out_heat and
+        # temp_low_source_component are documented below but do NOT exist
+        # as parameters in the __init__ signature of this class. Possibly
+        # related to the open, unverified calculation-logic questions
+        # around AuxiliaryHeat/auxiliary_heat_fraction (separate topic,
+        # out of scope for Pass 3/4/5). NOT resolved here - needs
+        # dedicated fachliche Klärung before deciding whether to add the
+        # missing parameters or remove these docstring entries.
         temp_in_heat : float or array-like
             |temp_in_heat|
         temp_out_heat : float or array-like

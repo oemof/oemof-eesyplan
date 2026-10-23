@@ -7,13 +7,8 @@
     lifetime, the replacement costs of the asset will be taken into
     account [a] (Natural number).
 
-.. |asset_type| replace:: Type of the component. [-] ().
-
 .. |balanced| replace:: Description text is missing [unit is missing]
     (no restrictions).
-
-.. |beta| replace:: Power loss index for CHPs, usually known as the beta
-    coefficient [-] (Between 0 and 1).
 
 .. |bus| replace:: Connected Bus component through which energy is
     exchanged with the utility grid (DSO). [object].
@@ -57,10 +52,6 @@
 
 .. |capacity| replace:: Nominal capacity of the component [:unit:]
     (non-negative real number).
-
-.. |capex_fix| replace:: Planning and development costs. These are
-    planning and development costs that do not depend on the (optimised)
-    capacities of the assets, in € (positive real number).
 
 .. |capex_spec| replace:: Specific investment costs of the asset related to
     the installed capacity (CAPEX) in €/:unit:.
@@ -232,9 +223,6 @@
     operation-dependent costs of a thermal power plant [€/kWh] (acceptable
     values are either a non-negative real number or a series of
     non-negative real numbers).
-
-.. |optimize_cap| replace:: Choose whether capacity optimisation should be
-    performed for this asset. [-] (acceptable values are either Yes or No).
 
 .. |peak_demand_pricing_period| replace:: Number of reference periods in one year
     for peak demand pricing, in times per year (only the following values
