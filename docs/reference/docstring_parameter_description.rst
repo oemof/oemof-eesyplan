@@ -7,8 +7,10 @@
     lifetime, the replacement costs of the asset will be taken into
     account [a] (Natural number).
 
-.. |balanced| replace:: Description text is missing [unit is missing]
-    (no restrictions).
+.. |balanced| replace:: Choose whether the sum of all inflows into the
+    bus must equal the sum of all outflows at every timestep (energy
+    balance constraint) [-] (acceptable values are either True or
+    False; default is True).
 
 .. |bus| replace:: Connected Bus component through which energy is
     exchanged with the utility grid (DSO). [object].
