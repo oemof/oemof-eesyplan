@@ -34,8 +34,10 @@ class DsoHeat(DSO):
 
         Parameters
         ----------
-        name : str
+         name : str
             |name|
+        bus_heat : CarrierBus
+            |bus|
         energy_price : float or array-like, default=0.3
             |energy_price|
         feedin_tariff : float or array-like, default=0.1

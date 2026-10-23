@@ -15,6 +15,9 @@
 .. |beta| replace:: Power loss index for CHPs, usually known as the beta
     coefficient [-] (Between 0 and 1).
 
+.. |bus| replace:: Connected Bus component through which energy is
+    exchanged with the utility grid (DSO). [object].
+
 .. |bus_1_heat| replace:: Connected Bus component for the first heat
     connection of the pipe. [object].
 

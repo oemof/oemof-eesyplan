@@ -36,6 +36,8 @@ class DsoHydrogen(DSO):
         ----------
         name : str
             |name|
+        bus_hydrogen : CarrierBus
+            |bus|
         energy_price : float or array-like, default=0.3
             |energy_price|
         feedin_tariff : float or array-like, default=0.1
