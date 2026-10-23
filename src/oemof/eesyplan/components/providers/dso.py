@@ -70,7 +70,7 @@ class DSO(Node):
         if isinstance(energy_price, list):
             energy_price = np.array(energy_price)
         self.energy_price = energy_price
-        if isinstance(energy_price, list):
+        if isinstance(feedin_tariff, list):
             feedin_tariff = np.array(feedin_tariff)
         self.feedin_tariff = feedin_tariff
         self.peak_demand_pricing = peak_demand_pricing

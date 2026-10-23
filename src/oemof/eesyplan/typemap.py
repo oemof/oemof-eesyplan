@@ -103,4 +103,5 @@ TYPEMAP = {
     "excess": Excess,
     "shortage": Shortage,
     "auxiliary_heat": AuxiliaryHeat,
+    "commodity": Commodity,
 }
