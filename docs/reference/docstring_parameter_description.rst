@@ -94,11 +94,17 @@
     efficiency is the ratio of the energy taken out of the battery to the
     energy put into the battery [-] (positive real number).
 
-.. |efficiency_charge| replace:: Description text is missing [unit is
-    missing] (no restrictions).
+.. |efficiency_charge| replace:: Conversion factor applied to the flow
+    when charging the storage (inflow conversion factor), i.e. the
+    share of the incoming energy that actually increases the storage
+    content; the remainder is lost as a charging loss [-] (real number
+    between 0 and 1).
 
-.. |efficiency_discharge| replace:: Description text is missing [-]
-    (no restrictions).
+.. |efficiency_discharge| replace:: Conversion factor applied to the
+    flow when discharging the storage (outflow conversion factor),
+    i.e. the share of the storage content converted into usable
+    outflow; the remainder is lost as a discharging loss [-] (real
+    number between 0 and 1).
 
 .. |efficiency_electricity_chp| replace:: Electrical efficiency with maximal
     heat extraction [-] (positive real number).
