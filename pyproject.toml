@@ -30,7 +30,7 @@ dependencies = [
   "oemof-datapackage @ git+https://github.com/oemof/oemof-datapackage.git@dev",
   "oemof-demand",
   "oemof-network",
-  "oemof.solph[solver] @ git+https://github.com/oemof/oemof-solph.git@dev",
+  "oemof.solph[solver] @ git+https://github.com/oemof/oemof-solph.git@a4611edb8a225ee6faa360f86afc49d2986c1105",
 ]
 dynamic = ["version"]
 
