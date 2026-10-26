@@ -71,7 +71,7 @@ def build_chp_variable(buses, project, installed, maximum):
 
 
 # Two cases: Dispatch (300, None), Investment (None, 300)
-@pytest.mark.parametrize("installed, maximum", [(300, None), (None, 300)])
+@pytest.mark.parametrize(("installed", "maximum"), [(300, None), (None, 300)])
 def test_chp_fixed(buses, project, installed, maximum):
     es = build_energy_system(buses)
     gas_bus, heat_bus, el_bus = buses
@@ -100,7 +100,7 @@ def test_chp_fixed(buses, project, installed, maximum):
 
 
 # Two cases: Dispatch (300, None), Investment (None, 300)
-@pytest.mark.parametrize("installed, maximum", [(300, None), (None, 300)])
+@pytest.mark.parametrize(("installed", "maximum"), [(300, None), (None, 300)])
 def test_chp_variable(buses, project, installed, maximum):
     es = build_energy_system(buses)
     gas_bus, heat_bus, el_bus = buses
