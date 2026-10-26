@@ -9,7 +9,8 @@ class H2Demand(Demand):
         self,
         name: str,
         bus_in_hydrogen: CarrierBus,
-        input_timeseries: npt.ArrayLike | str,  # CHECK: str (Dateiname) korrekt?
+        input_timeseries: npt.ArrayLike
+        | str,  # CHECK: str (Dateiname) korrekt?
         carrier: str = "hydrogen",
     ):
         """

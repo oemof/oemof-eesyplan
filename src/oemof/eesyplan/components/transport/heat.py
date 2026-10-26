@@ -11,7 +11,10 @@ class HeatingNetwork(CarrierBus):
     def __init__(
         self,
         name: str,
-        absolute_losses: float | int | npt.ArrayLike | None = None,  # CHECK: siehe ToDo zur Einheit
+        absolute_losses: float
+        | int
+        | npt.ArrayLike
+        | None = None,  # CHECK: siehe ToDo zur Einheit
     ):
         """
         Heating Network Bus
@@ -45,7 +48,10 @@ class HeatingPipe(Node):
         name: str,
         bus_1_heat: CarrierBus,
         bus_2_heat: CarrierBus,
-        absolute_losses: float | int | npt.ArrayLike | None = None,  # CHECK: siehe ToDo zur Einheit
+        absolute_losses: float
+        | int
+        | npt.ArrayLike
+        | None = None,  # CHECK: siehe ToDo zur Einheit
         relative_losses: float | int = 0.0,
         return_pipe: bool = True,
     ):

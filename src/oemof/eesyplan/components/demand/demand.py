@@ -10,7 +10,8 @@ class Demand(Sink):
         self,
         name: str,
         bus_in: CarrierBus,
-        input_timeseries: npt.ArrayLike | str,  # CHECK: str (Dateiname) korrekt - TODO Docstring anpassen?
+        input_timeseries: npt.ArrayLike
+        | str,  # CHECK: str (Dateiname) korrekt - TODO Docstring anpassen?
         carrier: str | None = None,
     ):
         """

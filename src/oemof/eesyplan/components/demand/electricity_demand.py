@@ -9,7 +9,8 @@ class ElectricityDemand(Demand):
         self,
         name: str,
         bus_in_electricity: CarrierBus,
-        input_timeseries: npt.ArrayLike | str,  # CHECK: str (Dateiname) korrekt?
+        input_timeseries: npt.ArrayLike
+        | str,  # CHECK: str (Dateiname) korrekt?
         carrier: str = "electricity",
     ):
         """

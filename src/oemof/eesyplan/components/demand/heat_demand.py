@@ -9,7 +9,8 @@ class HeatDemand(Demand):
         self,
         name: str,
         bus_in_heat: CarrierBus,
-        input_timeseries: npt.ArrayLike | str,  # CHECK: str (Dateiname) korrekt?
+        input_timeseries: npt.ArrayLike
+        | str,  # CHECK: str (Dateiname) korrekt?
         carrier: str = "heat",
     ):
         """

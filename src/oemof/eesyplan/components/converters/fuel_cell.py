@@ -20,7 +20,8 @@ class FuelCell(Converter):
         variable_costs: float | int | npt.ArrayLike = 0,
         lifetime: float | int = 20,
         efficiency: float | int | npt.ArrayLike = 0.8,  # CHECK
-        project_data: Project | None = None,  # CHECK: see Punkt D - project_data defaults to None but is used immediately below without a None-check
+        project_data: Project
+        | None = None,  # CHECK: see Punkt D - project_data defaults to None but is used immediately below without a None-check
     ):
         """
         Fuel cell for electricity generation.
