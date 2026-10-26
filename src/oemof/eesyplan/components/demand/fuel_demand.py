@@ -9,7 +9,9 @@ class FuelDemand(Demand):
         self,
         name: str,
         bus_in_fuel: CarrierBus,
-        input_timeseries: npt.ArrayLike | str,  # CHECK: str (Dateiname) korrekt?
+        input_timeseries: (
+            npt.ArrayLike | str
+        ),  # CHECK: str (Dateiname) korrekt?
         carrier: str = "fuel",
     ):
         """
@@ -22,7 +24,8 @@ class FuelDemand(Demand):
         ---------
             *input*
                 1. from_bus : Fuel
-
+        carrier : str, optional (default: "fuel")
+            |carrier|
         Parameters
         ----------
         name : str

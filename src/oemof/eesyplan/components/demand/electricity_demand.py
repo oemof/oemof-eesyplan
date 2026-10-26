@@ -23,6 +23,9 @@ class ElectricityDemand(Demand):
         *input*
             1. from_bus : Electricity
 
+        carrier : str, optional (default: "electricity")
+            |carrier|
+
         Parameters
         ----------
         name : str

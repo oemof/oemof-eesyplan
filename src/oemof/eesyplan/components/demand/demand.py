@@ -22,14 +22,14 @@ class Demand(Sink):
         Structure
         ---------
         *input*
-            1. from_bus : Electricity
+            1. from_bus : Carrier
 
         Parameters
         ----------
         name : str
             |name|
         bus_in : oemof.eesyplan.CarrierBus
-            |bus_in_electricity|
+            |bus_in|
         input_timeseries : array-like
             |input_timeseries|
         carrier : str

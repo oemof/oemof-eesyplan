@@ -22,6 +22,8 @@ class HeatDemand(Demand):
         ---------
         *input*
             1. from_bus : Heat
+        carrier : str, optional (default: "heat")
+            |carrier|
 
         Parameters
         ----------

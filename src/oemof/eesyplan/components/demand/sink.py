@@ -39,7 +39,7 @@ class Sink(SolphSink):
             |name|
         project_data : Project object
             |project_data|
-        bus_in : Node object
+        bus_in : oemof.eesyplan.CarrierBus
             |bus_in|
         age_installed : float or int, optional (default: 0)
             |age_installed|
@@ -53,7 +53,7 @@ class Sink(SolphSink):
             |opex_spec|
         variable_costs : float, optional (default: 0)
             |variable_costs|
-        lifetime : int, optional (default: None)
+        lifetime : int, optional (default: 20)
             |lifetime|
         minimum : float, optional
             |minimum|

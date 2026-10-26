@@ -20,9 +20,10 @@ class H2Demand(Demand):
 
         Structure
         ---------
-        *input:*
+        *input*
             1. from_bus : Hydrogen
-
+        carrier : str, optional (default: "hydrogen")
+            |carrier|
         Parameters
         ----------
         name : str
