@@ -40,9 +40,9 @@ class FuelStorage(EnergyStorage):
         Structure
         ---------
         *input*
-            bus_in_fuel : Gas
+            bus_in_fuel : Fuel
         *output*
-            bus_out_fuel : Gas
+            bus_out_fuel : Fuel
 
         Parameters
         ----------
@@ -94,9 +94,9 @@ class FuelStorage(EnergyStorage):
         ...         tax=0,
         ...         discount_factor=0.01
         ...     )
-        >>> fuel_bus = CarrierBus(name="gas_bus")
+        >>> fuel_bus = CarrierBus(name="fuel_bus")
         >>> my_bess = FuelStorage(
-        ...     name="gas storage tank",
+        ...     name="fuel storage tank",
         ...     project_data=my_project,
         ...     bus_in_fuel=fuel_bus,
         ...     installed_capacity=10,
@@ -105,7 +105,7 @@ class FuelStorage(EnergyStorage):
         ...     loss_rate=0.0001,
         ... )
         >>> my_invest_bess = FuelStorage(
-        ...     name="gas storage tank extension",
+        ...     name="fuel storage tank extension",
         ...     bus_in_fuel=fuel_bus,
         ...     bus_out_fuel=fuel_bus,
         ...     age_installed=0,
