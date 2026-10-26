@@ -111,7 +111,7 @@ include = [
   "pytest.ini",
   "tests/test_data/TRY2015_39065002972500_Jahr.dat",
 ]
-exclude = ["docs/_build", "**/*.egg-info"]
+exclude = ["docs/_build", "**/*.egg-info", "examples/simple_script/tester/*"]
 
 [tool.flit.module]
 name = "oemof.eesyplan"
