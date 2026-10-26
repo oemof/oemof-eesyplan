@@ -33,11 +33,11 @@ class AuxiliaryHeat(Converter):
         ----------
         name : string
             |name|
-        bus_in_heat : Node object
+        bus_in_heat : CarrierBus
             |bus_in_heat|
-        bus_in_heat_auxiliary : Node object
+        bus_in_heat_auxiliary : CarrierBus
             |bus_in_heat_auxiliary|
-        bus_out_heat : Node object
+        bus_out_heat : CarrierBus
             |bus_out_heat|
         project_data : Project object
             |project_data|
@@ -63,9 +63,9 @@ class AuxiliaryHeat(Converter):
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        capex_spec : float, optional (default: 1000)
+        capex_spec : float, optional (default: 0)
             |capex_spec|
-        opex_spec : float, optional (default: 10)
+        opex_spec : float, optional (default: 0)
             |opex_spec|
         variable_costs : float or array-like, optional (default: 0)
             |variable_costs|
