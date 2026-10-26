@@ -54,10 +54,10 @@ class DsoFuel(DSO):
         Examples
         --------
         >>> from oemof.eesyplan import CarrierBus
-        >>> gbus = CarrierBus(name="gas_bus")
+        >>> fbus = CarrierBus(name="fuel_bus")
         >>> my_dso = DsoFuel(
         ...     name="main_grid",
-        ...     bus_fuel=gbus,
+        ...     bus_fuel=fbus,
         ...     energy_price=0.25,
         ...     feedin_tariff=0.08,
         ... )
