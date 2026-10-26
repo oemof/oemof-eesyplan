@@ -29,7 +29,7 @@ class ElectricalTransformator(Converter):
 
         .. important ::
             The efficiency parameter determines the conversion rate
-            from gas to electrical output.
+            from electricity input to electricity output.
 
         Structure
         ---------
@@ -46,27 +46,29 @@ class ElectricalTransformator(Converter):
         Parameters
         ----------
         name : str
-            Name of the asset.
-        age_installed : int, default=0
-            Number of years the asset has already been in operation.
+            |name|
+        bus_in_electricity : CarrierBus
+            |bus_in_electricity|
+        bus_out_electricity : CarrierBus
+            |bus_out_electricity|
+        project_data : Project object
+            |project_data|
+        efficiency : float, optional (default: 0.3)
+            |efficiency|
+        age_installed : float or int, optional (default: 0)
+            |age_installed|
         installed_capacity : float or None (default: None)
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        capex_spec : float, default=1000
-            Specific investment costs of the asset related to the
-            installed capacity (CAPEX).
-        opex_spec : float, default=10
-            Specific operational and maintenance costs of the asset
-            related to the installed capacity (opex_spec).
-        variable_costs : float, default=0.01
-            Costs associated with a flow through/from the asset
-            (variable_costs or fuel costs).
-        lifetime : int, default=20
-            Number of operational years of the asset until it has to
-            be replaced.
-        efficiency : float, default=0.8
-            Ratio of energy output to energy input.
+        capex_spec : float, optional (default: 1000)
+            |capex_spec|
+        opex_spec : float, optional (default: 10)
+            |opex_spec|
+        variable_costs : float, optional (default: 0)
+            |variable_costs|
+        lifetime : int, optional (default: 20)
+            |lifetime|
 
         Examples
         --------
