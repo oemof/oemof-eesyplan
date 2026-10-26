@@ -47,6 +47,16 @@ class HeatPump(Converter):
         ----------
         name : str
             |name|
+        project_data : Project object
+            |project_data|
+        cop : float or list-like
+            |cop|
+        bus_in_electricity : CarrierBus
+            |bus_in_electricity|
+        bus_out_heat : CarrierBus
+            |bus_out_heat|
+        bus_in_heat : CarrierBus or None, optional (default: None)
+            |bus_in_heat|
         age_installed : int, default=0
             |age_installed|
         installed_capacity : float or None (default: None)
@@ -61,10 +71,6 @@ class HeatPump(Converter):
             |opex_spec|
         lifetime : int, default=20
             |lifetime|
-        maximum_capacity : float or None, default=None
-            |maximum_capacity|
-        cop : float or list-like, default=0.8
-            |cop|
 
         Examples
         --------

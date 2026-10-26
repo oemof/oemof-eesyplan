@@ -38,7 +38,7 @@ class ChpFixedRatio(Converter):
         Structure
         ---------
           *input*
-            1. fuel : Gas
+            1. fuel : Fuel
           *output*
             1. heat_bus : Heat
             2. electricity_bus : Electricity
@@ -52,14 +52,18 @@ class ChpFixedRatio(Converter):
         ----------
         name : str
             |name|
-        bus_out_electricity:  bus-object
+        bus_in_fuel : CarrierBus
+            |bus_in_fuel|
+        bus_out_electricity : CarrierBus
             |bus_out_electricity|
-        bus_out_heat:  bus-object
+        bus_out_heat : CarrierBus
             |bus_out_heat|
         efficiency_electricity_chp : float
             |efficiency_electricity_chp|
         efficiency_heat_chp : float
             |efficiency_heat_chp|
+        project_data : Project object
+            |project_data|
         age_installed : int, default=0
             |age_installed|
         installed_capacity : float or None (default: None)
@@ -74,19 +78,17 @@ class ChpFixedRatio(Converter):
             |variable_costs|
         lifetime : int, default=20
             |lifetime|
-        project_data : project_data
-            |project_data|
 
         Examples
         --------
         >>> from oemof.eesyplan import Project
         >>> from oemof.eesyplan import CarrierBus
-        >>> gas_bus = CarrierBus(name="gas_bus")
+        >>> fuel_bus = CarrierBus(name="fuel_bus")
         >>> heat_bus = CarrierBus(name="heat_bus")
         >>> el_bus = CarrierBus(name="electricity_bus")
         >>> my_chp_fixed = ChpFixedRatio(
         ...     name="fixed_ratio_chp",
-        ...     bus_in_fuel=gas_bus,
+        ...     bus_in_fuel=fuel_bus,
         ...     bus_out_heat=heat_bus,
         ...     bus_out_electricity=el_bus,
         ...     maximum_capacity=1000,
