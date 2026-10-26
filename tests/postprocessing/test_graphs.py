@@ -96,7 +96,7 @@ def simple_script(pv_installed_cap=1.0, optimize_battery=False):
             c_rate_charge=1.0,
             efficiency_charge=0.99,
             project_data=project,
-            self_discharge=0.000,
+            loss_rate=0.000,
         )
     )
 

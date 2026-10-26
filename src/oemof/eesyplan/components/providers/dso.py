@@ -1,5 +1,7 @@
 import numpy as np
+import numpy.typing as npt
 
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.network import Node
 from oemof.solph import Bus
 from oemof.solph import Flow
@@ -11,20 +13,20 @@ from oemof.solph.components import Source
 class DSO(Node):
     def __init__(
         self,
-        name,
-        bus,
-        energy_price,
-        feedin_tariff,
-        peak_demand_pricing=0,
-        peak_demand_pricing_period=1,
-        renewable_share=0.44,
-        feedin_cap=None,
+        name: str,
+        bus: CarrierBus,
+        energy_price: float | int | npt.ArrayLike = 0.3,  # TODO: check if default is intended here (base class)
+        feedin_tariff: float | int | npt.ArrayLike = 0.1,  # TODO: check if default is intended here (base class)
+        peak_demand_pricing: float | int = 0,
+        peak_demand_pricing_period: int = 1,
+        renewable_share: float | int = 0.44,
+        feedin_cap: float | int | None = None,
     ):
         """
-        Energy provider for electricity distribution.
+        Generic energy provider for distribution.
 
         This class represents a distribution system operator (DSO) that
-        provides electricity from the utility grid with pricing and
+        provides energy from the utility grid with pricing and
         feedin capabilities.
 
         .. important ::
@@ -34,20 +36,22 @@ class DSO(Node):
         Structure
         ---------
         *input* & *output*
-            bus : Electricity
+            bus : Carrier
 
         Parameters
         ----------
         name : str
             |name|
+        bus : CarrierBus
+            |bus|
         energy_price : float or array-like, default=0.3
-            |energy_prices|
+            |energy_price|
         feedin_tariff : float or array-like, default=0.1
             |feedin_tariff|
         peak_demand_pricing : float, default=0
             |peak_demand_pricing|
         peak_demand_pricing_period : int, default=1
-            |peak_demand_period|
+            |peak_demand_pricing_period|
         renewable_share : float, default=0.44
             |renewable_share|
         feedin_cap : float or None, default=None
@@ -55,8 +59,8 @@ class DSO(Node):
 
         Examples
         --------
-        >>> from oemof.solph import Bus
-        >>> ebus = Bus(label="any_bus")
+        >>> from oemof.eesyplan import CarrierBus
+        >>> ebus = CarrierBus(name="any_bus")
         >>> my_dso = DSO(
         ...     name="any_network",
         ...     bus=ebus,

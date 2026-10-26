@@ -1,3 +1,7 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 
@@ -5,18 +9,18 @@ from oemof.solph.components import Converter
 class FuelCell(Converter):
     def __init__(
         self,
-        name,
-        bus_in_hydrogen,
-        bus_out_electricity,
-        age_installed=0,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=1000,
-        opex_spec=10,
-        variable_costs=0,
-        lifetime=20,
-        efficiency=0.8,
-        project_data=None,
+        name: str,
+        bus_in_hydrogen: CarrierBus,
+        bus_out_electricity: CarrierBus,
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 1000,
+        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0,
+        lifetime: float | int = 20,
+        efficiency: float | int | npt.ArrayLike = 0.8,  # CHECK
+        project_data: Project | None = None,  # CHECK: see Punkt D - project_data defaults to None but is used immediately below without a None-check
     ):
         """
         Fuel cell for electricity generation.
@@ -38,34 +42,36 @@ class FuelCell(Converter):
         Parameters
         ----------
         name : str
-            Name of the asset.
-        age_installed : int, default=0
-            Number of years the asset has already been in operation.
+            |name|
+        bus_in_hydrogen : CarrierBus
+            |bus_in_hydrogen|
+        bus_out_electricity : CarrierBus
+            |bus_out_electricity|
+        age_installed : float or int, optional (default: 0)
+            |age_installed|
         installed_capacity : float or None (default: None)
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        capex_spec : float, default=1000
-            Specific investment costs of the asset related to the
-            installed capacity (CAPEX).
-        opex_spec : float, default=10
-            Specific operational and maintenance costs of the asset
-            related to the installed capacity (opex_spec).
-        variable_costs : float, default=0.01
-            Costs associated with a flow through/from the asset
-            (variable_costs or fuel costs).
-        lifetime : int, default=20
-            Number of operational years of the asset until it has to
-            be replaced.
-        efficiency : float, default=0.8
-            Ratio of energy output to energy input.
+        capex_spec : float, optional (default: 1000)
+            |capex_spec|
+        opex_spec : float, optional (default: 10)
+            |opex_spec|
+        variable_costs : float, optional (default: 0)
+            |variable_costs|
+        lifetime : int, optional (default: 20)
+            |lifetime|
+        efficiency : float, optional (default: 0.8)
+            |efficiency|
+        project_data : Project object or None, optional (default: None)
+            |project_data|
 
         Examples
         --------
         >>> from oemof.eesyplan import Project
-        >>> from oemof.solph import Bus
-        >>> h2_bus = Bus(label="hydrogen_bus")
-        >>> el_bus = Bus(label="electricity_bus")
+        >>> from oemof.eesyplan import CarrierBus
+        >>> h2_bus = CarrierBus(name="hydrogen_bus")
+        >>> el_bus = CarrierBus(name="electricity_bus")
         >>> my_fuel_cell = FuelCell(
         ...     name="hydrogen_fuel_cell",
         ...     bus_in_hydrogen=h2_bus,

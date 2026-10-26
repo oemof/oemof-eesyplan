@@ -88,7 +88,12 @@
                         "format": "default"
                     },
                     {
-                        "name": "crate",
+                        "name": "c_rate_charge",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "c_rate_discharge",
                         "type": "number",
                         "format": "default"
                     },

@@ -1,3 +1,5 @@
+import numpy.typing as npt
+
 from oemof.eesyplan import CarrierBus
 from oemof.network import Node
 from oemof.solph import Flow
@@ -8,9 +10,8 @@ from oemof.solph.components import Sink
 class HeatingNetwork(CarrierBus):
     def __init__(
         self,
-        name,
-        absolute_losses=None,  # ToDo: wie werden die angegeben: pro timestep?
-        **kwargs,
+        name: str,
+        absolute_losses: float | int | npt.ArrayLike | None = None,  # CHECK: siehe ToDo zur Einheit
     ):
         """
         Heating Network Bus
@@ -28,7 +29,7 @@ class HeatingNetwork(CarrierBus):
         """
         self.name = name
 
-        super().__init__(name=self.name, carrier="heat", **kwargs)
+        super().__init__(name=self.name, carrier="heat")
 
         if absolute_losses is not None:
             self.subnode(
@@ -41,12 +42,12 @@ class HeatingNetwork(CarrierBus):
 class HeatingPipe(Node):
     def __init__(
         self,
-        name,
-        bus_1_heat,
-        bus_2_heat,
-        absolute_losses=None,  # ToDo: wie werden die angegeben: pro timestep?
-        relative_losses=0.0,
-        return_pipe=True,
+        name: str,
+        bus_1_heat: CarrierBus,
+        bus_2_heat: CarrierBus,
+        absolute_losses: float | int | npt.ArrayLike | None = None,  # CHECK: siehe ToDo zur Einheit
+        relative_losses: float | int = 0.0,
+        return_pipe: bool = True,
     ):
         """
         Bidirectional Heating Pipe.

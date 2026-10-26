@@ -1,8 +1,17 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.demand.demand import Demand
 
 
 class HeatDemand(Demand):
-    def __init__(self, name, bus_in_heat, input_timeseries, carrier="heat"):
+    def __init__(
+        self,
+        name: str,
+        bus_in_heat: CarrierBus,
+        input_timeseries: npt.ArrayLike | str,  # CHECK: str (Dateiname) korrekt?
+        carrier: str = "heat",
+    ):
         """
         Heat demand/consumption component.
 
@@ -13,6 +22,8 @@ class HeatDemand(Demand):
         ---------
         *input*
             1. from_bus : Heat
+        carrier : str, optional (default: "heat")
+            |carrier|
 
         Parameters
         ----------

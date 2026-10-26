@@ -1,3 +1,7 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Source
 
@@ -5,18 +9,18 @@ from oemof.solph.components import Source
 class SolarThermalPlant(Source):
     def __init__(
         self,
-        project_data,
-        bus_out_heat,
-        input_timeseries,
-        name,
-        age_installed=0,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=1000,
-        opex_spec=10,
-        variable_costs=0,
-        lifetime=20,
-        renewable_asset=True,
+        project_data: Project,
+        bus_out_heat: CarrierBus,
+        input_timeseries: npt.ArrayLike,
+        name: str,
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 1000,
+        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0,
+        lifetime: float | int = 20,
+        renewable_asset: bool = True,
     ):
         """
         Solar thermal plant for renewable heat generation.

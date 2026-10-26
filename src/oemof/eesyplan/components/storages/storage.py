@@ -1,3 +1,7 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph import Investment
 from oemof.solph.components import GenericStorage
@@ -6,27 +10,28 @@ from oemof.solph.components import GenericStorage
 class EnergyStorage(GenericStorage):
     def __init__(
         self,
-        name,
-        project_data,
-        bus_in,
-        bus_out=None,
-        age_installed=0,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=0,
-        opex_spec=0,
-        variable_costs=0,
-        lifetime=20,
-        soc_max=1,
-        soc_min=0,
-        energy_losses_variable=0.0,
-        energy_losses_fixed=0.0,
-        efficiency_charge=1.0,
-        efficiency_discharge=1.0,
-        theoretical_time_charge=1.0,  # hours
-        theoretical_time_discharge=None,  # hours
-        initial_storage_level=None,
-        end_storage_level=True,
+        name: str,
+        project_data: Project,
+        bus_in: CarrierBus,
+        bus_out: CarrierBus | None = None,
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 0,
+        opex_spec: float | int | npt.ArrayLike = 0,  # CHECK: sequence ok?
+        variable_costs: float | int | npt.ArrayLike = 0,
+        lifetime: float | int = 20,
+        soc_max: float | int | npt.ArrayLike = 1,  # CHECK: sequence ok?
+        soc_min: float | int | npt.ArrayLike = 0,  # CHECK: sequence ok?
+        loss_rate: float | int | npt.ArrayLike = 0.0,  # CHECK: sequence ok?
+        fixed_losses_relative: float | int | npt.ArrayLike = 0.0,  # CHECK
+        fixed_losses_absolute: float | int | npt.ArrayLike = 0.0,  # CHECK
+        efficiency_charge: float | int | npt.ArrayLike = 1.0,  # CHECK
+        efficiency_discharge: float | int | npt.ArrayLike = 1.0,  # CHECK
+        c_rate_charge: float | int = 1.0,
+        c_rate_discharge: float | int | None = None,
+        initial_storage_level: float | int | None = None,
+        end_storage_level: bool = True,
     ):
         """
         Energy Storage System (ESS).
@@ -41,9 +46,9 @@ class EnergyStorage(GenericStorage):
         Structure
         ---------
         *input*
-            charge : Heat
+            charge : Energy
         *output*
-            discharge : Heat
+            discharge : Energy
 
         Parameters
         ----------
@@ -52,9 +57,9 @@ class EnergyStorage(GenericStorage):
         project_data : Project object
             |project_data|
 
-        bus_in : Node object
+        bus_in : CarrierBus
             |bus_in|
-        bus_out : Node object, optional
+        bus_out : CarrierBus | None, optional (default: None)
             |bus_out|
         age_installed : float or int, optional (default: 0)
             |age_installed|
@@ -68,24 +73,30 @@ class EnergyStorage(GenericStorage):
             |opex_spec|
         variable_costs : float, optional (default: 0)
             |variable_costs|
-        lifetime : int, optional
+        lifetime : int, optional (default: 20)
             |lifetime|
         soc_max : float, optional (default: 1)
             |soc_max|
         soc_min : float, optional (default: 0)
             |soc_min|
-        energy_losses_variable : float, optional (default: 0.0)
-            |energy_losses_relative|
-        energy_losses_fixed : float, optional (default: 0.0)
-            |energy_losses_absolute|
+        loss_rate : float, optional (default: 0.0)
+            |loss_rate|
+        fixed_losses_relative : float, optional (default: 0.0)
+            |fixed_losses_relative|
+        fixed_losses_absolute : float, optional (default: 0.0)
+            |fixed_losses_absolute|
         efficiency_charge : float, optional (default: 1.0)
             |efficiency_charge|
         efficiency_discharge : float, optional (default: 1.0)
             |efficiency_discharge|
-        theoretical_time_charge : float, optional (default: 1.0)
-            |theoretical_time_charge|
-        theoretical_time_discharge : float, optional
-            |theoretical_time_discharge|
+        c_rate_charge : float, optional (default: 1.0)
+            |c_rate_charge|
+        c_rate_discharge : float, optional (default: None)
+            |c_rate_discharge|
+        initial_storage_level : float or None, optional (default: None)
+            |initial_storage_level|
+        end_storage_level : bool, optional (default: True)
+            |end_storage_level|
 
 
         Examples
@@ -110,19 +121,19 @@ class EnergyStorage(GenericStorage):
         ...     bus_in=heat_bus,
         ...     bus_out=heat_bus,
         ...     age_installed=0,
-        ...     maximum_capacity=0,
+        ...     maximum_capacity=1000,
         ...     capex_spec=3,
         ...     opex_spec=5,
         ...     variable_costs=0,
         ...     lifetime=10,
         ...     soc_max=1,
         ...     soc_min=0,
-        ...     theoretical_time_charge=1,  # hours
-        ...     theoretical_time_discharge=1,  # hours
+        ...     c_rate_charge=1,
+        ...     c_rate_discharge=1,
         ...     efficiency_charge=0.99,
         ...     project_data=my_project,
-        ...     energy_losses_variable=0.6,
-        ...     energy_losses_fixed=0.1,
+        ...     loss_rate=0.6,
+        ...     fixed_losses_relative=0.1,
         ... )
         """
 
@@ -133,11 +144,9 @@ class EnergyStorage(GenericStorage):
             installed_capacity=installed_capacity,
             maximum_capacity=maximum_capacity,
         )
-        if theoretical_time_discharge is None:
-            theoretical_time_discharge = theoretical_time_charge
+        if c_rate_discharge is None:
+            c_rate_discharge = c_rate_charge
 
-        self.energy_losses_variable = energy_losses_variable
-        self.energy_losses_fixed = energy_losses_fixed
         self.efficiency_charge = efficiency_charge
         self.efficiency_discharge = efficiency_discharge
         self.age_installed = age_installed
@@ -145,15 +154,15 @@ class EnergyStorage(GenericStorage):
         self.end_storage_level = end_storage_level
 
         if installed_capacity:
-            self.capacity_charge = nv * theoretical_time_charge
-            self.capacity_discharge = nv * theoretical_time_discharge
+            self.capacity_charge = nv * c_rate_charge
+            self.capacity_discharge = nv * c_rate_discharge
             self.crate_charge = None
             self.crate_discharge = None
         else:
             self.capacity_charge = Investment()
             self.capacity_discharge = Investment()
-            self.crate_charge = theoretical_time_charge
-            self.crate_discharge = theoretical_time_discharge
+            self.crate_charge = c_rate_charge
+            self.crate_discharge = c_rate_discharge
 
         if bus_out is None:
             bus_out = bus_in
@@ -179,8 +188,8 @@ class EnergyStorage(GenericStorage):
             inflow_conversion_factor=self.efficiency_charge,
             outflow_conversion_factor=self.efficiency_discharge,
             invest_relation_input_capacity=self.crate_charge,
-            invest_relation_output_capacity=self.crate_charge,
-            loss_rate=self.energy_losses_variable,
-            fixed_losses_absolute=0,
-            fixed_losses_relative=self.energy_losses_fixed,
+            invest_relation_output_capacity=self.crate_discharge,
+            loss_rate=loss_rate,
+            fixed_losses_relative=fixed_losses_relative,
+            fixed_losses_absolute=fixed_losses_absolute,
         )
