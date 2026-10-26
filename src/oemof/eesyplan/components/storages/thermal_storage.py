@@ -58,9 +58,9 @@ class ThermalStorage(EnergyStorage):
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        bus_in_heat : Node object
+        bus_in_heat : CarrierBus
             |bus_in_heat|
-        bus_out_heat : Node object, optional (default: None)
+        bus_out_heat : CarrierBus | None, optional (default: None)
             |bus_out_heat|
         age_installed : float or int, optional (default: 0)
             |age_installed|
@@ -70,7 +70,7 @@ class ThermalStorage(EnergyStorage):
             |opex_spec|
         variable_costs : float, optional (default: 0.0)
             |variable_costs|
-        lifetime : int, optional (default: None)
+        lifetime : int, optional (default: 20)
             |lifetime|
         soc_max : float, optional (default: 1.0)
             |soc_max|

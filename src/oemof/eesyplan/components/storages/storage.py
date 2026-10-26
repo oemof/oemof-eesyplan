@@ -57,9 +57,9 @@ class EnergyStorage(GenericStorage):
         project_data : Project object
             |project_data|
 
-        bus_in : Node object
+        bus_in : CarrierBus
             |bus_in|
-        bus_out : Node object, optional
+        bus_out : CarrierBus | None, optional (default: None)
             |bus_out|
         age_installed : float or int, optional (default: 0)
             |age_installed|
@@ -73,7 +73,7 @@ class EnergyStorage(GenericStorage):
             |opex_spec|
         variable_costs : float, optional (default: 0)
             |variable_costs|
-        lifetime : int, optional
+        lifetime : int, optional (default: 20)
             |lifetime|
         soc_max : float, optional (default: 1)
             |soc_max|
@@ -91,7 +91,7 @@ class EnergyStorage(GenericStorage):
             |efficiency_discharge|
         c_rate_charge : float, optional (default: 1.0)
             |c_rate_charge|
-        c_rate_discharge : float, optional
+        c_rate_discharge : float, optional (default: None)
             |c_rate_discharge|
         initial_storage_level : float or None, optional (default: None)
             |initial_storage_level|

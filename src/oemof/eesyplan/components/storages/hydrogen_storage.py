@@ -54,9 +54,9 @@ class HydrogenStorage(EnergyStorage):
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        bus_in_hydrogen : Node object
+        bus_in_hydrogen : CarrierBus
             |bus_in_hydrogen|
-        bus_out_hydrogen : Node object, optional (default: None)
+        bus_out_hydrogen : CarrierBus | None, optional (default: None)
             |bus_out_hydrogen|
         capex_spec : float, optional (default: 0)
             |capex_spec|
@@ -64,7 +64,7 @@ class HydrogenStorage(EnergyStorage):
             |opex_spec|
         variable_costs : float, optional (default: 0)
             |variable_costs|
-        lifetime : int, optional (default: None)
+        lifetime : int, optional (default: 20)
             |lifetime|
         age_installed : float or int, optional (default: 0)
             |age_installed|

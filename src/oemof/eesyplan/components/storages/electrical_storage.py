@@ -56,9 +56,9 @@ class ElectricalStorage(EnergyStorage):
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        bus_in_electricity : Node object
+        bus_in_electricity : CarrierBus
             |bus_in_electricity|
-        bus_out_electricity : Node object, optional (default: None)
+        bus_out_electricity : CarrierBus | None, optional (default: None)
             |bus_out_electricity|
         age_installed : float or int, optional (default: 0)
             |age_installed|
@@ -68,7 +68,7 @@ class ElectricalStorage(EnergyStorage):
             |opex_spec|
         variable_costs : float, optional (default: 0)
             |variable_costs|
-        lifetime : int, optional (default: None)
+        lifetime : int, optional (default: 20)
             |lifetime|
         soc_max : float, optional (default: 1)
             |soc_max|
