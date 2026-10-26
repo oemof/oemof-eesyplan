@@ -65,9 +65,6 @@ class Project:
                 "optimised"
             )
 
-        if maximum_capacity is None:
-            maximum_capacity = float("+inf")
-
         if installed_capacity is None:
             specific_annual_cost = (
                 self.calculate_annuity(capex_spec, lifetime) + opex_spec
