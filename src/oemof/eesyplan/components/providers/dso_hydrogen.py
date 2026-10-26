@@ -30,7 +30,7 @@ class DsoHydrogen(DSO):
         Structure
         ---------
         *input* & *output*
-            bus : bus_hydrogen
+            bus : Hydrogen
 
         Parameters
         ----------

@@ -34,7 +34,7 @@ class DsoHeat(DSO):
 
         Parameters
         ----------
-         name : str
+        name : str
             |name|
         bus_heat : CarrierBus
             |bus|
