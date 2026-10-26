@@ -1,36 +1,41 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.storages.storage import EnergyStorage
+from oemof.eesyplan.project import Project
 
 
 class ThermalStorage(EnergyStorage):
     def __init__(
         self,
-        name,
-        project_data,
-        bus_in_heat,
-        bus_out_heat=None,
-        age_installed=0,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=0.0,
-        opex_spec=0.0,
-        variable_costs=0.0,
-        lifetime=20,
-        soc_max=1.0,
-        soc_min=0.0,
-        thermal_losses_variable=0.0,
-        thermal_losses_fixed=0.0,
-        efficiency_charge=1.0,
-        efficiency_discharge=1.0,
-        theoretical_time_charge=1.0,  # hours
-        theoretical_time_discharge=None,  # hours
-        initial_storage_level=None,
-        end_storage_level=True,
+        name: str,
+        project_data: Project,
+        bus_in_heat: CarrierBus,
+        bus_out_heat: CarrierBus | None = None,
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 0.0,
+        opex_spec: float | int | npt.ArrayLike = 0.0,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0.0,
+        lifetime: float | int = 20,
+        soc_max: float | int | npt.ArrayLike = 1.0,  # CHECK
+        soc_min: float | int | npt.ArrayLike = 0.0,  # CHECK
+        loss_rate: float | int | npt.ArrayLike = 0.0,  # CHECK
+        fixed_losses_relative: float | int | npt.ArrayLike = 0.0,  # CHECK
+        fixed_losses_absolute: float | int | npt.ArrayLike = 0.0,  # CHECK
+        efficiency_charge: float | int | npt.ArrayLike = 1.0,  # CHECK
+        efficiency_discharge: float | int | npt.ArrayLike = 1.0,  # CHECK
+        c_rate_charge: float | int = 1.0,
+        c_rate_discharge: float | int | None = None,
+        initial_storage_level: float | int | None = None,
+        end_storage_level: bool = True,
     ):
         """
         Heat Energy Storage System (HESS).
 
         This class represents a complete thermal energy storage system
-        for electrical energy storage and dispatch.
+        for thermal energy storage and dispatch.
 
         .. important ::
            This is a simplified representation of a complete HESS
@@ -53,9 +58,9 @@ class ThermalStorage(EnergyStorage):
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        bus_in_heat : Node object
+        bus_in_heat : CarrierBus
             |bus_in_heat|
-        bus_out_heat : Node object, optional (default: None)
+        bus_out_heat : CarrierBus | None, optional (default: None)
             |bus_out_heat|
         age_installed : float or int, optional (default: 0)
             |age_installed|
@@ -65,24 +70,30 @@ class ThermalStorage(EnergyStorage):
             |opex_spec|
         variable_costs : float, optional (default: 0.0)
             |variable_costs|
-        lifetime : int, optional (default: None)
+        lifetime : int, optional (default: 20)
             |lifetime|
         soc_max : float, optional (default: 1.0)
             |soc_max|
         soc_min : float, optional (default: 0.0)
             |soc_min|
-        thermal_losses_variable : float, optional (default: 0.0)
-            |fixed_thermal_losses_relative|
-        thermal_losses_fixed : float, optional (default: 0.0)
-            |fixed_thermal_losses_absolute|
+        loss_rate : float, optional (default: 0.0)
+            |loss_rate|
+        fixed_losses_relative : float, optional (default: 0.0)
+            |fixed_losses_relative|
+        fixed_losses_absolute : float, optional (default: 0.0)
+            |fixed_losses_absolute|
         efficiency_charge : float, optional (default: 1.0)
             |efficiency_charge|
         efficiency_discharge : float, optional (default: 1.0)
             |efficiency_discharge|
-        theoretical_time_charge : float, optional (default: 1.0)
-            |theoretical_time_charge|
-        theoretical_time_discharge : float, optional (default: None)
-            |theoretical_time_discharge|
+        c_rate_charge : float, optional (default: 1.0)
+            |c_rate_charge|
+        c_rate_discharge : float, optional (default: None)
+            |c_rate_discharge|
+        initial_storage_level : float or None, optional (default: None)
+            |initial_storage_level|
+        end_storage_level : bool, optional (default: True)
+            |end_storage_level|
 
         Examples
         --------
@@ -113,16 +124,14 @@ class ThermalStorage(EnergyStorage):
         ...     lifetime=10,
         ...     soc_max=1,
         ...     soc_min=0,
-        ...     theoretical_time_charge=1,
-        ...     theoretical_time_discharge=1,
+        ...     c_rate_charge=1,
+        ...     c_rate_discharge=1,
         ...     efficiency_charge=0.99,
         ...     project_data=my_project,
-        ...     thermal_losses_variable=0.06,
-        ...     thermal_losses_fixed=0.02,
+        ...     loss_rate=0.06,
+        ...     fixed_losses_relative=0.02,
         ... )
         """
-        self.thermal_losses_variable = thermal_losses_variable
-        self.thermal_losses_fixed = thermal_losses_fixed
 
         super().__init__(
             name,
@@ -138,12 +147,13 @@ class ThermalStorage(EnergyStorage):
             lifetime=lifetime,
             soc_max=soc_max,
             soc_min=soc_min,
-            energy_losses_variable=thermal_losses_variable,
-            energy_losses_fixed=thermal_losses_fixed,
+            loss_rate=loss_rate,
+            fixed_losses_relative=fixed_losses_relative,
+            fixed_losses_absolute=fixed_losses_absolute,
             efficiency_charge=efficiency_charge,
             efficiency_discharge=efficiency_discharge,
-            theoretical_time_charge=theoretical_time_charge,  # hours
-            theoretical_time_discharge=theoretical_time_discharge,  # hours
+            c_rate_charge=c_rate_charge,
+            c_rate_discharge=c_rate_discharge,
             initial_storage_level=initial_storage_level,
             end_storage_level=end_storage_level,
         )

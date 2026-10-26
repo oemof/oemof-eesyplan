@@ -107,7 +107,7 @@ def sample_energy_system():
             c_rate_charge=1.0,
             efficiency_charge=0.99,
             project_data=project,
-            self_discharge=0.000,
+            loss_rate=0.000,
         )
     )
 

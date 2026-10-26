@@ -1,17 +1,20 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.providers.dso import DSO
 
 
 class DsoFuel(DSO):
     def __init__(
         self,
-        name,
-        bus_fuel,
-        energy_price=0.3,
-        feedin_tariff=0.1,
-        peak_demand_pricing=0,
-        peak_demand_pricing_period=1,
-        renewable_share=0.44,
-        feedin_cap=None,
+        name: str,
+        bus_fuel: CarrierBus,
+        energy_price: float | int | npt.ArrayLike = 0.3,
+        feedin_tariff: float | int | npt.ArrayLike = 0.1,
+        peak_demand_pricing: float | int = 0,
+        peak_demand_pricing_period: int = 1,
+        renewable_share: float | int = 0.44,
+        feedin_cap: float | int | None = None,
     ):
         """
         Energy provider for electricity distribution.
@@ -33,14 +36,16 @@ class DsoFuel(DSO):
         ----------
         name : str
             |name|
+        bus_fuel : CarrierBus
+            |bus|
         energy_price : float or array-like, default=0.3
-            |energy_prices|
+            |energy_price|
         feedin_tariff : float or array-like, default=0.1
             |feedin_tariff|
         peak_demand_pricing : float, default=0
             |peak_demand_pricing|
         peak_demand_pricing_period : int, default=1
-            |peak_demand_period|
+            |peak_demand_pricing_period|
         renewable_share : float, default=0.44
             |renewable_share|
         feedin_cap : float or None, default=None
@@ -49,10 +54,10 @@ class DsoFuel(DSO):
         Examples
         --------
         >>> from oemof.eesyplan import CarrierBus
-        >>> gbus = CarrierBus(name="gas_bus")
+        >>> fbus = CarrierBus(name="fuel_bus")
         >>> my_dso = DsoFuel(
         ...     name="main_grid",
-        ...     bus_fuel=gbus,
+        ...     bus_fuel=fbus,
         ...     energy_price=0.25,
         ...     feedin_tariff=0.08,
         ... )

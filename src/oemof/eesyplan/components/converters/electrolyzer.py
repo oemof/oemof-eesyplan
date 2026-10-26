@@ -1,3 +1,7 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 
@@ -5,20 +9,23 @@ from oemof.solph.components import Converter
 class Electrolyzer(Converter):
     def __init__(
         self,
-        name,
-        bus_in_electricity,
-        bus_out_hydrogen,
-        project_data,
-        bus_out_heat=None,
-        efficiency=0.3,
-        efficiency_heat=0.6,
-        age_installed=0,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=1000,
-        opex_spec=10,
-        variable_costs=0,
-        lifetime=20,
+        name: str,
+        bus_in_electricity: CarrierBus,
+        bus_out_hydrogen: CarrierBus,
+        project_data: Project,
+        bus_out_heat: CarrierBus | None = None,
+        efficiency: float | int | npt.ArrayLike = 0.3,  # CHECK
+        # CHECK: sequence ok? Naming still open - originally flagged in
+        # docstring as "TODO find a good attribute name"; description
+        # text added in Pass 3, parameter name itself not decided yet.
+        efficiency_heat: float | int | npt.ArrayLike = 0.6,
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 1000,
+        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0,
+        lifetime: float | int = 20,
     ):
         """
         Electrolyzer for hydrogen production.
@@ -42,38 +49,42 @@ class Electrolyzer(Converter):
         Parameters
         ----------
         name : str
-            Name of the asset.
-        age_installed : int, default=0
-            Number of years the asset has already been in operation.
+            |name|
+        bus_in_electricity : CarrierBus
+            |bus_in_electricity|
+        bus_out_hydrogen : CarrierBus
+            |bus_out_hydrogen|
+        project_data : Project object
+            |project_data|
+        bus_out_heat : CarrierBus or None, optional (default: None)
+            |bus_out_heat|
+        efficiency : float, optional (default: 0.3)
+            |efficiency|
+        efficiency_heat : float, optional (default: 0.6)
+            |efficiency_heat|
+        age_installed : float or int, optional (default: 0)
+            |age_installed|
         installed_capacity : float or None (default: None)
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        capex_spec : float, default=1000
-            Specific investment costs of the asset related to the
-            installed capacity (CAPEX).
-        opex_spec : float, default=10
-            Specific operational and maintenance costs of the asset
-            related to the installed capacity (opex_spec).
-        variable_costs : float, default=0.01
-            Costs associated with a flow through/from the asset
-            (variable_costs or fuel costs).
-        lifetime : int, default=20
-            Number of operational years of the asset until it has to
-            be replaced.
-        efficiency : float, default=0.8
-            Ratio of energy output to energy input.
-        efficiency_heat : float, default=0.6
-            TODO find a good attribute name and description
+        capex_spec : float, optional (default: 1000)
+            |capex_spec|
+        opex_spec : float, optional (default: 10)
+            |opex_spec|
+        variable_costs : float, optional (default: 0)
+            |variable_costs|
+        lifetime : int, optional (default: 20)
+            |lifetime|
 
         Examples
         --------
 
         >>> from oemof.eesyplan import Project
-        >>> from oemof.solph import Bus
-        >>> el_bus_in = Bus(label="el_bus_in")
-        >>> heat_bus_out = Bus(label="heat_bus_out")
-        >>> h2_bus_out = Bus(label="h2_bus_out")
+        >>> from oemof.eesyplan import CarrierBus
+        >>> el_bus_in = CarrierBus(name="el_bus_in")
+        >>> heat_bus_out = CarrierBus(name="heat_bus_out")
+        >>> h2_bus_out = CarrierBus(name="h2_bus_out")
         >>> my_electrolyzer = Electrolyzer(
         ...     name="Electrolyzer",
         ...     bus_in_electricity=el_bus_in,
@@ -145,6 +156,20 @@ class Electrolyzer(Converter):
             inputs=inputs,
             conversion_factors={
                 bus_out_hydrogen: efficiency,
+                # TODO BUG: bus_out_heat is optional (see "outputs" dict
+                # above, which only adds bus_out_heat conditionally via
+                # "if bus_out_heat is not None"). This conversion_factors
+                # entry, however, is ALWAYS added, even when bus_out_heat
+                # is None. Likely consequence: oemof.solph either raises
+                # an error because a conversion factor is defined for a
+                # bus that is not an input/output of this node, or (worse)
+                # silently accepts it without effect - behaviour not yet
+                # verified. Fix: wrap this entry in the same
+                # "if bus_out_heat is not None" condition as "outputs"
+                # above. Needs its
+                # own dedicated bugfix commit with a regression test
+                # (instantiate Electrolyzer with bus_out_heat=None and
+                # verify no error / correct conversion_factors dict).
                 bus_out_heat: efficiency_heat,
             },
         )

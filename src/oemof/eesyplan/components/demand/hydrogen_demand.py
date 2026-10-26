@@ -1,9 +1,17 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.demand.demand import Demand
 
 
 class H2Demand(Demand):
     def __init__(
-        self, name, bus_in_hydrogen, input_timeseries, carrier="hydrogen"
+        self,
+        name: str,
+        bus_in_hydrogen: CarrierBus,
+        input_timeseries: npt.ArrayLike
+        | str,  # CHECK: str (Dateiname) korrekt?
+        carrier: str = "hydrogen",
     ):
         """
         Hydrogen demand/consumption component.
@@ -13,7 +21,7 @@ class H2Demand(Demand):
 
         Structure
         ---------
-        *input:*
+        *input*
             1. from_bus : Hydrogen
 
         Parameters
@@ -24,6 +32,8 @@ class H2Demand(Demand):
             |bus_in_hydrogen|
         input_timeseries : array-like
             |input_timeseries|
+        carrier : str, optional (default: "hydrogen")
+            |carrier|
 
         Examples
         --------

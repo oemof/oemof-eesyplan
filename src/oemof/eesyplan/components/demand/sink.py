@@ -1,3 +1,7 @@
+import numpy.typing as npt
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Sink as SolphSink
 
@@ -5,26 +9,26 @@ from oemof.solph.components import Sink as SolphSink
 class Sink(SolphSink):
     def __init__(
         self,
-        name,
-        project_data,
-        bus_in,
-        age_installed=0,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=1000,
-        opex_spec=10,
-        variable_costs=0,
-        lifetime=20,
-        minimum=None,
-        maximum=None,
-        fix=None,
-        positive_gradient_limit=None,
-        negative_gradient_limit=None,
-        full_load_time_max=None,
-        full_load_time_min=None,
-        integer=False,
-        custom_properties_flow=None,
-        custom_properties=None,
+        name: str,
+        project_data: Project,
+        bus_in: CarrierBus,
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 1000,
+        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
+        variable_costs: float | int | npt.ArrayLike = 0,
+        lifetime: float | int = 20,
+        minimum: float | int | None = None,
+        maximum: float | int | None = None,
+        fix: float | int | npt.ArrayLike | None = None,
+        positive_gradient_limit: float | int | None = None,
+        negative_gradient_limit: float | int | None = None,
+        full_load_time_max: float | int | None = None,
+        full_load_time_min: float | int | None = None,
+        integer: bool = False,
+        custom_properties_flow: dict | None = None,
+        custom_properties: dict | None = None,
     ):
         """
         General Sink.
@@ -35,7 +39,7 @@ class Sink(SolphSink):
             |name|
         project_data : Project object
             |project_data|
-        bus_in : Node object
+        bus_in : oemof.eesyplan.CarrierBus
             |bus_in|
         age_installed : float or int, optional (default: 0)
             |age_installed|
@@ -43,19 +47,19 @@ class Sink(SolphSink):
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        capex_spec : float, optional (default: 0)
+        capex_spec : float, optional (default: 1000)
             |capex_spec|
-        opex_spec : float, optional (default: 0)
+        opex_spec : float, optional (default: 10)
             |opex_spec|
         variable_costs : float, optional (default: 0)
             |variable_costs|
-        lifetime : int, optional (default: None)
+        lifetime : int, optional (default: 20)
             |lifetime|
         minimum : float, optional
             |minimum|
         maximum : float, optional
             |maximum|
-        fix : float or iterable, optional
+        fix: float | int | npt.ArrayLike, optional
             |fix|
         positive_gradient_limit : float, optional
             |positive_gradient_limit|
