@@ -46,7 +46,7 @@ from oemof.eesyplan.components.storages.fuel_storage import FuelStorage
 from oemof.eesyplan.components.storages.hydrogen_storage import HydrogenStorage
 from oemof.eesyplan.components.storages.storage import EnergyStorage
 from oemof.eesyplan.components.storages.thermal_storage import ThermalStorage
-from oemof.eesyplan.components.transport.heat import HeatingNetwork
+from oemof.eesyplan import HeatingNetwork
 from oemof.eesyplan.components.transport.heat import HeatingPipe
 from oemof.eesyplan.project import Project
 from oemof.solph.components import Source

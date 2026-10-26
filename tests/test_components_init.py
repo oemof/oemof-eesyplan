@@ -1,4 +1,4 @@
-from oemof.eesyplan.components.transport.heat import HeatingNetwork
+from oemof.eesyplan import HeatingNetwork
 from oemof.solph.components import Sink
 
 
