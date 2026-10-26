@@ -7,6 +7,8 @@
     lifetime, the replacement costs of the asset will be taken into
     account [a] (Natural number).
 
+.. |auxiliary_heat_fraction| replace:: No text.
+
 .. |balanced| replace:: Choose whether the sum of all inflows into the
     bus must equal the sum of all outflows at every timestep (energy
     balance constraint) [-] (acceptable values are either True or

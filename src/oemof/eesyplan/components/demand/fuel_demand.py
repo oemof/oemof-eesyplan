@@ -24,8 +24,7 @@ class FuelDemand(Demand):
         ---------
             *input*
                 1. from_bus : Fuel
-        carrier : str, optional (default: "fuel")
-            |carrier|
+
         Parameters
         ----------
         name : str
@@ -34,6 +33,8 @@ class FuelDemand(Demand):
             |bus_in_fuel|
         input_timeseries : array-like
             |input_timeseries|
+        carrier : str, optional (default: "fuel")
+            |carrier|
 
         Examples
         --------

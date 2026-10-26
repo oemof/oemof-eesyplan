@@ -23,8 +23,7 @@ class H2Demand(Demand):
         ---------
         *input*
             1. from_bus : Hydrogen
-        carrier : str, optional (default: "hydrogen")
-            |carrier|
+
         Parameters
         ----------
         name : str
@@ -33,6 +32,8 @@ class H2Demand(Demand):
             |bus_in_hydrogen|
         input_timeseries : array-like
             |input_timeseries|
+        carrier : str, optional (default: "hydrogen")
+            |carrier|
 
         Examples
         --------

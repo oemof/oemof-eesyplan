@@ -40,6 +40,7 @@ class HeatingPipe(Node):
 
         Examples
         --------
+        >>> from oemof.eesyplan.components.buses.network import HeatingNetwork
         >>> w = HeatingNetwork(name="Heating Network West", absolute_losses=5)
         >>> e = HeatingNetwork(name="Heating Network East")
         >>> pipe1 =HeatingPipe(name="pipe1", bus_1_heat=w, bus_2_heat=e,
