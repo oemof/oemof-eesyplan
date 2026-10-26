@@ -47,9 +47,9 @@ class Sink(SolphSink):
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        capex_spec : float, optional (default: 0)
+        capex_spec : float, optional (default: 1000)
             |capex_spec|
-        opex_spec : float, optional (default: 0)
+        opex_spec : float, optional (default: 10)
             |opex_spec|
         variable_costs : float, optional (default: 0)
             |variable_costs|
