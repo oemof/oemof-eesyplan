@@ -79,3 +79,4 @@ docs/_build
 /.venv
 /test_cases/*
 /ci/*.csv
+/examples/simple_script/tester/*
