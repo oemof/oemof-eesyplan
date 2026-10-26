@@ -3,6 +3,7 @@
 __version__ = "0.0.1"
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.components.buses.network import HeatingNetwork
 from oemof.eesyplan.components.compensation.excess import Excess
 from oemof.eesyplan.components.compensation.shortage import Shortage
 from oemof.eesyplan.components.converters.auxiliary_heat import AuxiliaryHeat
@@ -50,7 +51,6 @@ from oemof.eesyplan.components.storages.fuel_storage import FuelStorage
 from oemof.eesyplan.components.storages.hydrogen_storage import HydrogenStorage
 from oemof.eesyplan.components.storages.storage import EnergyStorage
 from oemof.eesyplan.components.storages.thermal_storage import ThermalStorage
-from oemof.eesyplan.components.buses.network import HeatingNetwork
 from oemof.eesyplan.components.transport.heat import HeatingPipe
 from oemof.eesyplan.datapackage.results import export_results
 from oemof.eesyplan.datapackage.results import import_results

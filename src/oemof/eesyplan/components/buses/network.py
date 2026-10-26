@@ -1,7 +1,8 @@
 from numpy import typing as npt
+
+from oemof.eesyplan import CarrierBus
 from oemof.solph import Flow
 from oemof.solph.components import Sink
-from oemof.eesyplan import CarrierBus
 
 
 class HeatingNetwork(CarrierBus):
