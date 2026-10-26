@@ -15,18 +15,18 @@ class DSO(Node):
         self,
         name: str,
         bus: CarrierBus,
-        energy_price: float | int | npt.ArrayLike,
-        feedin_tariff: float | int | npt.ArrayLike,
+        energy_price: float | int | npt.ArrayLike = 0.3,  # TODO: check if default is intended here (base class)
+        feedin_tariff: float | int | npt.ArrayLike = 0.1,  # TODO: check if default is intended here (base class)
         peak_demand_pricing: float | int = 0,
         peak_demand_pricing_period: int = 1,
         renewable_share: float | int = 0.44,
         feedin_cap: float | int | None = None,
     ):
         """
-        Energy provider for electricity distribution.
+        Generic energy provider for distribution.
 
         This class represents a distribution system operator (DSO) that
-        provides electricity from the utility grid with pricing and
+        provides energy from the utility grid with pricing and
         feedin capabilities.
 
         .. important ::
@@ -36,7 +36,7 @@ class DSO(Node):
         Structure
         ---------
         *input* & *output*
-            bus : Electricity
+            bus : Carrier
 
         Parameters
         ----------
@@ -59,8 +59,8 @@ class DSO(Node):
 
         Examples
         --------
-        >>> from oemof.solph import Bus
-        >>> ebus = Bus(label="any_bus")
+        >>> from oemof.eesyplan import CarrierBus
+        >>> ebus = CarrierBus(name="any_bus")
         >>> my_dso = DSO(
         ...     name="any_network",
         ...     bus=ebus,
