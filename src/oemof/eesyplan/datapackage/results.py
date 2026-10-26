@@ -10,6 +10,8 @@ from oemof.datapackage.resultpackage import write
 def export_results(results, path):
     # ToDo The following lines are neccessary until the bug is fixed in solph
     for key in results.keys():
+        if key in ["Solver", "Problem", "Solution"]:
+            continue
         try:
             results[key]
         except KeyError:

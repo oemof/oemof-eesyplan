@@ -1,19 +1,25 @@
 from pathlib import Path
 
 import pandas as pd
+from oemof.tools.logger import define_logging
 
 from oemof.eesyplan import CarrierBus
-from oemof.eesyplan import Demand
 from oemof.eesyplan import DsoElectricity
 from oemof.eesyplan import ElectricalStorage
+from oemof.eesyplan import ElectricityDemand
 from oemof.eesyplan import EnergySystem
 from oemof.eesyplan import Project
 from oemof.eesyplan import PvPlant
 from oemof.eesyplan import WindTurbine
+from oemof.eesyplan import export_results
+from oemof.eesyplan import import_results
 from oemof.eesyplan import optimise
 from oemof.eesyplan.postprocessing.balance import nodes_io
 from oemof.eesyplan.postprocessing.graphs import sankey
-from oemof.tools.logger import define_logging
+
+
+# import warnings
+# warnings.simplefilter("error")
 
 DATA_PATH = Path("data")
 
@@ -89,7 +95,7 @@ def simple_script():
             soc_max=1,
             soc_min=0,
             c_rate_charge=1.0,
-            efficiency=0.99,
+            efficiency_charge=0.95,
             project_data=project,
             loss_rate=0.000,
         )
@@ -97,7 +103,7 @@ def simple_script():
 
     # demands (electricity/heat)
     energy_system.add(
-        Demand(
+        ElectricityDemand(
             name="demand_el",
             bus_in_electricity=bus_elec,
             input_timeseries=data["demand_elec"],
@@ -109,6 +115,9 @@ def simple_script():
 if __name__ == "__main__":
     define_logging()
     res, es = simple_script()
-    print(nodes_io(res).sum().sort_index())
+    export_results(res, Path("tester"))
+    imres = import_results(Path("tester"), es)
+    print(imres["flow"].sum())
+    print(imres.solver)
+    print(nodes_io(res["flow"]).sum().sort_index())
     fig = sankey(res["flow"], es=es)
-    fig.show()
