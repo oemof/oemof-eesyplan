@@ -13,15 +13,15 @@ class FuelDemand(Demand):
         carrier: str = "fuel",
     ):
         """
-        Gas demand/consumption component.
+        Fuel demand/consumption component.
 
-        This class represents a gas demand that consumes gas according
-        to a specified time series pattern.
+        This class represents a fuel demand that consumes fuel
+        according to a specified time series pattern.
 
         Structure
         ---------
             *input*
-                1. bus_in_fuel : Gas
+                1. from_bus : Fuel
 
         Parameters
         ----------
