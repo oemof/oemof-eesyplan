@@ -20,7 +20,7 @@ class FuelCell(Converter):
         variable_costs: float | int | npt.ArrayLike = 0,
         lifetime: float | int = 20,
         efficiency: float | int | npt.ArrayLike = 0.8,  # CHECK
-        project_data: Project | None = None,
+        project_data: Project | None = None,  # CHECK: see Punkt D - project_data defaults to None but is used immediately below without a None-check
     ):
         """
         Fuel cell for electricity generation.
@@ -42,27 +42,29 @@ class FuelCell(Converter):
         Parameters
         ----------
         name : str
-            Name of the asset.
-        age_installed : int, default=0
-            Number of years the asset has already been in operation.
+            |name|
+        bus_in_hydrogen : CarrierBus
+            |bus_in_hydrogen|
+        bus_out_electricity : CarrierBus
+            |bus_out_electricity|
+        age_installed : float or int, optional (default: 0)
+            |age_installed|
         installed_capacity : float or None (default: None)
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        capex_spec : float, default=1000
-            Specific investment costs of the asset related to the
-            installed capacity (CAPEX).
-        opex_spec : float, default=10
-            Specific operational and maintenance costs of the asset
-            related to the installed capacity (opex_spec).
-        variable_costs : float, default=0.01
-            Costs associated with a flow through/from the asset
-            (variable_costs or fuel costs).
-        lifetime : int, default=20
-            Number of operational years of the asset until it has to
-            be replaced.
-        efficiency : float, default=0.8
-            Ratio of energy output to energy input.
+        capex_spec : float, optional (default: 1000)
+            |capex_spec|
+        opex_spec : float, optional (default: 10)
+            |opex_spec|
+        variable_costs : float, optional (default: 0)
+            |variable_costs|
+        lifetime : int, optional (default: 20)
+            |lifetime|
+        efficiency : float, optional (default: 0.8)
+            |efficiency|
+        project_data : Project object or None, optional (default: None)
+            |project_data|
 
         Examples
         --------
