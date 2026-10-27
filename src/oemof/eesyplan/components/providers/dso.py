@@ -17,10 +17,12 @@ class DSO(Node):
         bus: CarrierBus,
         energy_price: float
         | int
-        | npt.ArrayLike = 0.3,  # TODO: check if default is intended here (base class)
+        | npt.ArrayLike
+        | None = None,  # TODO: check if default is intended here (base class)
         feedin_tariff: float
         | int
-        | npt.ArrayLike = 0.1,  # TODO: check if default is intended here (base class)
+        | npt.ArrayLike
+        | None = None,  # TODO: check if default is intended here (base class)
         peak_demand_pricing: float | int = 0,
         peak_demand_pricing_period: int = 1,
         renewable_share: float | int = 0.44,
@@ -73,14 +75,27 @@ class DSO(Node):
         ... )
 
         """
+
         self.name = name
         self.bus = bus
         if isinstance(energy_price, list):
             energy_price = np.array(energy_price)
         self.energy_price = energy_price
+
+        if self.energy_price is not None:
+            consumption_flow = Flow(variable_costs=self.energy_price)
+        else:
+            consumption_flow = Flow()
+
         if isinstance(feedin_tariff, list):
             feedin_tariff = np.array(feedin_tariff)
         self.feedin_tariff = feedin_tariff
+
+        if self.feedin_tariff is not None:
+            feedin_flow = Flow(variable_costs=self.feedin_tariff * -1)
+        else:
+            feedin_flow = Flow()
+
         self.peak_demand_pricing = peak_demand_pricing
         self.peak_demand_pricing_period = peak_demand_pricing_period
         self.renewable_share = renewable_share  # Specific emission
@@ -92,7 +107,7 @@ class DSO(Node):
 
         self.subnode(
             Converter,
-            inputs={self.bus: Flow(variable_costs=self.feedin_tariff * -1)},
+            inputs={self.bus: feedin_flow},
             outputs={internal_bus: Flow()},
             local_name="feedin_converter",
         )
@@ -104,7 +119,7 @@ class DSO(Node):
         self.subnode(
             Converter,
             inputs={internal_bus: Flow()},
-            outputs={self.bus: Flow(variable_costs=self.energy_price)},
+            outputs={self.bus: consumption_flow},
             local_name="consumption_converter",
         )
 
