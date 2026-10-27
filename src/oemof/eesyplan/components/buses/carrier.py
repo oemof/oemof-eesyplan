@@ -14,19 +14,19 @@ class Bus(Bus):
         shortage_cost: float | int | None = None,
     ):
         """
-        Bus mit Energieträger-Information
+        Bus with carrier information
 
         Parameters
         ----------
         name : str or tuple
             |name|
-        carrier : str
+        carrier : str, optional (default: None)
             |carrier|
-        balanced : bool
+        balanced : bool, optional (default: True)
             |balanced|
-        excess_cost : float
+        excess_cost : float or int, optional (default: None)
             |excess_cost|
-        shortage_cost : float
+        shortage_cost : float or int, optional (default: None)
             |shortage_cost|
 
         Examples

@@ -20,7 +20,7 @@ class HeatingNetwork(Bus):
         ----------
         name : string
             |name|
-        absolute_losses : float, optional
+        absolute_losses : float, int or array-like, optional (default: None)
             |absolute_losses|
 
         Examples
