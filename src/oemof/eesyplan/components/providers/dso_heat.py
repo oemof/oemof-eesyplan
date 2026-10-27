@@ -63,5 +63,5 @@ class DsoHeat(DSO):
             energy_price=energy_price,
             feedin_tariff=feedin_tariff,
             peak_demand_pricing=peak_demand_pricing,
-            maximum_capacity=maximum_capacity
+            maximum_capacity=maximum_capacity,
         )
