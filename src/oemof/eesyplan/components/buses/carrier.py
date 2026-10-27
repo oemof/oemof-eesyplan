@@ -1,10 +1,10 @@
-from oemof.solph import Bus
+from oemof.solph import Bus as SolphBus
 from oemof.solph import Flow
 from oemof.solph.components import Sink
 from oemof.solph.components import Source
 
 
-class Bus(Bus):
+class Bus(SolphBus):
     def __init__(
         self,
         name: str | tuple,
