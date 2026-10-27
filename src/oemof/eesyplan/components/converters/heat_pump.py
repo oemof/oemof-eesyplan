@@ -1,7 +1,7 @@
 import numpy as np
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.components.buses.carrier import Bus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
@@ -12,16 +12,16 @@ class HeatPump(Converter):
         self,
         name: str,
         project_data: Project,
-        cop: float | int | npt.ArrayLike,
-        bus_in_electricity: CarrierBus,
-        bus_out_heat: CarrierBus,
-        bus_in_heat: CarrierBus | None = None,
+        cop: float | int | ArrayLike,
+        bus_in_electricity: Bus,
+        bus_out_heat: Bus,
+        bus_in_heat: Bus | None = None,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
         age_installed: float | int = 0,
         capex_spec: float | int = 0.0,
-        variable_costs: float | int | npt.ArrayLike = 0.0,
-        opex_spec: float | int | npt.ArrayLike = 0.0,  # CHECK
+        variable_costs: float | int | ArrayLike = 0.0,
+        opex_spec: float | int | ArrayLike = 0.0,  # CHECK
         lifetime: float | int = 20,
     ):
         """
@@ -51,11 +51,11 @@ class HeatPump(Converter):
             |project_data|
         cop : float or list-like
             |cop|
-        bus_in_electricity : CarrierBus
+        bus_in_electricity : Bus
             |bus_in_electricity|
-        bus_out_heat : CarrierBus
+        bus_out_heat : Bus
             |bus_out_heat|
-        bus_in_heat : CarrierBus or None, optional (default: None)
+        bus_in_heat : Bus or None, optional (default: None)
             |bus_in_heat|
         age_installed : int, default=0
             |age_installed|
@@ -75,10 +75,10 @@ class HeatPump(Converter):
         Examples
         --------
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import CarrierBus
-        >>> el_bus = CarrierBus(name="electricity_bus")
-        >>> ambient_heat_bus = CarrierBus(name="ambient_heat_bus")
-        >>> heat_bus = CarrierBus(name="heat_bus")
+        >>> from oemof.eesyplan import Bus
+        >>> el_bus = Bus(name="electricity_bus")
+        >>> ambient_heat_bus = Bus(name="ambient_heat_bus")
+        >>> heat_bus = Bus(name="heat_bus")
         >>> my_heat_pump = HeatPump(
         ...     name="air_source_heat_pump",
         ...     bus_in_electricity=el_bus,

@@ -1,6 +1,6 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.components.buses.carrier import Bus
 from oemof.eesyplan.components.providers.dso import DSO
 
 
@@ -8,9 +8,9 @@ class DsoHydrogen(DSO):
     def __init__(
         self,
         name: str,
-        bus_hydrogen: CarrierBus,
-        energy_price: float | int | npt.ArrayLike = 0.3,
-        feedin_tariff: float | int | npt.ArrayLike = 0.1,
+        bus_hydrogen: Bus,
+        energy_price: float | int | ArrayLike = 0.3,
+        feedin_tariff: float | int | ArrayLike = 0.1,
         peak_demand_pricing: float | int = 0,
         peak_demand_pricing_period: int = 1,
         renewable_share: float | int = 0.44,
@@ -36,7 +36,7 @@ class DsoHydrogen(DSO):
         ----------
         name : str
             |name|
-        bus_hydrogen : CarrierBus
+        bus_hydrogen : Bus
             |bus|
         energy_price : float or array-like, default=0.3
             |energy_price|
@@ -53,8 +53,8 @@ class DsoHydrogen(DSO):
 
         Examples
         --------
-        >>> from oemof.eesyplan import CarrierBus
-        >>> h2bus = CarrierBus(name="h2_bus")
+        >>> from oemof.eesyplan import Bus
+        >>> h2bus = Bus(name="h2_bus")
         >>> my_dso = DsoHydrogen(
         ...     name="main_grid",
         ...     bus_hydrogen=h2bus,

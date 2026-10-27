@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from oemof.eesyplan import CarrierBus as Bus
+from oemof.eesyplan import Bus as Bus
 from oemof.eesyplan import ChpFixedRatio
 from oemof.eesyplan import ChpVariableRatio
 from oemof.eesyplan import EnergySystem

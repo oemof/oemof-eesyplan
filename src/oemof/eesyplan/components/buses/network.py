@@ -1,16 +1,16 @@
-from numpy import typing as npt
+from numpy.typing import ArrayLike
 
-from oemof.eesyplan import CarrierBus
+from oemof.eesyplan import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Sink
 
 
-class HeatingNetwork(CarrierBus):
+class HeatingNetwork(Bus):
     def __init__(
         self,
         name: str,
         absolute_losses: (
-            float | int | npt.ArrayLike | None
+            float | int | ArrayLike | None
         ) = None,  # CHECK: siehe ToDo zur Einheit
     ):
         """

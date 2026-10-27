@@ -1,6 +1,6 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
-from oemof.eesyplan import CarrierBus
+from oemof.eesyplan import Bus
 from oemof.network import Node
 from oemof.solph import Flow
 from oemof.solph.components import Converter
@@ -11,11 +11,11 @@ class HeatingPipe(Node):
     def __init__(
         self,
         name: str,
-        bus_1_heat: CarrierBus,
-        bus_2_heat: CarrierBus,
+        bus_1_heat: Bus,
+        bus_2_heat: Bus,
         absolute_losses: float
         | int
-        | npt.ArrayLike
+        | ArrayLike
         | None = None,  # CHECK: siehe ToDo zur Einheit
         relative_losses: float | int = 0.0,
         return_pipe: bool = True,

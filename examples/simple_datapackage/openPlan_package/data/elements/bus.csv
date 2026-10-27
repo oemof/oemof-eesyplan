@@ -1,2 +1,2 @@
 name,type,carrier,balanced,excess,excess_costs
-electricity,CarrierBus,Electricity,True,False,0.0
+electricity,Bus,Electricity,True,False,0.0

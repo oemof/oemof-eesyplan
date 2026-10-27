@@ -2,7 +2,7 @@
 
 __version__ = "0.0.1"
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.components.buses.carrier import Bus
 from oemof.eesyplan.components.buses.network import HeatingNetwork
 from oemof.eesyplan.components.compensation.excess import Excess
 from oemof.eesyplan.components.compensation.shortage import Shortage
@@ -67,7 +67,7 @@ __all__ = [
     "AuxiliaryHeat",
     "BiogasPlant",
     "Boiler",
-    "CarrierBus",
+    "Bus",
     "ChpFixedRatio",
     "ChpVariableRatio",
     "Commodity",

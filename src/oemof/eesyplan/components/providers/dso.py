@@ -1,7 +1,7 @@
 import numpy as np
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.components.buses.carrier import Bus
 from oemof.network import Node
 from oemof.solph import Bus
 from oemof.solph import Flow
@@ -14,13 +14,13 @@ class DSO(Node):
     def __init__(
         self,
         name: str,
-        bus: CarrierBus,
+        bus: Bus,
         energy_price: float
         | int
-        | npt.ArrayLike = 0.3,  # TODO: check if default is intended here (base class)
+        | ArrayLike = 0.3,  # TODO: check if default is intended here (base class)
         feedin_tariff: float
         | int
-        | npt.ArrayLike = 0.1,  # TODO: check if default is intended here (base class)
+        | ArrayLike = 0.1,  # TODO: check if default is intended here (base class)
         peak_demand_pricing: float | int = 0,
         peak_demand_pricing_period: int = 1,
         renewable_share: float | int = 0.44,
@@ -46,7 +46,7 @@ class DSO(Node):
         ----------
         name : str
             |name|
-        bus : CarrierBus
+        bus : Bus
             |bus|
         energy_price : float or array-like, default=0.3
             |energy_price|
@@ -63,8 +63,8 @@ class DSO(Node):
 
         Examples
         --------
-        >>> from oemof.eesyplan import CarrierBus
-        >>> ebus = CarrierBus(name="any_bus")
+        >>> from oemof.eesyplan import Bus
+        >>> ebus = Bus(name="any_bus")
         >>> my_dso = DSO(
         ...     name="any_network",
         ...     bus=ebus,
