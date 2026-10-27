@@ -12,6 +12,7 @@ class HeatingNetwork(CarrierBus):
         absolute_losses: (
             float | int | npt.ArrayLike | None
         ) = None,  # CHECK: siehe ToDo zur Einheit
+        excess_cost=None,
     ):
         """
         Heating Network Bus
@@ -29,7 +30,9 @@ class HeatingNetwork(CarrierBus):
         """
         self.name = name
 
-        super().__init__(name=self.name, carrier="heat")
+        super().__init__(
+            name=self.name, carrier="heat", excess_cost=excess_cost
+        )
 
         if absolute_losses is not None:
             self.subnode(
