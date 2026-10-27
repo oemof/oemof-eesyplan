@@ -37,9 +37,14 @@ class GeothermalPlant(Source):
           *output*
             1. to_bus : Heat
 
+        Optimisation
+        ------------
+          The characteristic quantity of the optimization is the *nominal
+          power-output* of the geothermal plant given in kW
+
         Parameters
         ----------
-        project_data: Project object
+        project_data : Project object
             |project_data|
         bus_out_heat : bus object
             |bus_out_heat|

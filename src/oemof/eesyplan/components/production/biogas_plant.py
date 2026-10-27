@@ -44,7 +44,7 @@ class BiogasPlant(Source):
 
         Parameters
         ----------
-        project_data: Project object
+        project_data : Project object
             |project_data|
         bus_out_fuel : bus object
             |bus_out_fuel|

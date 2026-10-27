@@ -22,22 +22,22 @@ class Commodity(Source):
         ----------
         name : string
             |name|
-        bus_out : Node object
+        bus_out : bus object
             |bus_out|
-        commodity : string
+        commodity : string, optional (default: None)
             |commodity|
-        capacity : float
+        capacity : float, optional (default: None)
             |capacity|
-        full_load_time_max : float, optional
+        full_load_time_max : float, optional (default: None)
             |full_load_time_max|
-        variable_costs : float, optional
+        variable_costs : float, optional (default: 0)
             |variable_costs|
 
         Examples
         --------
-        >>> # Limited by the capacity in yearly system with houry time steps.
+        >>> # Limited by the capacity in yearly system with hourly time steps.
         >>> # In every time step the output will be between 0 and 10
-                >>> from oemof.eesyplan import Bus
+        >>> from oemof.eesyplan import Bus
         >>> gas_bus = Bus(name="natural_gas_bus")
         >>> wood = Commodity(
         ...     name="Commodity",

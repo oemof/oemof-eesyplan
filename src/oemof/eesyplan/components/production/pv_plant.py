@@ -44,7 +44,7 @@ class PvPlant(Source):
 
         Parameters
         ----------
-        project_data: Project object
+        project_data : Project object
             |project_data|
         bus_out_electricity : bus object
             |bus_out_electricity|

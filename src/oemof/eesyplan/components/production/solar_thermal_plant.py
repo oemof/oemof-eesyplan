@@ -37,10 +37,15 @@ class SolarThermalPlant(Source):
           *output*
             1. to_bus : Heat
 
+        Optimisation
+        ------------
+          The characteristic quantity of the optimization is the *nominal
+          power-output* of the solar thermal plant given in kW
+
         Parameters
         ----------
-        project_data: Project object
-           |project_data|
+        project_data : Project object
+            |project_data|
         bus_out_heat : bus object
             |bus_out_heat|
         input_timeseries : array-like
