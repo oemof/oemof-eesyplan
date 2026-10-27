@@ -1,6 +1,6 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.components.buses.carrier import Bus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
@@ -10,21 +10,21 @@ class Electrolyzer(Converter):
     def __init__(
         self,
         name: str,
-        bus_in_electricity: CarrierBus,
-        bus_out_hydrogen: CarrierBus,
+        bus_in_electricity: Bus,
+        bus_out_hydrogen: Bus,
         project_data: Project,
-        bus_out_heat: CarrierBus | None = None,
-        efficiency: float | int | npt.ArrayLike = 0.3,  # CHECK
+        bus_out_heat: Bus | None = None,
+        efficiency: float | int | ArrayLike = 0.3,  # CHECK
         # CHECK: sequence ok? Naming still open - originally flagged in
         # docstring as "TODO find a good attribute name"; description
         # text added in Pass 3, parameter name itself not decided yet.
-        efficiency_heat: float | int | npt.ArrayLike = 0.6,
+        efficiency_heat: float | int | ArrayLike = 0.6,
         age_installed: float | int = 0,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
         capex_spec: float | int = 1000,
-        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
-        variable_costs: float | int | npt.ArrayLike = 0,
+        opex_spec: float | int | ArrayLike = 10,  # CHECK
+        variable_costs: float | int | ArrayLike = 0,
         lifetime: float | int = 20,
     ):
         """
@@ -50,13 +50,13 @@ class Electrolyzer(Converter):
         ----------
         name : str
             |name|
-        bus_in_electricity : CarrierBus
+        bus_in_electricity : Bus
             |bus_in_electricity|
-        bus_out_hydrogen : CarrierBus
+        bus_out_hydrogen : Bus
             |bus_out_hydrogen|
         project_data : Project object
             |project_data|
-        bus_out_heat : CarrierBus or None, optional (default: None)
+        bus_out_heat : Bus or None, optional (default: None)
             |bus_out_heat|
         efficiency : float, optional (default: 0.3)
             |efficiency|
@@ -81,10 +81,10 @@ class Electrolyzer(Converter):
         --------
 
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import CarrierBus
-        >>> el_bus_in = CarrierBus(name="el_bus_in")
-        >>> heat_bus_out = CarrierBus(name="heat_bus_out")
-        >>> h2_bus_out = CarrierBus(name="h2_bus_out")
+        >>> from oemof.eesyplan import Bus
+        >>> el_bus_in = Bus(name="el_bus_in")
+        >>> heat_bus_out = Bus(name="heat_bus_out")
+        >>> h2_bus_out = Bus(name="h2_bus_out")
         >>> my_electrolyzer = Electrolyzer(
         ...     name="Electrolyzer",
         ...     bus_in_electricity=el_bus_in,

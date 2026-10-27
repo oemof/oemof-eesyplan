@@ -1,6 +1,6 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.components.buses.carrier import Bus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Source
@@ -10,15 +10,15 @@ class WindTurbine(Source):
     def __init__(
         self,
         project_data: Project,
-        bus_out_electricity: CarrierBus,
-        input_timeseries: npt.ArrayLike,
+        bus_out_electricity: Bus,
+        input_timeseries: ArrayLike,
         name: str,
         age_installed: float | int = 0,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
         capex_spec: float | int = 1000,
-        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
-        variable_costs: float | int | npt.ArrayLike = 0,
+        opex_spec: float | int | ArrayLike = 10,  # CHECK
+        variable_costs: float | int | ArrayLike = 0,
         lifetime: float | int = 20,
         renewable_asset: bool = True,
     ):
@@ -44,7 +44,7 @@ class WindTurbine(Source):
 
         Parameters
         ----------
-        project_data: Project object
+        project_data : Project object
             |project_data|
         bus_out_electricity : bus object
             |bus_out_electricity|
@@ -73,14 +73,14 @@ class WindTurbine(Source):
         Examples
         --------
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import CarrierBus
+        >>> from oemof.eesyplan import Bus
         >>> my_project = Project(
         ...         name="my_project",
         ...         economic_period=20,
         ...         tax=0,
         ...         discount_factor=0.01
         ...     )
-        >>> el_bus = CarrierBus(name="my_electricity_bus")
+        >>> el_bus = Bus(name="my_electricity_bus")
         >>> my_wind = WindTurbine(
         ...     bus_out_electricity=el_bus,
         ...     name="my_wind_plant",

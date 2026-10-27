@@ -1,6 +1,6 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.components.buses.carrier import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Source
 
@@ -9,11 +9,11 @@ class Commodity(Source):
     def __init__(
         self,
         name: str,
-        bus_out: CarrierBus,
+        bus_out: Bus,
         commodity: str | None = None,
         capacity: float | int | None = None,
         full_load_time_max: float | int | None = None,
-        variable_costs: float | int | npt.ArrayLike = 0,
+        variable_costs: float | int | ArrayLike = 0,
     ):
         """
         General Commodity.
@@ -22,23 +22,23 @@ class Commodity(Source):
         ----------
         name : string
             |name|
-        bus_out : Node object
+        bus_out : bus object
             |bus_out|
-        commodity : string
+        commodity : string, optional (default: None)
             |commodity|
-        capacity : float
+        capacity : float, optional (default: None)
             |capacity|
-        full_load_time_max : float, optional
+        full_load_time_max : float, optional (default: None)
             |full_load_time_max|
-        variable_costs : float, optional
+        variable_costs : float, optional (default: 0)
             |variable_costs|
 
         Examples
         --------
-        >>> # Limited by the capacity in yearly system with houry time steps.
+        >>> # Limited by the capacity in yearly system with hourly time steps.
         >>> # In every time step the output will be between 0 and 10
-                >>> from oemof.eesyplan import CarrierBus
-        >>> gas_bus = CarrierBus(name="natural_gas_bus")
+        >>> from oemof.eesyplan import Bus
+        >>> gas_bus = Bus(name="natural_gas_bus")
         >>> wood = Commodity(
         ...     name="Commodity",
         ...     bus_out=gas_bus,
@@ -50,8 +50,8 @@ class Commodity(Source):
         >>> # one timestep or can be used in 10 units in every time step. And
         >>> # everything between. Typically, a following boiler will restrict
         >>> # the capacity.
-        >>> from oemof.eesyplan import CarrierBus
-        >>> wood_bus = CarrierBus(name="wood_bus")
+        >>> from oemof.eesyplan import Bus
+        >>> wood_bus = Bus(name="wood_bus")
         >>> wood = Commodity(
         ...     name="Commodity",
         ...     bus_out=wood_bus,

@@ -1,13 +1,13 @@
 import pytest
 
-from oemof.eesyplan import CarrierBus
+from oemof.eesyplan import Bus
 from oemof.eesyplan import Electrolyzer
 from oemof.eesyplan import Project
 
 
 def test_error_message():
-    el_bus_in = CarrierBus(name="Electricity")
-    h2_bus_out = CarrierBus(name="H2-Bus")
+    el_bus_in = Bus(name="Electricity")
+    h2_bus_out = Bus(name="H2-Bus")
     msg = (
         "Maximum capacity and installed capacity can't be set at the same time"
     )

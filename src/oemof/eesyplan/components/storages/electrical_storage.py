@@ -1,6 +1,6 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.components.buses.carrier import Bus
 from oemof.eesyplan.components.storages.storage import EnergyStorage
 from oemof.eesyplan.project import Project
 
@@ -10,20 +10,20 @@ class ElectricalStorage(EnergyStorage):
         self,
         name: str,
         project_data: Project,
-        bus_in_electricity: CarrierBus,
-        bus_out_electricity: CarrierBus | None = None,
+        bus_in_electricity: Bus,
+        bus_out_electricity: Bus | None = None,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
         age_installed: float | int = 0,
         capex_spec: float | int = 0,
-        opex_spec: float | int | npt.ArrayLike = 0,  # CHECK
-        variable_costs: float | int | npt.ArrayLike = 0,
+        opex_spec: float | int | ArrayLike = 0,  # CHECK
+        variable_costs: float | int | ArrayLike = 0,
         lifetime: float | int = 20,
-        soc_max: float | int | npt.ArrayLike = 1,  # CHECK
-        soc_min: float | int | npt.ArrayLike = 0,  # CHECK
-        loss_rate: float | int | npt.ArrayLike = 0.0,  # CHECK
-        efficiency_charge: float | int | npt.ArrayLike = 1.0,  # CHECK
-        efficiency_discharge: float | int | npt.ArrayLike = 1.0,  # CHECK
+        soc_max: float | int | ArrayLike = 1,  # CHECK
+        soc_min: float | int | ArrayLike = 0,  # CHECK
+        loss_rate: float | int | ArrayLike = 0.0,  # CHECK
+        efficiency_charge: float | int | ArrayLike = 1.0,  # CHECK
+        efficiency_discharge: float | int | ArrayLike = 1.0,  # CHECK
         c_rate_charge: float | int = 1.0,
         c_rate_discharge: float | int | None = None,
         initial_storage_level: float | int | None = None,
@@ -56,9 +56,9 @@ class ElectricalStorage(EnergyStorage):
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        bus_in_electricity : CarrierBus
+        bus_in_electricity : Bus
             |bus_in_electricity|
-        bus_out_electricity : CarrierBus | None, optional (default: None)
+        bus_out_electricity : Bus | None, optional (default: None)
             |bus_out_electricity|
         age_installed : float or int, optional (default: 0)
             |age_installed|
@@ -88,14 +88,14 @@ class ElectricalStorage(EnergyStorage):
         Examples
         --------
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import CarrierBus
+        >>> from oemof.eesyplan import Bus
         >>> my_project = Project(
         ...         name="my_project",
         ...         economic_period=20,
         ...         tax=0,
         ...         discount_factor=0.01
         ...     )
-        >>> el_bus = CarrierBus(name="my_electricity_bus")
+        >>> el_bus = Bus(name="my_electricity_bus")
         >>> my_bess = ElectricalStorage(
         ...     name="lithium_battery_system",
         ...     project_data=my_project,

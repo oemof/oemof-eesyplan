@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from oemof.eesyplan import CarrierBus
+from oemof.eesyplan import Bus
 from oemof.eesyplan import DsoElectricity
 from oemof.eesyplan import ElectricalStorage
 from oemof.eesyplan import ElectricityDemand
@@ -47,7 +47,7 @@ def simple_script():
     # ######################### create energysystem components ################
 
     # carrier
-    bus_elec = CarrierBus(name="electricity")
+    bus_elec = Bus(name="electricity")
 
     energy_system.add(bus_elec)
 

@@ -9,6 +9,47 @@ from oemof.solph.components import Source
 
 
 class DSO(Node):
+    """
+    Generic energy provider for distribution.
+
+    This class represents a distribution system operator (DSO) that
+    provides energy from the utility grid with pricing and
+    feedin capabilities.
+
+    .. important ::
+        The renewable share affects the overall system renewable
+        factor calculation.
+
+    Structure
+    ---------
+    *input* & *output*
+        bus : Any Carrier
+
+    Parameters
+    ----------
+    name
+        |name|
+    energy_price
+        |energy_prices|
+    feedin_tariff
+        |feedin_tariff|
+    peak_demand_pricing
+        |peak_demand_pricing|
+    maximum_capacity
+        |maximum_capacity|
+
+    Examples
+    --------
+    >>> from oemof.eesyplan import CarrierBus
+    >>> ebus = CarrierBus(name="any_bus")
+    >>> my_dso = DSO(
+    ...     name="any_network",
+    ...     bus=ebus,
+    ...     energy_price=0.25,
+    ...     feedin_tariff=0.08,
+    ... )
+
+    """
     def __init__(
         self,
         name: str,
@@ -19,47 +60,6 @@ class DSO(Node):
         peak_demand_pricing: float | int = 0,
         basic_amount=0,  # Warnung, weil nur für Profis :-)
     ):
-        """
-        Generic energy provider for distribution.
-
-        This class represents a distribution system operator (DSO) that
-        provides energy from the utility grid with pricing and
-        feedin capabilities.
-
-        .. important ::
-            The renewable share affects the overall system renewable
-            factor calculation.
-
-        Structure
-        ---------
-        *input* & *output*
-            bus : Any
-
-        Parameters
-        ----------
-        name : str
-            |name|
-        energy_price
-            |energy_prices|
-        feedin_tariff
-            |feedin_tariff|
-        peak_demand_pricing
-            |peak_demand_pricing|
-        maximum_capacity
-            |maximum_capacity|
-
-        Examples
-        --------
-        >>> from oemof.eesyplan import CarrierBus
-        >>> ebus = CarrierBus(name="any_bus")
-        >>> my_dso = DSO(
-        ...     name="any_network",
-        ...     bus=ebus,
-        ...     energy_price=0.25,
-        ...     feedin_tariff=0.08,
-        ... )
-
-        """
         self.name = name
         self.bus = bus
         self.maximum_capacity = maximum_capacity

@@ -1,6 +1,6 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
-from oemof.eesyplan import CarrierBus
+from oemof.eesyplan import Bus
 from oemof.network import Node
 from oemof.solph import Flow
 from oemof.solph.components import Converter
@@ -11,11 +11,11 @@ class HeatingPipe(Node):
     def __init__(
         self,
         name: str,
-        bus_1_heat: CarrierBus,
-        bus_2_heat: CarrierBus,
+        bus_1_heat: Bus,
+        bus_2_heat: Bus,
         absolute_losses: float
         | int
-        | npt.ArrayLike
+        | ArrayLike
         | None = None,  # CHECK: siehe ToDo zur Einheit
         relative_losses: float | int = 0.0,
         return_pipe: bool = True,
@@ -23,15 +23,24 @@ class HeatingPipe(Node):
         """
         Bidirectional Heating Pipe.
 
+        Structure
+        ---------
+          *input*
+            1. bus_1_heat : Heat
+            2. bus_2_heat : Heat (only if return_pipe is True)
+          *output*
+            1. bus_2_heat : Heat
+            2. bus_1_heat : Heat (only if return_pipe is True)
+
         Parameters
         ----------
         name : string
             |name|
-        bus_1_heat : Node object
+        bus_1_heat : Bus
             |bus_1_heat|
-        bus_2_heat : Node object
+        bus_2_heat : Bus
             |bus_2_heat|
-        absolute_losses : float, optional (default: None)
+        absolute_losses : float, int or array-like, optional (default: None)
             |absolute_losses|
         relative_losses : float, optional (default: 0.0)
             |relative_losses|
@@ -43,9 +52,9 @@ class HeatingPipe(Node):
         >>> from oemof.eesyplan.components.buses.network import HeatingNetwork
         >>> w = HeatingNetwork(name="Heating Network West", absolute_losses=5)
         >>> e = HeatingNetwork(name="Heating Network East")
-        >>> pipe1 =HeatingPipe(name="pipe1", bus_1_heat=w, bus_2_heat=e,
+        >>> pipe1 = HeatingPipe(name="pipe1", bus_1_heat=w, bus_2_heat=e,
         ...                    relative_losses=0.1, return_pipe=True)
-        >>> pipe2 =HeatingPipe(name="pipe1", bus_1_heat=w, bus_2_heat=e,
+        >>> pipe2 = HeatingPipe(name="pipe1", bus_1_heat=w, bus_2_heat=e,
         ...                    absolute_losses=1, return_pipe=False)
 
         """

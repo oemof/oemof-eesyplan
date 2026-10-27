@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.solph import Bus
 from oemof.eesyplan.components.providers.dso import DSO
 
 
@@ -8,7 +8,7 @@ class DsoElectricity(DSO):
     def __init__(
         self,
         name: str,
-        bus_electricity: CarrierBus,
+        bus_electricity: Bus,
         energy_price: float | int | ArrayLike | None = None,
         feedin_tariff: float | int | ArrayLike | None = None,
         peak_demand_pricing: float | int = 0,
@@ -32,9 +32,9 @@ class DsoElectricity(DSO):
 
         Parameters
         ----------
-        name : str
+        name
             |name|
-        bus_electricity : CarrierBus
+        bus_electricity
             |bus|
         maximum_capacity
             |maximum_capacity|
@@ -42,7 +42,7 @@ class DsoElectricity(DSO):
             |energy_price|
         feedin_tariff
             |feedin_tariff|
-        peak_demand_pricing : float, default=0
+        peak_demand_pricing
             |peak_demand_pricing|
 
         Examples
