@@ -37,7 +37,7 @@ class Shortage(Source):
             |name|
         bus_out : Bus
             |bus_out|
-        cost : float or array-like
+        cost : float, int or array-like
             |shortage_cost|
 
         Examples

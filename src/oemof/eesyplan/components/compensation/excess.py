@@ -38,7 +38,7 @@ class Excess(Sink):
             |name|
         bus_in : Bus
             |bus_in|
-        cost : float or array-like
+        cost : float, int or array-like
             |excess_cost|
 
         Examples
