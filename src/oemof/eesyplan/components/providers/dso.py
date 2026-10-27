@@ -1,6 +1,7 @@
 from numpy.typing import ArrayLike
 
 from oemof.network import Node
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph import Investment
 from oemof.solph.components import Sink
@@ -11,12 +12,11 @@ class DSO(Node):
     def __init__(
         self,
         name: str,
-        bus: CarrierBus,
+        bus: Bus,
         energy_price: float | int | ArrayLike | None = None,
         feedin_tariff: float | int | ArrayLike | None = None,
         maximum_capacity: float | int | None = None,
         peak_demand_pricing: float | int = 0,
-        # peak_demand_pricing_period=1, ToDo: Still important? Not used!
         basic_amount=0,  # Warnung, weil nur für Profis :-)
     ):
         """
@@ -46,7 +46,7 @@ class DSO(Node):
         peak_demand_pricing
             |peak_demand_pricing|
         maximum_capacity
-            |feedin_cap|
+            |maximum_capacity|
 
         Examples
         --------
