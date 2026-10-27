@@ -4,6 +4,7 @@ import pytest
 from oemof.eesyplan import CarrierBus as Bus
 from oemof.eesyplan import ChpFixedRatio
 from oemof.eesyplan import ChpVariableRatio
+from oemof.eesyplan import DsoFuel
 from oemof.eesyplan import EnergySystem
 from oemof.eesyplan import Project
 from oemof.eesyplan import optimise
@@ -106,6 +107,39 @@ def test_chp_variable(buses, project, installed, maximum):
     gas_bus, heat_bus, el_bus = buses
     chp_var = build_chp_variable(buses, project, installed, maximum)
     es.add(chp_var)
+
+    results = optimise(es)
+    flows = results["flow"]
+    flow_sum = flows.sum()
+
+    capacity = installed or maximum
+    energy = capacity * NUMBER
+
+    assert flow_sum[chp_var, el_bus] == energy
+    assert flow_sum[chp_var, heat_bus] == 0
+    assert flow_sum[chp_var, el_bus] / (
+        chp_var.efficiency_electricity_state_a
+    ) == pytest.approx(flow_sum[gas_bus, chp_var], 0.00001)
+
+
+# Two cases: Dispatch (300, None), Investment (None, 300)
+@pytest.mark.parametrize(("installed", "maximum"), [(300, None), (None, 300)])
+def test_chp_variable_with_fuel_dso(project, installed, maximum):
+    gas_bus = Bus(name="gas_bus")
+    heat_bus = Bus(name="heat_bus", balanced=False)
+    el_bus = Bus(name="electricity_bus", balanced=False)
+    buses = (gas_bus, heat_bus, el_bus)
+    es = build_energy_system(buses)
+    chp_var = build_chp_variable(buses, project, installed, maximum)
+    es.add(chp_var)
+    gas_dso = DsoFuel(
+        name="gas_dso",
+        bus_fuel=gas_bus,
+        energy_price=0.2,
+        renewable_share=0.44,
+    )
+
+    es.add(gas_dso)
 
     results = optimise(es)
     flows = results["flow"]
