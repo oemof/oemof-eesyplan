@@ -1,5 +1,8 @@
 import numpy as np
+import numpy.typing as npt
 
+from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 
@@ -7,19 +10,19 @@ from oemof.solph.components import Converter
 class HeatPump(Converter):
     def __init__(
         self,
-        name,
-        project_data,
-        cop,
-        bus_in_electricity,
-        bus_out_heat,
-        bus_in_heat=None,
-        installed_capacity=None,
-        maximum_capacity=None,
-        age_installed=0,
-        capex_spec=0.0,
-        variable_costs=0.0,
-        opex_spec=0.0,
-        lifetime=20,
+        name: str,
+        project_data: Project,
+        cop: float | int | npt.ArrayLike,
+        bus_in_electricity: CarrierBus,
+        bus_out_heat: CarrierBus,
+        bus_in_heat: CarrierBus | None = None,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        age_installed: float | int = 0,
+        capex_spec: float | int = 0.0,
+        variable_costs: float | int | npt.ArrayLike = 0.0,
+        opex_spec: float | int | npt.ArrayLike = 0.0,  # CHECK
+        lifetime: float | int = 20,
     ):
         """
         Heat pump for efficient heat generation.
@@ -44,6 +47,16 @@ class HeatPump(Converter):
         ----------
         name : str
             |name|
+        project_data : Project object
+            |project_data|
+        cop : float or list-like
+            |cop|
+        bus_in_electricity : CarrierBus
+            |bus_in_electricity|
+        bus_out_heat : CarrierBus
+            |bus_out_heat|
+        bus_in_heat : CarrierBus or None, optional (default: None)
+            |bus_in_heat|
         age_installed : int, default=0
             |age_installed|
         installed_capacity : float or None (default: None)
@@ -58,10 +71,6 @@ class HeatPump(Converter):
             |opex_spec|
         lifetime : int, default=20
             |lifetime|
-        maximum_capacity : float or None, default=None
-            |maximum_capacity|
-        cop : float or list-like, default=0.8
-            |cop|
 
         Examples
         --------

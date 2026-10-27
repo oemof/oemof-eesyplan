@@ -1,4 +1,8 @@
+import numpy as np
+from numpy.typing import ArrayLike
+
 from oemof.network import Node
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph import Investment
 from oemof.solph.components import Sink
@@ -8,20 +12,28 @@ from oemof.solph.components import Source
 class DSO(Node):
     def __init__(
         self,
-        name,
-        bus,
-        energy_price=None,
-        feedin_tariff=None,
-        maximum_capacity=None,
-        peak_demand_pricing=0,
+       name: str,
+        bus: CarrierBus,
+        energy_price: float
+        | int
+        | ArrayLike 
+        | None = None,
+        feedin_tariff: float
+        | int
+        | ArrayLike 
+        | None = None,
+        maximum_capacity: float
+        | int
+        | None = None,
+        peak_demand_pricing: float | int = 0,
         # peak_demand_pricing_period=1, ToDo: Still important? Not used!
         basic_amount=0,  # Warnung, weil nur für Profis :-)
     ):
         """
-        Energy provider for electricity distribution.
+        Generic energy provider for distribution.
 
         This class represents a distribution system operator (DSO) that
-        provides electricity from the utility grid with pricing and
+        provides energy from the utility grid with pricing and
         feedin capabilities.
 
         .. important ::
@@ -31,25 +43,25 @@ class DSO(Node):
         Structure
         ---------
         *input* & *output*
-            bus : Electricity
+            bus : Any
 
         Parameters
         ----------
         name : str
             |name|
-        energy_price : float, default=0.3
+        energy_price
             |energy_prices|
-        feedin_tariff : float, default=0.1
+        feedin_tariff
             |feedin_tariff|
-        peak_demand_pricing : float, default=0
+        peak_demand_pricing
             |peak_demand_pricing|
-        maximum_capacity : float or None, default=None
+        maximum_capacity
             |feedin_cap|
 
         Examples
         --------
-        >>> from oemof.solph import Bus
-        >>> ebus = Bus(label="any_bus")
+        >>> from oemof.eesyplan import CarrierBus
+        >>> ebus = CarrierBus(name="any_bus")
         >>> my_dso = DSO(
         ...     name="any_network",
         ...     bus=ebus,

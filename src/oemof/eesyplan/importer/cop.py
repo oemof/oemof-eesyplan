@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.typing as npt
 
 try:
     from tespy.components import Compressor
@@ -12,7 +13,9 @@ except (ImportError, ModuleNotFoundError):
 
 
 def calculate_cop_simple(
-    temperature_source, temperature_supply, quality_factor
+    temperature_source: float | int | npt.ArrayLike,
+    temperature_supply: float | int | npt.ArrayLike,
+    quality_factor: float | int,
 ):
     """
 
@@ -48,12 +51,12 @@ def calculate_cop_simple(
 
 
 def calculate_cop_tespy(
-    temperature_source,
-    temperature_supply,
-    refrigerant="R290",
-    capacity=1000,
-    pressure_loss_factor_hex=1,
-    eta_s=0.55,
+    temperature_source: float | int | npt.ArrayLike,
+    temperature_supply: float | int | npt.ArrayLike,
+    refrigerant: str = "R290",
+    capacity: float | int = 1000,
+    pressure_loss_factor_hex: float | int = 1,
+    eta_s: float | int = 0.55,
 ):
     """
     Temperature input must have the same length.

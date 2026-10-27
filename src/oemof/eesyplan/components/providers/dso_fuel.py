@@ -1,14 +1,17 @@
+from numpy.typing import ArrayLike
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.providers.dso import DSO
 
 
 class DsoFuel(DSO):
     def __init__(
         self,
-        name,
-        bus_fuel,
-        energy_price=0.3,
-        feedin_tariff=0.1,
-        peak_demand_pricing=0,
+        name: str,
+        bus_fuel: CarrierBus,
+        energy_price: float | int | ArrayLike | None = None,
+        feedin_tariff: float | int | ArrayLike | None = None,
+        peak_demand_pricing: float | int = 0,
         maximum_capacity=None,
     ):
         """
@@ -31,22 +34,24 @@ class DsoFuel(DSO):
         ----------
         name : str
             |name|
-        maximum_capacity : float or None, default: None
+        bus_fuel
+            |bus|
+        maximum_capacity
             |maximum_capacity|
-        energy_price : float or None, default=0.3
+        energy_price
             |energy_prices|
-        feedin_tariff : float or None, default=0.1
+        feedin_tariff
             |feedin_tariff|
-        peak_demand_pricing : float, default=0
+        peak_demand_pricing
             |peak_demand_pricing|
 
         Examples
         --------
         >>> from oemof.eesyplan import CarrierBus
-        >>> gbus = CarrierBus(name="gas_bus")
+        >>> fbus = CarrierBus(name="fuel_bus")
         >>> my_dso = DsoFuel(
         ...     name="main_grid",
-        ...     bus_fuel=gbus,
+        ...     bus_fuel=fbus,
         ...     energy_price=0.25,
         ...     feedin_tariff=0.08,
         ... )

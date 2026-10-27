@@ -1,15 +1,18 @@
+from numpy.typing import ArrayLike
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.providers.dso import DSO
 
 
 class DsoHeat(DSO):
     def __init__(
         self,
-        name,
-        bus_heat,
-        energy_price=0.3,
-        feedin_tariff=0.1,
-        peak_demand_pricing=0,
-        maximum_capacity=None,
+        name: str,
+        bus_heat: CarrierBus,
+        energy_price: float | int | ArrayLike | None = None,
+        feedin_tariff: float | int | ArrayLike | None = None,
+        peak_demand_pricing: float | int = 0,
+        maximum_capacity: float | int | None = None,
     ):
         """
         Energy provider for heat distribution.
@@ -29,15 +32,17 @@ class DsoHeat(DSO):
 
         Parameters
         ----------
-        name : str
+        name
             |name|
-        maximum_capacity : float or None, default: None
+        bus_heat
+            |bus|
+        maximum_capacity
             |maximum_capacity|
-        energy_price : float or None, default=0.3
+        energy_price
             |energy_prices|
-        feedin_tariff : float or None, default=0.1
+        feedin_tariff
             |feedin_tariff|
-        peak_demand_pricing : float, default=0
+        peak_demand_pricing
             |peak_demand_pricing|
 
         Examples

@@ -96,7 +96,7 @@ def simple_script(pv_installed_cap=1.0, optimize_battery=False):
             c_rate_charge=1.0,
             efficiency_charge=0.99,
             project_data=project,
-            self_discharge=0.000,
+            loss_rate=0.000,
         )
     )
 
@@ -142,5 +142,5 @@ def test_sankey_diagram():
 
     # Überprüfe Gesamtfluss mit Toleranz
     total_flow = sum(actual_data["link"]["value"])
-    expected_total_flow = 880.9083295884674
+    expected_total_flow = 888.0125834243663
     assert abs(total_flow - expected_total_flow) < 1e-6

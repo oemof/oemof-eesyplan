@@ -1,4 +1,6 @@
 sphinx>=1.3
 furo
+sphinx-design
 oemof-solph
 oemof-network
+oemof-demand

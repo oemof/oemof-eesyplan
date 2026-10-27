@@ -1,15 +1,18 @@
+from numpy.typing import ArrayLike
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.providers.dso import DSO
 
 
 class DsoHydrogen(DSO):
     def __init__(
         self,
-        name,
-        bus_h2,
-        energy_price=0.3,
-        feedin_tariff=0.1,
-        peak_demand_pricing=0,
-        maximum_capacity=None,
+        name: str,
+        bus_hydrogen: CarrierBus,
+        energy_price: float | int | ArrayLike | None = None,
+        feedin_tariff: float | int | ArrayLike | None = None,
+        peak_demand_pricing: float | int = 0,
+        maximum_capacity: float | int | None = None,
     ):
         """
         Energy provider for hydrogen distribution.
@@ -25,19 +28,21 @@ class DsoHydrogen(DSO):
         Structure
         ---------
         *input* & *output*
-            bus : bus_h2
+            bus : Hydrogen
 
         Parameters
         ----------
         name : str
             |name|
-        maximum_capacity : float or None, default: None
+        bus_hydrogen
+            |bus|
+        maximum_capacity
             |maximum_capacity|
-        energy_price : float or None, default=0.3
+        energy_price
             |energy_prices|
-        feedin_tariff : float or None, default=0.1
+        feedin_tariff
             |feedin_tariff|
-        peak_demand_pricing : float, default=0
+        peak_demand_pricing
             |peak_demand_pricing|
 
         Examples
@@ -46,7 +51,7 @@ class DsoHydrogen(DSO):
         >>> h2bus = CarrierBus(name="h2_bus")
         >>> my_dso = DsoHydrogen(
         ...     name="main_grid",
-        ...     bus_h2=h2bus,
+        ...     bus_hydrogen=h2bus,
         ...     energy_price=0.25,
         ...     feedin_tariff=0.08,
         ... )
@@ -54,7 +59,7 @@ class DsoHydrogen(DSO):
         """
         super().__init__(
             name=name,
-            bus=bus_h2,
+            bus=bus_hydrogen,
             energy_price=energy_price,
             feedin_tariff=feedin_tariff,
             peak_demand_pricing=peak_demand_pricing,

@@ -76,3 +76,7 @@ docs/_build
 */results/*
 /examples/solve_any_datapackage
 *.graphml
+/.venv
+/test_cases/*
+/ci/*.csv
+/examples/simple_script/tester/*

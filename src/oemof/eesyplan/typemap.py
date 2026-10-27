@@ -1,6 +1,7 @@
+from oemof.eesyplan import HeatingNetwork
 from oemof.eesyplan.components.buses.carrier import CarrierBus
-from oemof.eesyplan.components.compansation.excess import Excess
-from oemof.eesyplan.components.compansation.shortage import Shortage
+from oemof.eesyplan.components.compensation.excess import Excess
+from oemof.eesyplan.components.compensation.shortage import Shortage
 from oemof.eesyplan.components.converters.auxiliary_heat import AuxiliaryHeat
 from oemof.eesyplan.components.converters.boiler import Boiler
 from oemof.eesyplan.components.converters.chp_fixed_ratio import ChpFixedRatio
@@ -46,7 +47,6 @@ from oemof.eesyplan.components.storages.fuel_storage import FuelStorage
 from oemof.eesyplan.components.storages.hydrogen_storage import HydrogenStorage
 from oemof.eesyplan.components.storages.storage import EnergyStorage
 from oemof.eesyplan.components.storages.thermal_storage import ThermalStorage
-from oemof.eesyplan.components.transport.heat import HeatingNetwork
 from oemof.eesyplan.components.transport.heat import HeatingPipe
 from oemof.eesyplan.project import Project
 from oemof.solph.components import Source
@@ -64,6 +64,8 @@ TYPEMAP = {
     "j": HeatingPipe,
     "Battery": ElectricalStorage,
     "CarrierBus": CarrierBus,
+    "HeatingNetwork": HeatingNetwork,
+    "heating_network": HeatingNetwork,
     "demand": ElectricityDemand,
     "Source": Source,
     "project": Project,
@@ -96,4 +98,10 @@ TYPEMAP = {
     "hess": ThermalStorage,
     "chp": ChpVariableRatio,
     "chp_fixed_ratio": ChpFixedRatio,
+    "heating_pipe": HeatingPipe,
+    "sink": Sink,
+    "excess": Excess,
+    "shortage": Shortage,
+    "auxiliary_heat": AuxiliaryHeat,
+    "commodity": Commodity,
 }
