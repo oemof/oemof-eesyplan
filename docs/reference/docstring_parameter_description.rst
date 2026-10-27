@@ -264,7 +264,7 @@
     deficit. Typically set to a high value to penalise and thus avoid
     shortage energy in the optimisation results [currency/unit]
     (acceptable values are either a real number or a series of real
-    numbers).ja vereinheitliche das mit den polygonflächen.
+    numbers).
 
 .. |soc_max| replace:: The maximum permissible level of charge of the storage
     as a factor of the nominal capacity. When the battery is filled to its
