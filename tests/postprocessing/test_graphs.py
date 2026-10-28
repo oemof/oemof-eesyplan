@@ -137,7 +137,6 @@ def test_sankey_diagram():
     assert len(actual_data["node"]["label"]) == 8
     assert len(actual_data["link"]["source"]) == 8
 
-
     # Überprüfe, dass alle Fließwerte positiv sind
     assert all(v >= 0 for v in actual_data["link"]["value"])
 
