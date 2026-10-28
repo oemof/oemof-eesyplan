@@ -189,7 +189,7 @@ class DashboardResults(ImportResults):
     def add_capacities_graph(self):
         fig = graphs.capacities_graph(self["invest"], self.energy_system)
         key = "capacities"
-        self[key] = fig.to_plotly_json()
+        self[key] = json.loads(fig.to_json())
         self.figure_keys.append(key)
         return key
 
@@ -204,6 +204,18 @@ class DashboardResults(ImportResults):
             figs[k] = self[k]
 
         return figs
+
+    def tables(self, table_keys=None):
+        if table_keys is None:
+            table_keys = self.table_keys
+        else:
+            table_keys = [k for k in table_keys if k in self.keys()]
+
+        tables = {}
+        for k in table_keys:
+            tables[k] = self[k]
+
+        return tables
 
     def export_results_to_datapackage(
         self,
