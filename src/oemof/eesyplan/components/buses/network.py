@@ -9,9 +9,10 @@ class HeatingNetwork(CarrierBus):
     def __init__(
         self,
         name: str,
-        absolute_losses: (
-            float | int | ArrayLike | None
-        ) = None,  # CHECK: siehe ToDo zur Einheit
+        # CHECK: see ToDo regarding the unit of absolute_losses
+        absolute_losses: float | int | ArrayLike | None = None,
+        excess_cost: float | int | None = None,
+        shortage_cost: float | int | None = None,
     ):
         """
         Heating Network Bus
@@ -22,6 +23,10 @@ class HeatingNetwork(CarrierBus):
             |name|
         absolute_losses : float, int or array-like, optional (default: None)
             |absolute_losses|
+        excess_cost : float or int, optional (default: None)
+            |excess_cost|
+        shortage_cost : float or int, optional (default: None)
+            |shortage_cost|
 
         Examples
         --------
@@ -29,7 +34,12 @@ class HeatingNetwork(CarrierBus):
         """
         self.name = name
 
-        super().__init__(name=self.name, carrier="heat")
+        super().__init__(
+            name=self.name,
+            carrier="heat",
+            excess_cost=excess_cost,
+            shortage_cost=shortage_cost,
+        )
 
         if absolute_losses is not None:
             self.subnode(
