@@ -8,9 +8,7 @@ from oemof.eesyplan.components.converters.chp_fixed_ratio import ChpFixedRatio
 from oemof.eesyplan.components.converters.chp_variable_ratio import (
     ChpVariableRatio,
 )
-from oemof.eesyplan.components.converters.diesel_generator import (
-    DieselGenerator,
-)
+from oemof.eesyplan.components.converters.diesel_generator import FuelGenerator
 from oemof.eesyplan.components.converters.electrical_transformator import (
     ElectricalTransformator,
 )
@@ -63,7 +61,7 @@ TYPEMAP = {
     "i": HeatingNetwork,
     "j": HeatingPipe,
     "Battery": ElectricalStorage,
-    "CarrierBus": CarrierBus,
+    "Bus": CarrierBus,
     "HeatingNetwork": HeatingNetwork,
     "heating_network": HeatingNetwork,
     "demand": ElectricityDemand,
@@ -84,7 +82,7 @@ TYPEMAP = {
     "storage_charge_controller_in": ElectricalTransformator,
     "storage_charge_controller_out": ElectricalTransformator,
     "solar_inverter": ElectricalTransformator,
-    "diesel_generator": DieselGenerator,
+    "diesel_generator": FuelGenerator,
     "fuel_cell": FuelCell,
     "gas_boiler": Boiler,
     "electrolyzer": Electrolyzer,

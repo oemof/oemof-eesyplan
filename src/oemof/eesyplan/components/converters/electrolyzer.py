@@ -1,4 +1,4 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
@@ -14,17 +14,17 @@ class Electrolyzer(Converter):
         bus_out_hydrogen: CarrierBus,
         project_data: Project,
         bus_out_heat: CarrierBus | None = None,
-        efficiency: float | int | npt.ArrayLike = 0.3,  # CHECK
+        efficiency: float | int | ArrayLike = 0.3,  # CHECK
         # CHECK: sequence ok? Naming still open - originally flagged in
         # docstring as "TODO find a good attribute name"; description
         # text added in Pass 3, parameter name itself not decided yet.
-        efficiency_heat: float | int | npt.ArrayLike = 0.6,
+        efficiency_heat: float | int | ArrayLike = 0.6,
         age_installed: float | int = 0,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
         capex_spec: float | int = 1000,
-        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
-        variable_costs: float | int | npt.ArrayLike = 0,
+        opex_spec: float | int | ArrayLike = 10,  # CHECK
+        variable_costs: float | int | ArrayLike = 0,
         lifetime: float | int = 20,
     ):
         """
@@ -56,7 +56,7 @@ class Electrolyzer(Converter):
             |bus_out_hydrogen|
         project_data : Project object
             |project_data|
-        bus_out_heat : CarrierBus or None, optional (default: None)
+        bus_out_heat : Bus or None, optional (default: None)
             |bus_out_heat|
         efficiency : float, optional (default: 0.3)
             |efficiency|

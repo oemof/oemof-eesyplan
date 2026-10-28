@@ -1,4 +1,4 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
@@ -18,16 +18,16 @@ class EnergyStorage(GenericStorage):
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
         capex_spec: float | int = 0,
-        opex_spec: float | int | npt.ArrayLike = 0,  # CHECK: sequence ok?
-        variable_costs: float | int | npt.ArrayLike = 0,
+        opex_spec: float | int | ArrayLike = 0,  # CHECK: sequence ok?
+        variable_costs: float | int | ArrayLike = 0,
         lifetime: float | int = 20,
-        soc_max: float | int | npt.ArrayLike = 1,  # CHECK: sequence ok?
-        soc_min: float | int | npt.ArrayLike = 0,  # CHECK: sequence ok?
-        loss_rate: float | int | npt.ArrayLike = 0.0,  # CHECK: sequence ok?
-        fixed_losses_relative: float | int | npt.ArrayLike = 0.0,  # CHECK
-        fixed_losses_absolute: float | int | npt.ArrayLike = 0.0,  # CHECK
-        efficiency_charge: float | int | npt.ArrayLike = 1.0,  # CHECK
-        efficiency_discharge: float | int | npt.ArrayLike = 1.0,  # CHECK
+        soc_max: float | int | ArrayLike = 1,  # CHECK: sequence ok?
+        soc_min: float | int | ArrayLike = 0,  # CHECK: sequence ok?
+        loss_rate: float | int | ArrayLike = 0.0,  # CHECK: sequence ok?
+        fixed_losses_relative: float | int | ArrayLike = 0.0,  # CHECK
+        fixed_losses_absolute: float | int | ArrayLike = 0.0,  # CHECK
+        efficiency_charge: float | int | ArrayLike = 1.0,  # CHECK
+        efficiency_discharge: float | int | ArrayLike = 1.0,  # CHECK
         c_rate_charge: float | int = 1.0,
         c_rate_discharge: float | int | None = None,
         initial_storage_level: float | int | None = None,
@@ -59,7 +59,7 @@ class EnergyStorage(GenericStorage):
 
         bus_in : CarrierBus
             |bus_in|
-        bus_out : CarrierBus | None, optional (default: None)
+        bus_out : Bus | None, optional (default: None)
             |bus_out|
         age_installed : float or int, optional (default: 0)
             |age_installed|

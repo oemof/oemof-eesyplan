@@ -1,93 +1,49 @@
-import numpy.typing as npt
+import numpy as np
+from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
+from oemof.eesyplan.type_checks import to_array_or_number
 from oemof.solph import Flow
 from oemof.solph.components import VariableSplitConverter
 
 
 class ChpVariableRatio(VariableSplitConverter):
-    def __init__(
-        self,
-        name: str,
-        bus_in_fuel: CarrierBus,
-        bus_out_electricity: CarrierBus,
-        bus_out_heat: CarrierBus,
-        efficiency_electricity_state_a: float | int | npt.ArrayLike,
-        efficiency_electricity_state_b: float | int | npt.ArrayLike,
-        efficiency_heat_state_a: float | int | npt.ArrayLike,
-        efficiency_heat_state_b: float | int | npt.ArrayLike,
-        project_data: Project,
-        age_installed: float | int = 0,
-        installed_capacity: float | int | None = None,
-        maximum_capacity: float | int | None = None,
-        capex_spec: float | int = 1000,
-        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
-        variable_costs: float | int | npt.ArrayLike = 0,
-        lifetime: float | int = 20,
-    ):
-        """
-        Combined Heat and Power (CHP) plant.
+    """
+    Combined Heat and Power (CHP) plant.
 
-        This class represents a combined heat and power plant that
-        simultaneously generates electricity and useful heat from a
-        single fuel source.
+    This class represents a combined heat and power plant that
+    simultaneously generates electricity and useful heat from a
+    single fuel source.
 
-        .. important ::
-            CHP systems achieve higher overall efficiency by utilising
-            waste heat for useful purposes.
+    .. important ::
+        CHP systems achieve higher overall efficiency by utilising
+        waste heat for useful purposes.
 
-        Structure
-        ---------
-          *input*
-            1. bus_in_fuel : Fuel
-          *output*
-            1. bus_out_heat : Heat
-            2. bus_out_electricity : Electricity
+    Optimisation:
+        The characteristic quantity of the optimisation is the
+        *maximum electricity power-output (active power)* of the CHP given
+        in kW.
 
-        Optimisation
-        ------------
-          The characteristic quantity of the optimisation is the
-          *maximum electricity
-          power-output (active power)* of the CHP given in kW
+    Args:
+        name: |name|
+        bus_in_fuel: |bus_in_fuel|
+        bus_out_electricity: |bus_out_electricity|
+        bus_out_heat: |bus_out_heat|
+        efficiency_electricity_state_a: |efficiency_electricity_state_a|
+        efficiency_electricity_state_b: |efficiency_electricity_state_b|
+        efficiency_heat_state_a: |efficiency_heat_state_a|
+        efficiency_heat_state_b: |efficiency_heat_state_b|
+        project_data: |project_data|
+        age_installed: (optional) -- |age_installed|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        capex_spec: (optional) -- |capex_spec|
+        opex_spec: (optional) -- |opex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        lifetime: (optional) -- |lifetime|
 
-        Parameters
-        ----------
-        name : str
-            |name|
-        bus_in_fuel : CarrierBus
-            |bus_in_fuel|
-        bus_out_electricity : CarrierBus
-            |bus_out_electricity|
-        bus_out_heat : CarrierBus
-            |bus_out_heat|
-        efficiency_electricity_state_a : float
-            |efficiency_electricity_state_a|
-        efficiency_electricity_state_b : float
-            |efficiency_electricity_state_b|
-        efficiency_heat_state_a : float
-            |efficiency_heat_state_a|
-        efficiency_heat_state_b : float
-            |efficiency_heat_state_b|
-        project_data : Project object
-            |project_data|
-        age_installed : int, default=0
-            |age_installed|
-        installed_capacity : float or None (default: None)
-            |installed_capacity|
-        maximum_capacity : float or None (default: None)
-            |maximum_capacity|
-        capex_spec : float, default=1000
-            |capex_spec|
-        opex_spec : float, default=10
-            |opex_spec|
-        variable_costs : float, default=0,
-            |variable_costs|
-        lifetime : int, default=20
-            |lifetime|
-
-        Examples
-        --------
+    Examples:
         >>> from oemof.eesyplan import Project
         >>> from oemof.eesyplan import CarrierBus
         >>> fuel_bus = CarrierBus(name="fuel_bus")
@@ -111,13 +67,56 @@ class ChpVariableRatio(VariableSplitConverter):
         ...         discount_factor=0.01,
         ...     )
         ... )
+    """
 
-        """
-
-        if efficiency_electricity_state_a + efficiency_heat_state_a > 1.0:
-            raise ValueError("Total efficiency at state a is above 100%.")
-        if efficiency_electricity_state_b + efficiency_heat_state_b > 1.0:
-            raise ValueError("Total efficiency at state b is above 100%.")
+    def __init__(
+        self,
+        name: str,
+        bus_in_fuel: CarrierBus,
+        bus_out_electricity: CarrierBus,
+        bus_out_heat: CarrierBus,
+        efficiency_electricity_state_a: float | int | ArrayLike,
+        efficiency_electricity_state_b: float | int | ArrayLike,
+        efficiency_heat_state_a: float | int | ArrayLike,
+        efficiency_heat_state_b: float | int | ArrayLike,
+        project_data: Project,
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 1000,
+        opex_spec: float | int | ArrayLike = 10,  # CHECK
+        variable_costs: float | int | ArrayLike = 0,
+        lifetime: float | int = 20,
+    ):
+        self.efficiency_electricity_state_a = to_array_or_number(
+            efficiency_electricity_state_a
+        )
+        self.efficiency_heat_state_a = to_array_or_number(
+            efficiency_heat_state_a
+        )
+        self.efficiency_electricity_state_b = to_array_or_number(
+            efficiency_electricity_state_b
+        )
+        self.efficiency_heat_state_b = to_array_or_number(
+            efficiency_heat_state_b
+        )
+        if (
+            np.asarray(self.efficiency_electricity_state_a)
+            + np.asarray(self.efficiency_heat_state_a)
+            > 1.0
+        ).any():
+            raise ValueError(
+                "Total efficiency at state a is above 100% in at least one "
+                "time step."
+            )
+        if np.asarray(
+            self.efficiency_electricity_state_b + self.efficiency_heat_state_b
+            > 1.0
+        ).any():
+            raise ValueError(
+                "Total efficiency at state b is above 100% in at least one "
+                "time step."
+            )
 
         nv = project_data.create_invest_if_wanted(
             capex_spec=capex_spec,

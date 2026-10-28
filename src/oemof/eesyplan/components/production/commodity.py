@@ -1,4 +1,4 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.solph import Flow
@@ -13,7 +13,7 @@ class Commodity(Source):
         commodity: str | None = None,
         capacity: float | int | None = None,
         full_load_time_max: float | int | None = None,
-        variable_costs: float | int | npt.ArrayLike = 0,
+        variable_costs: float | int | ArrayLike = 0,
     ):
         """
         General Commodity.
@@ -22,22 +22,22 @@ class Commodity(Source):
         ----------
         name : string
             |name|
-        bus_out : Node object
+        bus_out : bus object
             |bus_out|
-        commodity : string
+        commodity : string, optional (default: None)
             |commodity|
-        capacity : float
+        capacity : float, optional (default: None)
             |capacity|
-        full_load_time_max : float, optional
+        full_load_time_max : float, optional (default: None)
             |full_load_time_max|
-        variable_costs : float, optional
+        variable_costs : float, optional (default: 0)
             |variable_costs|
 
         Examples
         --------
-        >>> # Limited by the capacity in yearly system with houry time steps.
+        >>> # Limited by the capacity in yearly system with hourly time steps.
         >>> # In every time step the output will be between 0 and 10
-                >>> from oemof.eesyplan import CarrierBus
+        >>> from oemof.eesyplan import CarrierBus
         >>> gas_bus = CarrierBus(name="natural_gas_bus")
         >>> wood = Commodity(
         ...     name="Commodity",

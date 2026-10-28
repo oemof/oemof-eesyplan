@@ -1,4 +1,4 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.storages.storage import EnergyStorage
@@ -16,16 +16,16 @@ class FuelStorage(EnergyStorage):
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
         capex_spec: float | int = 0,
-        opex_spec: float | int | npt.ArrayLike = 0,  # CHECK
-        variable_costs: float | int | npt.ArrayLike = 0,
+        opex_spec: float | int | ArrayLike = 0,  # CHECK
+        variable_costs: float | int | ArrayLike = 0,
         lifetime: float | int = 20,
-        soc_max: float | int | npt.ArrayLike = 1,  # CHECK
-        soc_min: float | int | npt.ArrayLike = 0,  # CHECK
+        soc_max: float | int | ArrayLike = 1,  # CHECK
+        soc_min: float | int | ArrayLike = 0,  # CHECK
         c_rate_charge: float | int = 1.0,
         c_rate_discharge: float | int | None = None,
-        efficiency_charge: float | int | npt.ArrayLike = 1.0,  # CHECK
-        efficiency_discharge: float | int | npt.ArrayLike = 1.0,  # CHECK
-        loss_rate: float | int | npt.ArrayLike = 0.0,  # CHECK
+        efficiency_charge: float | int | ArrayLike = 1.0,  # CHECK
+        efficiency_discharge: float | int | ArrayLike = 1.0,  # CHECK
+        loss_rate: float | int | ArrayLike = 0.0,  # CHECK
     ):
         """
         Fuel Energy Storage System (FESS).
@@ -56,7 +56,7 @@ class FuelStorage(EnergyStorage):
             |maximum_capacity|
         bus_in_fuel : CarrierBus
             |bus_in_fuel|
-        bus_out_fuel : CarrierBus | None, optional (default: None)
+        bus_out_fuel : Bus | None, optional (default: None)
             |bus_out_fuel|
         age_installed : float or int, optional (default: 0)
             |age_installed|

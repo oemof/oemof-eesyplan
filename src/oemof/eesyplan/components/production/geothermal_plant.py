@@ -1,4 +1,4 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
@@ -11,14 +11,14 @@ class GeothermalPlant(Source):
         self,
         project_data: Project,
         bus_out_heat: CarrierBus,
-        input_timeseries: npt.ArrayLike,
+        input_timeseries: ArrayLike,
         name: str,
         age_installed: float | int = 0,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
         capex_spec: float | int = 1000,
-        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
-        variable_costs: float | int | npt.ArrayLike = 0,
+        opex_spec: float | int | ArrayLike = 10,  # CHECK
+        variable_costs: float | int | ArrayLike = 0,
         lifetime: float | int = 20,
         renewable_asset: bool = True,
     ):
@@ -37,9 +37,14 @@ class GeothermalPlant(Source):
           *output*
             1. to_bus : Heat
 
+        Optimisation
+        ------------
+          The characteristic quantity of the optimization is the *nominal
+          power-output* of the geothermal plant given in kW
+
         Parameters
         ----------
-        project_data: Project object
+        project_data : Project object
             |project_data|
         bus_out_heat : bus object
             |bus_out_heat|

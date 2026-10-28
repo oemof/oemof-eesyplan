@@ -1,5 +1,5 @@
 import numpy as np
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
@@ -12,7 +12,7 @@ class HeatPump(Converter):
         self,
         name: str,
         project_data: Project,
-        cop: float | int | npt.ArrayLike,
+        cop: float | int | ArrayLike,
         bus_in_electricity: CarrierBus,
         bus_out_heat: CarrierBus,
         bus_in_heat: CarrierBus | None = None,
@@ -20,8 +20,8 @@ class HeatPump(Converter):
         maximum_capacity: float | int | None = None,
         age_installed: float | int = 0,
         capex_spec: float | int = 0.0,
-        variable_costs: float | int | npt.ArrayLike = 0.0,
-        opex_spec: float | int | npt.ArrayLike = 0.0,  # CHECK
+        variable_costs: float | int | ArrayLike = 0.0,
+        opex_spec: float | int | ArrayLike = 0.0,  # CHECK
         lifetime: float | int = 20,
     ):
         """
@@ -55,7 +55,7 @@ class HeatPump(Converter):
             |bus_in_electricity|
         bus_out_heat : CarrierBus
             |bus_out_heat|
-        bus_in_heat : CarrierBus or None, optional (default: None)
+        bus_in_heat : Bus or None, optional (default: None)
             |bus_in_heat|
         age_installed : int, default=0
             |age_installed|

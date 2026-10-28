@@ -1,21 +1,21 @@
 import numpy as np
 import pytest
 
-from oemof.eesyplan import CarrierBus as Bus
 from oemof.eesyplan import ChpFixedRatio
 from oemof.eesyplan import ChpVariableRatio
 from oemof.eesyplan import EnergySystem
 from oemof.eesyplan import Project
 from oemof.eesyplan import optimise
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 
 NUMBER = 10
 
 
 @pytest.fixture
 def buses():
-    gas_bus = Bus(name="gas_bus", balanced=False)
-    heat_bus = Bus(name="heat_bus", balanced=False)
-    el_bus = Bus(name="electricity_bus", balanced=False)
+    gas_bus = CarrierBus(name="gas_bus", balanced=False)
+    heat_bus = CarrierBus(name="heat_bus", balanced=False)
+    el_bus = CarrierBus(name="electricity_bus", balanced=False)
     return gas_bus, heat_bus, el_bus
 
 

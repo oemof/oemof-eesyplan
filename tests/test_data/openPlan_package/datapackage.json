@@ -253,18 +253,8 @@
                         "format": "default"
                     },
                     {
-                        "name": "peak_demand_pricing_period",
-                        "type": "integer",
-                        "format": "default"
-                    },
-                    {
-                        "name": "renewable_share",
+                        "name": "maximum_capacity",
                         "type": "number",
-                        "format": "default"
-                    },
-                    {
-                        "name": "feedin_cap",
-                        "type": "string",
                         "format": "default"
                     },
                     {

@@ -1,4 +1,4 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.solph import Flow
@@ -10,7 +10,7 @@ class Demand(Sink):
         self,
         name: str,
         bus_in: CarrierBus,
-        input_timeseries: npt.ArrayLike
+        input_timeseries: ArrayLike
         | str,  # CHECK: str (Dateiname) korrekt - TODO Docstring anpassen?
         carrier: str | None = None,
     ):
@@ -39,7 +39,7 @@ class Demand(Sink):
         Examples
         --------
         >>> from oemof.eesyplan import CarrierBus as Bus
-        >>> ebus = Bus(name="electricity_bus")
+        >>> ebus = CarrierBus(name="electricity_bus")
         >>> my_demand = Demand(
         ...     name="office_demand",
         ...     carrier="electricity",

@@ -169,7 +169,7 @@ class TestSankey:
 
         assert isinstance(fig, go.Figure)
         assert isinstance(links_df, pd.DataFrame)
-        assert len(links_df) == 11
+        assert len(links_df) == 7
         assert all(
             col in links_df.columns
             for col in ["source", "target", "value", "min", "max", "aggregate"]
@@ -504,7 +504,7 @@ class TestIntegration:
         assert isinstance(fig, go.Figure)
         assert isinstance(links_df, pd.DataFrame)
         assert fig.layout.title.text == "Integration Test"
-        assert len(links_df) == 11
+        assert len(links_df) == 7
         assert all(
             col in links_df.columns
             for col in ["source", "target", "value", "min", "max", "aggregate"]

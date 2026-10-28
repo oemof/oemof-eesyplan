@@ -134,13 +134,13 @@ def test_sankey_diagram():
     assert actual_data["type"] == "sankey"
 
     # Überprüfe konkrete erwartete Werte
-    assert len(actual_data["node"]["label"]) == 11  # Z.B. 11 Nodes erwartet
-    assert len(actual_data["link"]["source"]) == 12  # Z.B. 12 Links erwartet
+    assert len(actual_data["node"]["label"]) == 8
+    assert len(actual_data["link"]["source"]) == 8
 
     # Überprüfe, dass alle Fließwerte positiv sind
     assert all(v >= 0 for v in actual_data["link"]["value"])
 
     # Überprüfe Gesamtfluss mit Toleranz
     total_flow = sum(actual_data["link"]["value"])
-    expected_total_flow = 888.0125834243663
+    expected_total_flow = 730.5401400484004
     assert abs(total_flow - expected_total_flow) < 1e-6

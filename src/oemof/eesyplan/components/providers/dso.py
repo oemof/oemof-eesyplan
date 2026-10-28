@@ -1,115 +1,109 @@
-import numpy as np
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.type_checks import to_array_or_number
 from oemof.network import Node
 from oemof.solph import Bus
 from oemof.solph import Flow
-from oemof.solph.components import Converter
+from oemof.solph import Investment
 from oemof.solph.components import Sink
 from oemof.solph.components import Source
 
 
 class DSO(Node):
+    """
+    Generic energy provider for distribution.
+
+    This class represents a distribution system operator (DSO) that
+    provides energy from the utility grid with pricing and
+    feedin capabilities.
+
+    .. important ::
+        Nothing important.
+
+    Structure
+    ---------
+    *input* & *output*
+        bus : Any Carrier
+
+    Parameters
+    ----------
+    name
+        Test with text
+    energy_price
+        |energy_price|
+    feedin_tariff
+        |feedin_tariff|
+    peak_demand_pricing
+        |peak_demand_pricing|
+    maximum_capacity
+        |maximum_capacity|
+
+    Examples
+    --------
+    >>> from oemof.eesyplan import CarrierBus
+    >>> ebus = CarrierBus(name="any_bus")
+    >>> my_dso = DSO(
+    ...     name="any_network",
+    ...     bus=ebus,
+    ...     energy_price=0.25,
+    ...     feedin_tariff=0.08,
+    ... )
+
+    """
+
     def __init__(
         self,
         name: str,
-        bus: CarrierBus,
-        energy_price: float
-        | int
-        | npt.ArrayLike = 0.3,  # TODO: check if default is intended here (base class)
-        feedin_tariff: float
-        | int
-        | npt.ArrayLike = 0.1,  # TODO: check if default is intended here (base class)
+        bus: Bus,
+        energy_price: float | int | ArrayLike | None = None,
+        feedin_tariff: float | int | ArrayLike | None = None,
+        maximum_capacity: float | int = float("inf"),
         peak_demand_pricing: float | int = 0,
-        peak_demand_pricing_period: int = 1,
-        renewable_share: float | int = 0.44,
-        feedin_cap: float | int | None = None,
+        basic_amount=0,  # Warnung, weil nur für Profis :-)
     ):
-        """
-        Generic energy provider for distribution.
-
-        This class represents a distribution system operator (DSO) that
-        provides energy from the utility grid with pricing and
-        feedin capabilities.
-
-        .. important ::
-            The renewable share affects the overall system renewable
-            factor calculation.
-
-        Structure
-        ---------
-        *input* & *output*
-            bus : Carrier
-
-        Parameters
-        ----------
-        name : str
-            |name|
-        bus : CarrierBus
-            |bus|
-        energy_price : float or array-like, default=0.3
-            |energy_price|
-        feedin_tariff : float or array-like, default=0.1
-            |feedin_tariff|
-        peak_demand_pricing : float, default=0
-            |peak_demand_pricing|
-        peak_demand_pricing_period : int, default=1
-            |peak_demand_pricing_period|
-        renewable_share : float, default=0.44
-            |renewable_share|
-        feedin_cap : float or None, default=None
-            |feedin_cap|
-
-        Examples
-        --------
-        >>> from oemof.eesyplan import CarrierBus
-        >>> ebus = CarrierBus(name="any_bus")
-        >>> my_dso = DSO(
-        ...     name="any_network",
-        ...     bus=ebus,
-        ...     energy_price=0.25,
-        ...     feedin_tariff=0.08,
-        ... )
-
-        """
         self.name = name
         self.bus = bus
-        if isinstance(energy_price, list):
-            energy_price = np.array(energy_price)
-        self.energy_price = energy_price
-        if isinstance(feedin_tariff, list):
-            feedin_tariff = np.array(feedin_tariff)
-        self.feedin_tariff = feedin_tariff
+        self.maximum_capacity = maximum_capacity
+        self.energy_price = to_array_or_number(energy_price)
+        self.feedin_tariff = to_array_or_number(feedin_tariff)
         self.peak_demand_pricing = peak_demand_pricing
-        self.peak_demand_pricing_period = peak_demand_pricing_period
-        self.renewable_share = renewable_share  # Specific emission
-        self.feedin_cap = feedin_cap
+        self.fix_cost = basic_amount
 
         super().__init__(label=self.name)
 
-        internal_bus = self.subnode(Bus, local_name="internal_bus")
+        if energy_price is None and feedin_tariff is None:
+            raise ValueError(
+                "Either energy_price or feedin_tariff must be set"
+            )
 
-        self.subnode(
-            Converter,
-            inputs={self.bus: Flow(variable_costs=self.feedin_tariff * -1)},
-            outputs={internal_bus: Flow()},
-            local_name="feedin_converter",
-        )
+        if feedin_tariff is not None:
+            if self.maximum_capacity == float("inf"):
+                installed_capacity = None
+            else:
+                installed_capacity = self.maximum_capacity
 
-        self.subnode(
-            Sink, inputs={internal_bus: Flow()}, local_name="feedin_sink"
-        )
+            self.subnode(
+                Sink,
+                inputs={
+                    self.bus: Flow(
+                        variable_costs=self.feedin_tariff * -1,
+                        nominal_capacity=installed_capacity,
+                    )
+                },
+                local_name="feedin_sink",
+            )
 
-        self.subnode(
-            Converter,
-            inputs={internal_bus: Flow()},
-            outputs={self.bus: Flow(variable_costs=self.energy_price)},
-            local_name="consumption_converter",
-        )
-
-        self.subnode(
-            Source,
-            outputs={internal_bus: Flow()},
-            local_name="consumption_source",
-        )
+        if energy_price is not None:
+            self.subnode(
+                Source,
+                outputs={
+                    self.bus: Flow(
+                        variable_costs=self.energy_price,
+                        nominal_capacity=Investment(
+                            ep_costs=self.peak_demand_pricing,
+                            maximum=self.maximum_capacity,
+                        ),
+                    )
+                },
+                local_name="consumption_source",
+            )

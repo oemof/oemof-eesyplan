@@ -12,9 +12,7 @@ from oemof.eesyplan.components.converters.chp_fixed_ratio import ChpFixedRatio
 from oemof.eesyplan.components.converters.chp_variable_ratio import (
     ChpVariableRatio,
 )
-from oemof.eesyplan.components.converters.diesel_generator import (
-    DieselGenerator,
-)
+from oemof.eesyplan.components.converters.diesel_generator import FuelGenerator
 from oemof.eesyplan.components.converters.electrical_transformator import (
     ElectricalTransformator,
 )
@@ -52,6 +50,8 @@ from oemof.eesyplan.components.storages.hydrogen_storage import HydrogenStorage
 from oemof.eesyplan.components.storages.storage import EnergyStorage
 from oemof.eesyplan.components.storages.thermal_storage import ThermalStorage
 from oemof.eesyplan.components.transport.heat import HeatingPipe
+from oemof.eesyplan.components.virtual.pricing import FlowPricing
+from oemof.eesyplan.components.virtual.pricing import PeakPricing
 from oemof.eesyplan.datapackage.results import export_results
 from oemof.eesyplan.datapackage.results import import_results
 from oemof.eesyplan.model import EnergySystem
@@ -72,7 +72,6 @@ __all__ = [
     "ChpVariableRatio",
     "Commodity",
     "Demand",
-    "DieselGenerator",
     "DsoElectricity",
     "DsoFuel",
     "DsoHeat",
@@ -84,8 +83,10 @@ __all__ = [
     "EnergyStorage",
     "EnergySystem",
     "Excess",
+    "FlowPricing",
     "FuelCell",
     "FuelDemand",
+    "FuelGenerator",
     "FuelStorage",
     "GeothermalPlant",
     "H2Demand",
@@ -94,6 +95,7 @@ __all__ = [
     "HeatingNetwork",
     "HeatingPipe",
     "HydrogenStorage",
+    "PeakPricing",
     "Project",
     "PvPlant",
     "Results",

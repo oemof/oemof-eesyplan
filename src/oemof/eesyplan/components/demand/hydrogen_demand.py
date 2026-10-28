@@ -1,4 +1,4 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.demand.demand import Demand
@@ -9,8 +9,7 @@ class H2Demand(Demand):
         self,
         name: str,
         bus_in_hydrogen: CarrierBus,
-        input_timeseries: npt.ArrayLike
-        | str,  # CHECK: str (Dateiname) korrekt?
+        input_timeseries: ArrayLike | str,  # CHECK: str (Dateiname) korrekt?
         carrier: str = "hydrogen",
     ):
         """
@@ -38,7 +37,7 @@ class H2Demand(Demand):
         Examples
         --------
         >>> from oemof.eesyplan import CarrierBus as Bus
-        >>> h2_bus = Bus(name="hydrogen_bus")
+        >>> h2_bus = CarrierBus(name="hydrogen_bus")
         >>> my_h2_demand = H2Demand(
         ...     name="fuel_cell_demand",
         ...     bus_in_hydrogen=h2_bus,

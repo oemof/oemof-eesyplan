@@ -1,4 +1,4 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
@@ -16,10 +16,10 @@ class FuelCell(Converter):
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
         capex_spec: float | int = 1000,
-        opex_spec: float | int | npt.ArrayLike = 10,  # CHECK
-        variable_costs: float | int | npt.ArrayLike = 0,
+        opex_spec: float | int | ArrayLike = 10,  # CHECK
+        variable_costs: float | int | ArrayLike = 0,
         lifetime: float | int = 20,
-        efficiency: float | int | npt.ArrayLike = 0.8,  # CHECK
+        efficiency: float | int | ArrayLike = 0.8,  # CHECK
         project_data: Project
         | None = None,  # CHECK: see Punkt D - project_data defaults to None but is used immediately below without a None-check
     ):

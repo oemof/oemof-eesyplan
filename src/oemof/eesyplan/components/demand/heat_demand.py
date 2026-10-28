@@ -1,4 +1,4 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.demand.demand import Demand
@@ -9,8 +9,7 @@ class HeatDemand(Demand):
         self,
         name: str,
         bus_in_heat: CarrierBus,
-        input_timeseries: npt.ArrayLike
-        | str,  # CHECK: str (Dateiname) korrekt?
+        input_timeseries: ArrayLike | str,  # CHECK: str (Dateiname) korrekt?
         carrier: str = "heat",
     ):
         """
@@ -38,7 +37,7 @@ class HeatDemand(Demand):
         Examples
         --------
         >>> from oemof.eesyplan import CarrierBus as Bus
-        >>> heat_bus = Bus(name="heat_bus")
+        >>> heat_bus = CarrierBus(name="heat_bus")
         >>> my_demand = HeatDemand(
         ...     name="office_demand",
         ...     bus_in_heat=heat_bus,

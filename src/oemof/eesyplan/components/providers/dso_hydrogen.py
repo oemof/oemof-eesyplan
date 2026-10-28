@@ -1,4 +1,4 @@
-import numpy.typing as npt
+from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.providers.dso import DSO
@@ -9,12 +9,10 @@ class DsoHydrogen(DSO):
         self,
         name: str,
         bus_hydrogen: CarrierBus,
-        energy_price: float | int | npt.ArrayLike = 0.3,
-        feedin_tariff: float | int | npt.ArrayLike = 0.1,
+        energy_price: float | int | ArrayLike | None = None,
+        feedin_tariff: float | int | ArrayLike | None = None,
         peak_demand_pricing: float | int = 0,
-        peak_demand_pricing_period: int = 1,
-        renewable_share: float | int = 0.44,
-        feedin_cap: float | int | None = None,
+        maximum_capacity: float | int = float("inf"),
     ):
         """
         Energy provider for hydrogen distribution.
@@ -36,20 +34,16 @@ class DsoHydrogen(DSO):
         ----------
         name : str
             |name|
-        bus_hydrogen : CarrierBus
+        bus_hydrogen
             |bus|
-        energy_price : float or array-like, default=0.3
+        maximum_capacity
+            |maximum_capacity|
+        energy_price
             |energy_price|
-        feedin_tariff : float or array-like, default=0.1
+        feedin_tariff
             |feedin_tariff|
-        peak_demand_pricing : float, default=0
+        peak_demand_pricing
             |peak_demand_pricing|
-        peak_demand_pricing_period : int, default=1
-            |peak_demand_pricing_period|
-        renewable_share : float, default=0.44
-            |renewable_share|
-        feedin_cap : float or None, default=None
-            |feedin_cap|
 
         Examples
         --------
@@ -69,7 +63,5 @@ class DsoHydrogen(DSO):
             energy_price=energy_price,
             feedin_tariff=feedin_tariff,
             peak_demand_pricing=peak_demand_pricing,
-            peak_demand_pricing_period=peak_demand_pricing_period,
-            renewable_share=renewable_share,
-            feedin_cap=feedin_cap,
+            maximum_capacity=maximum_capacity,
         )
