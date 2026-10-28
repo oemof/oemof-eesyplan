@@ -15,6 +15,6 @@ def to_array_or_number(x: Number | ArrayLike):
     Gibt x unverändert zurück, falls es eine Zahl (int/float) ist.
     Andernfalls wird x in ein NumPy-Array umgewandelt.
     """
-    if isinstance(x, Number):
+    if isinstance(x, (Number, type(None))):
         return x
     return np.asarray(x)
