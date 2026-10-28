@@ -1,4 +1,4 @@
-from oemof.eesyplan import Bus
+from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import EnergySystem
 from oemof.eesyplan import HeatDemand
 from oemof.eesyplan import Project
@@ -10,7 +10,7 @@ def test_carrier_bus_excess():
     # init
     number = 3
     es = EnergySystem(2023, number=number)
-    bus1 = Bus(name="bus1", balanced=True, excess_cost=0)
+    bus1 = CarrierBus(name="bus1", balanced=True, excess_cost=0)
     es.add(bus1)
     my_project = Project(
         name="Project_X",
@@ -34,7 +34,7 @@ def test_carrier_bus_excess():
 def test_carrier_bus_shortage():
     number = 3
     es = EnergySystem(2023, number=number)
-    bus2 = Bus(name="bus2", balanced=True, shortage_cost=5)
+    bus2 = CarrierBus(name="bus2", balanced=True, shortage_cost=5)
     es.add(bus2)
     my_sink = HeatDemand(
         bus_in_heat=bus2,

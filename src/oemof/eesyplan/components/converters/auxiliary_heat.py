@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
@@ -10,9 +10,9 @@ class AuxiliaryHeat(Converter):
     def __init__(
         self,
         name: str,
-        bus_in_heat: Bus,
-        bus_in_heat_auxiliary: Bus,
-        bus_out_heat: Bus,
+        bus_in_heat: CarrierBus,
+        bus_in_heat_auxiliary: CarrierBus,
+        bus_out_heat: CarrierBus,
         project_data: Project,
         auxiliary_heat_fraction: float | int | ArrayLike,
         installed_capacity: float | int | None = None,
@@ -33,11 +33,11 @@ class AuxiliaryHeat(Converter):
         ----------
         name : string
             |name|
-        bus_in_heat : Bus
+        bus_in_heat : CarrierBus
             |bus_in_heat|
-        bus_in_heat_auxiliary : Bus
+        bus_in_heat_auxiliary : CarrierBus
             |bus_in_heat_auxiliary|
-        bus_out_heat : Bus
+        bus_out_heat : CarrierBus
             |bus_out_heat|
         project_data : Project object
             |project_data|
@@ -62,12 +62,12 @@ class AuxiliaryHeat(Converter):
         --------
         >>> import numpy as np
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import Bus
+        >>> from oemof.eesyplan import CarrierBus
         >>> from oemof.eesyplan.importer.auxiliary_heat_fraction import (
         ...     calculate_top_up_fraction)
-        >>> heat_bus = Bus(name="heat_bus")
-        >>> heat_bus_aux = Bus(name="heat_bus_auxiliary")
-        >>> heat_supply = Bus(name="heat_supply")
+        >>> heat_bus = CarrierBus(name="heat_bus")
+        >>> heat_bus_aux = CarrierBus(name="heat_bus_auxiliary")
+        >>> heat_supply = CarrierBus(name="heat_supply")
         >>> heat_fraction = calculate_top_up_fraction(
         ...     temperature_difference_source=[40, 40, 40],
         ...     temperature_source=[60, 80, 100],

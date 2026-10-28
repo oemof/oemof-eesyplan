@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Source
@@ -10,7 +10,7 @@ class PvPlant(Source):
     def __init__(
         self,
         project_data: Project,
-        bus_out_electricity: Bus,
+        bus_out_electricity: CarrierBus,
         input_timeseries: ArrayLike,
         name: str,
         age_installed: float | int = 0,
@@ -73,14 +73,14 @@ class PvPlant(Source):
         Examples
         --------
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import Bus
+        >>> from oemof.eesyplan import CarrierBus
         >>> my_project = Project(
         ...         name="my_project",
         ...         economic_period=20,
         ...         tax=0,
         ...         discount_factor=0.01
         ...     )
-        >>> el_bus = Bus(name="my_electricity_bus")
+        >>> el_bus = CarrierBus(name="my_electricity_bus")
         >>> my_pv = PvPlant(
         ...     bus_out_electricity=el_bus,
         ...     name="my_pv_plant",

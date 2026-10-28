@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Source
@@ -10,7 +10,7 @@ class GeothermalPlant(Source):
     def __init__(
         self,
         project_data: Project,
-        bus_out_heat: Bus,
+        bus_out_heat: CarrierBus,
         input_timeseries: ArrayLike,
         name: str,
         age_installed: float | int = 0,
@@ -73,14 +73,14 @@ class GeothermalPlant(Source):
         Examples
         --------
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import Bus
+        >>> from oemof.eesyplan import CarrierBus
         >>> my_project = Project(
         ...         name="my_project",
         ...         economic_period=20,
         ...         tax=0,
         ...         discount_factor=0.01
         ...     )
-        >>> heat_bus = Bus(name="my_heat_bus")
+        >>> heat_bus = CarrierBus(name="my_heat_bus")
         >>> my_geothermal = GeothermalPlant(
         ...     bus_out_heat=heat_bus,
         ...     name="my_geothermal_plant",

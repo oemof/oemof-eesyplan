@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import pytest
 
 from oemof.datapackage import datapackage  # noqa
-from oemof.eesyplan import Bus
+from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import Demand
 from oemof.eesyplan import DsoElectricity
 from oemof.eesyplan import ElectricalStorage
@@ -54,7 +54,7 @@ def sample_energy_system():
     # ######################### create energysystem components ################
 
     # carrier
-    bus_elec = Bus(name="electricity")
+    bus_elec = CarrierBus(name="electricity")
 
     energy_system.add(bus_elec)
 

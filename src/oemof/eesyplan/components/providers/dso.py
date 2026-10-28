@@ -1,5 +1,6 @@
 from numpy.typing import ArrayLike
 
+from oemof.eesyplan.type_checks import to_array_or_number
 from oemof.network import Node
 from oemof.solph import Bus
 from oemof.solph import Flow
@@ -17,8 +18,7 @@ class DSO(Node):
     feedin capabilities.
 
     .. important ::
-        The renewable share affects the overall system renewable
-        factor calculation.
+        Nothing important.
 
     Structure
     ---------
@@ -28,9 +28,9 @@ class DSO(Node):
     Parameters
     ----------
     name
-        |name|
+        Test with text
     energy_price
-        |energy_prices|
+        |energy_price|
     feedin_tariff
         |feedin_tariff|
     peak_demand_pricing
@@ -50,6 +50,7 @@ class DSO(Node):
     ... )
 
     """
+
     def __init__(
         self,
         name: str,
@@ -63,8 +64,8 @@ class DSO(Node):
         self.name = name
         self.bus = bus
         self.maximum_capacity = maximum_capacity
-        self.energy_price = energy_price
-        self.feedin_tariff = feedin_tariff
+        self.energy_price = to_array_or_number(energy_price)
+        self.feedin_tariff = to_array_or_number("None")
         self.peak_demand_pricing = peak_demand_pricing
         self.fix_cost = basic_amount
 

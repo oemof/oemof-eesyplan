@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.storages.storage import EnergyStorage
 from oemof.eesyplan.project import Project
 
@@ -10,8 +10,8 @@ class HydrogenStorage(EnergyStorage):
         self,
         name: str,
         project_data: Project,
-        bus_in_hydrogen: Bus,
-        bus_out_hydrogen: Bus | None = None,
+        bus_in_hydrogen: CarrierBus,
+        bus_out_hydrogen: CarrierBus | None = None,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
         capex_spec: float | int = 0,
@@ -54,7 +54,7 @@ class HydrogenStorage(EnergyStorage):
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        bus_in_hydrogen : Bus
+        bus_in_hydrogen : CarrierBus
             |bus_in_hydrogen|
         bus_out_hydrogen : Bus | None, optional (default: None)
             |bus_out_hydrogen|
@@ -86,14 +86,14 @@ class HydrogenStorage(EnergyStorage):
         Examples
         --------
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import Bus
+        >>> from oemof.eesyplan import CarrierBus
         >>> my_project = Project(
         ...         name="my_project",
         ...         economic_period=20,
         ...         tax=0,
         ...         discount_factor=0.01
         ...     )
-        >>> h2_bus = Bus(name="my_h2_bus")
+        >>> h2_bus = CarrierBus(name="my_h2_bus")
         >>> my_storage = HydrogenStorage(
         ...     name="hydrogen_storage_system",
         ...     project_data=my_project,

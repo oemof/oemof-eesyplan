@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Sink as SolphSink
@@ -11,7 +11,7 @@ class Sink(SolphSink):
         self,
         name: str,
         project_data: Project,
-        bus_in: Bus,
+        bus_in: CarrierBus,
         age_installed: float | int = 0,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
@@ -39,7 +39,7 @@ class Sink(SolphSink):
             |name|
         project_data : Project object
             |project_data|
-        bus_in : oemof.eesyplan.Bus
+        bus_in : oemof.eesyplan.CarrierBus
             |bus_in|
         age_installed : float or int, optional (default: 0)
             |age_installed|
@@ -78,9 +78,9 @@ class Sink(SolphSink):
 
         Examples
         --------
-        >>> from oemof.eesyplan import Bus
+        >>> from oemof.eesyplan import CarrierBus
         >>> from oemof.eesyplan import Project
-        >>> bus = Bus("Test", balanced=False)
+        >>> bus = CarrierBus("Test", balanced=False)
         >>> project = Project(
         ...     name="Project_X",
         ...     economic_period=20,

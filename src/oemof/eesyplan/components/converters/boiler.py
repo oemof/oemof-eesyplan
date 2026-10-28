@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
@@ -10,8 +10,8 @@ class Boiler(Converter):
     def __init__(
         self,
         name: str,
-        bus_in_fuel: Bus,
-        bus_out_heat: Bus,
+        bus_in_fuel: CarrierBus,
+        bus_out_heat: CarrierBus,
         project_data: Project,
         efficiency: float | int | ArrayLike = 0.8,  # CHECK
         age_installed: float | int = 0,
@@ -48,9 +48,9 @@ class Boiler(Converter):
         ----------
         name : str
             |name|
-        bus_in_fuel : Bus
+        bus_in_fuel : CarrierBus
             |bus_in_fuel|
-        bus_out_heat : Bus
+        bus_out_heat : CarrierBus
             |bus_out_heat|
         project_data : Project object
             |project_data|
@@ -75,9 +75,9 @@ class Boiler(Converter):
         --------
 
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import Bus
-        >>> fuel_bus = Bus(name="fuel_bus")
-        >>> heat_bus = Bus(name="heat_bus")
+        >>> from oemof.eesyplan import CarrierBus
+        >>> fuel_bus = CarrierBus(name="fuel_bus")
+        >>> heat_bus = CarrierBus(name="heat_bus")
         >>> my_fuel_boiler = Boiler(
         ...     name="central_fuel_boiler",
         ...     bus_in_fuel=fuel_bus,

@@ -1,4 +1,4 @@
-from oemof.eesyplan import Bus
+from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import Demand
 from oemof.eesyplan import DsoElectricity
 from oemof.eesyplan import EnergySystem
@@ -15,7 +15,7 @@ def test_node_io_balance():
     )
     energy_system = EnergySystem(2023, number=10)
 
-    bus_elec = Bus(name="electricity")
+    bus_elec = CarrierBus(name="electricity")
     energy_system.add(bus_elec)
 
     energy_system.add(

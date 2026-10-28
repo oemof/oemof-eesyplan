@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
@@ -10,10 +10,10 @@ class Electrolyzer(Converter):
     def __init__(
         self,
         name: str,
-        bus_in_electricity: Bus,
-        bus_out_hydrogen: Bus,
+        bus_in_electricity: CarrierBus,
+        bus_out_hydrogen: CarrierBus,
         project_data: Project,
-        bus_out_heat: Bus | None = None,
+        bus_out_heat: CarrierBus | None = None,
         efficiency: float | int | ArrayLike = 0.3,  # CHECK
         # CHECK: sequence ok? Naming still open - originally flagged in
         # docstring as "TODO find a good attribute name"; description
@@ -50,9 +50,9 @@ class Electrolyzer(Converter):
         ----------
         name : str
             |name|
-        bus_in_electricity : Bus
+        bus_in_electricity : CarrierBus
             |bus_in_electricity|
-        bus_out_hydrogen : Bus
+        bus_out_hydrogen : CarrierBus
             |bus_out_hydrogen|
         project_data : Project object
             |project_data|
@@ -81,10 +81,10 @@ class Electrolyzer(Converter):
         --------
 
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import Bus
-        >>> el_bus_in = Bus(name="el_bus_in")
-        >>> heat_bus_out = Bus(name="heat_bus_out")
-        >>> h2_bus_out = Bus(name="h2_bus_out")
+        >>> from oemof.eesyplan import CarrierBus
+        >>> el_bus_in = CarrierBus(name="el_bus_in")
+        >>> heat_bus_out = CarrierBus(name="heat_bus_out")
+        >>> h2_bus_out = CarrierBus(name="h2_bus_out")
         >>> my_electrolyzer = Electrolyzer(
         ...     name="Electrolyzer",
         ...     bus_in_electricity=el_bus_in,

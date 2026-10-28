@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.graph_objects as go
 
-from oemof.eesyplan import Bus
+from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import EnergySystem
 
 
@@ -145,7 +145,7 @@ def sankey(
             if n in es_node_labels:
                 node_idx = es_node_labels.index(n)
                 es_node = es_nodes[node_idx]
-                if isinstance(es_node, Bus):
+                if isinstance(es_node, CarrierBus):
                     color = "grey"
                 else:
                     if len(es_node.inputs) == 0:

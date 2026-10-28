@@ -4,7 +4,7 @@ from oemof.solph.components import Sink
 from oemof.solph.components import Source
 
 
-class Bus(SolphBus):
+class CarrierBus(SolphBus):
     def __init__(
         self,
         name: str | tuple,
@@ -31,14 +31,14 @@ class Bus(SolphBus):
 
         Examples
         --------
-        >>> electricity_bus = Bus(name="grid", carrier="electricity",
+        >>> electricity_bus = CarrierBus(name="grid", carrier="electricity",
         ...                      excess_cost=2)
         >>> electricity_bus.excess_cost
         2.0
-        >>> heat_bus = Bus(name="heating", carrier="heat")
+        >>> heat_bus = CarrierBus(name="heating", carrier="heat")
         >>> heat_bus
         <Bus 'heating', carrier='heat', shortage: None, excess: None>
-        >>> h2_bus = Bus(name="h2_net", carrier="hydrogen",
+        >>> h2_bus = CarrierBus(name="h2_net", carrier="hydrogen",
         ...                     excess_cost=0, shortage_cost=99)
         >>> h2_bus
         <Bus 'h2_net', carrier='hydrogen', shortage: 99, excess: 0.0>

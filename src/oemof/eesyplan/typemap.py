@@ -1,5 +1,5 @@
 from oemof.eesyplan import HeatingNetwork
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.compensation.excess import Excess
 from oemof.eesyplan.components.compensation.shortage import Shortage
 from oemof.eesyplan.components.converters.auxiliary_heat import AuxiliaryHeat
@@ -63,7 +63,7 @@ TYPEMAP = {
     "i": HeatingNetwork,
     "j": HeatingPipe,
     "Battery": ElectricalStorage,
-    "Bus": Bus,
+    "Bus": CarrierBus,
     "HeatingNetwork": HeatingNetwork,
     "heating_network": HeatingNetwork,
     "demand": ElectricityDemand,

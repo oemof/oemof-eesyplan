@@ -1,11 +1,11 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan import Bus
+from oemof.eesyplan import CarrierBus
 from oemof.solph import Flow
 from oemof.solph.components import Sink
 
 
-class HeatingNetwork(Bus):
+class HeatingNetwork(CarrierBus):
     def __init__(
         self,
         name: str,

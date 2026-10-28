@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.storages.storage import EnergyStorage
 from oemof.eesyplan.project import Project
 
@@ -10,8 +10,8 @@ class FuelStorage(EnergyStorage):
         self,
         name: str,
         project_data: Project,
-        bus_in_fuel: Bus,
-        bus_out_fuel: Bus | None = None,
+        bus_in_fuel: CarrierBus,
+        bus_out_fuel: CarrierBus | None = None,
         age_installed: float | int = 0,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
@@ -54,7 +54,7 @@ class FuelStorage(EnergyStorage):
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        bus_in_fuel : Bus
+        bus_in_fuel : CarrierBus
             |bus_in_fuel|
         bus_out_fuel : Bus | None, optional (default: None)
             |bus_out_fuel|
@@ -87,14 +87,14 @@ class FuelStorage(EnergyStorage):
         Examples
         --------
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import Bus
+        >>> from oemof.eesyplan import CarrierBus
         >>> my_project = Project(
         ...         name="my_project",
         ...         economic_period=20,
         ...         tax=0,
         ...         discount_factor=0.01
         ...     )
-        >>> fuel_bus = Bus(name="fuel_bus")
+        >>> fuel_bus = CarrierBus(name="fuel_bus")
         >>> my_bess = FuelStorage(
         ...     name="fuel storage tank",
         ...     project_data=my_project,

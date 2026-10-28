@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Source
@@ -10,7 +10,7 @@ class BiogasPlant(Source):
     def __init__(
         self,
         project_data: Project,
-        bus_out_fuel: Bus,
+        bus_out_fuel: CarrierBus,
         input_timeseries: ArrayLike,
         name: str,
         age_installed: float | int = 0,
@@ -72,14 +72,14 @@ class BiogasPlant(Source):
         Examples
         --------
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import Bus
+        >>> from oemof.eesyplan import CarrierBus
         >>> my_project = Project(
         ...         name="my_project",
         ...         economic_period=20,
         ...         tax=0,
         ...         discount_factor=0.01
         ...     )
-        >>> fuel_bus = Bus(name="my_fuel_bus")
+        >>> fuel_bus = CarrierBus(name="my_fuel_bus")
         >>> my_biogas = BiogasPlant(
         ...     bus_out_fuel=fuel_bus,
         ...     name="my_biogas_plant",

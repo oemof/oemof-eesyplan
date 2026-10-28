@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph import Investment
@@ -12,8 +12,8 @@ class EnergyStorage(GenericStorage):
         self,
         name: str,
         project_data: Project,
-        bus_in: Bus,
-        bus_out: Bus | None = None,
+        bus_in: CarrierBus,
+        bus_out: CarrierBus | None = None,
         age_installed: float | int = 0,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
@@ -57,7 +57,7 @@ class EnergyStorage(GenericStorage):
         project_data : Project object
             |project_data|
 
-        bus_in : Bus
+        bus_in : CarrierBus
             |bus_in|
         bus_out : Bus | None, optional (default: None)
             |bus_out|
@@ -102,14 +102,14 @@ class EnergyStorage(GenericStorage):
         Examples
         --------
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import Bus
+        >>> from oemof.eesyplan import CarrierBus
         >>> my_project = Project(
         ...         name="my_project",
         ...         economic_period=20,
         ...         tax=0,
         ...         discount_factor=0.01
         ...     )
-        >>> heat_bus = Bus(name="my_bus")
+        >>> heat_bus = CarrierBus(name="my_bus")
         >>> my_minimal_storage = EnergyStorage(
         ...     name="energy_storage",
         ...     project_data=my_project,

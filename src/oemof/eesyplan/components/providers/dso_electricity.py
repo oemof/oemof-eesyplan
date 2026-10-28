@@ -1,7 +1,7 @@
 from numpy.typing import ArrayLike
 
-from oemof.solph import Bus
 from oemof.eesyplan.components.providers.dso import DSO
+from oemof.solph import Bus
 
 
 class DsoElectricity(DSO):

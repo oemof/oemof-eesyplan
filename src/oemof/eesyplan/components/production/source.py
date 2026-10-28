@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Source as SolphSource
@@ -11,7 +11,7 @@ class Source(SolphSource):
         self,
         name: str,
         project_data: Project,
-        bus_out: Bus,
+        bus_out: CarrierBus,
         age_installed: float | int = 0,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
@@ -78,9 +78,9 @@ class Source(SolphSource):
 
         Examples
         --------
-        >>> from oemof.eesyplan import Bus
+        >>> from oemof.eesyplan import CarrierBus
         >>> from oemof.eesyplan import Project
-        >>> bus = Bus("Test", balanced=False)
+        >>> bus = CarrierBus("Test", balanced=False)
         >>> project = Project(
         ...     name="Project_X",
         ...     economic_period=20,

@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import VariableSplitConverter
@@ -10,9 +10,9 @@ class ChpVariableRatio(VariableSplitConverter):
     def __init__(
         self,
         name: str,
-        bus_in_fuel: Bus,
-        bus_out_electricity: Bus,
-        bus_out_heat: Bus,
+        bus_in_fuel: CarrierBus,
+        bus_out_electricity: CarrierBus,
+        bus_out_heat: CarrierBus,
         efficiency_electricity_state_a: float | int | ArrayLike,
         efficiency_electricity_state_b: float | int | ArrayLike,
         efficiency_heat_state_a: float | int | ArrayLike,
@@ -55,11 +55,11 @@ class ChpVariableRatio(VariableSplitConverter):
         ----------
         name : str
             |name|
-        bus_in_fuel : Bus
+        bus_in_fuel : CarrierBus
             |bus_in_fuel|
-        bus_out_electricity : Bus
+        bus_out_electricity : CarrierBus
             |bus_out_electricity|
-        bus_out_heat : Bus
+        bus_out_heat : CarrierBus
             |bus_out_heat|
         efficiency_electricity_state_a : float
             |efficiency_electricity_state_a|
@@ -89,10 +89,10 @@ class ChpVariableRatio(VariableSplitConverter):
         Examples
         --------
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import Bus
-        >>> fuel_bus = Bus(name="fuel_bus")
-        >>> heat_bus = Bus(name="heat_bus")
-        >>> el_bus = Bus(name="electricity_bus")
+        >>> from oemof.eesyplan import CarrierBus
+        >>> fuel_bus = CarrierBus(name="fuel_bus")
+        >>> heat_bus = CarrierBus(name="heat_bus")
+        >>> el_bus = CarrierBus(name="electricity_bus")
         >>> my_chp_fixed = ChpVariableRatio(
         ...     name="variable_ratio_chp",
         ...     bus_in_fuel=fuel_bus,

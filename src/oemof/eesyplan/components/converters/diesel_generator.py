@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
@@ -10,8 +10,8 @@ class DieselGenerator(Converter):
     def __init__(
         self,
         name: str,
-        bus_in_fuel: Bus,
-        bus_out_electricity: Bus,
+        bus_in_fuel: CarrierBus,
+        bus_out_electricity: CarrierBus,
         project_data: Project,
         efficiency: float | int | ArrayLike = 0.3,  # CHECK
         age_installed: float | int = 0,
@@ -48,9 +48,9 @@ class DieselGenerator(Converter):
         ----------
         name : str
             |name|
-        bus_in_fuel : Bus
+        bus_in_fuel : CarrierBus
             |bus_in_fuel|
-        bus_out_electricity : Bus
+        bus_out_electricity : CarrierBus
             |bus_out_electricity|
         project_data : Project object
             |project_data|
@@ -75,9 +75,9 @@ class DieselGenerator(Converter):
         --------
 
         >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import Bus
-        >>> fuel_bus = Bus(name="fuel_bus")
-        >>> el_bus = Bus(name="el_bus")
+        >>> from oemof.eesyplan import CarrierBus
+        >>> fuel_bus = CarrierBus(name="fuel_bus")
+        >>> el_bus = CarrierBus(name="el_bus")
         >>> my_diesel_generator = DieselGenerator(
         ...     name="DieselGenerator",
         ...     bus_in_fuel=fuel_bus,

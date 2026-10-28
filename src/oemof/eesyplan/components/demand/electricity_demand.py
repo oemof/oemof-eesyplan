@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import Bus
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.demand.demand import Demand
 
 
@@ -8,9 +8,8 @@ class ElectricityDemand(Demand):
     def __init__(
         self,
         name: str,
-        bus_in_electricity: Bus,
-        input_timeseries: ArrayLike
-        | str,  # CHECK: str (Dateiname) korrekt?
+        bus_in_electricity: CarrierBus,
+        input_timeseries: ArrayLike | str,  # CHECK: str (Dateiname) korrekt?
         carrier: str = "electricity",
     ):
         """
@@ -31,15 +30,15 @@ class ElectricityDemand(Demand):
         ----------
         name : str
             |name|
-        bus_in_electricity : oemof.eesyplan.Bus
+        bus_in_electricity : oemof.eesyplan.CarrierBus
             |bus_in_electricity|
         input_timeseries : array-like
             |input_timeseries|
 
         Examples
         --------
-        >>> from oemof.eesyplan import Bus as Bus
-        >>> ebus = Bus(name="electricity_bus")
+        >>> from oemof.eesyplan import CarrierBus as Bus
+        >>> ebus = CarrierBus(name="electricity_bus")
         >>> my_demand = ElectricityDemand(
         ...     name="office_demand",
         ...     bus_in_electricity=ebus,
