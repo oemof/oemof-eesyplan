@@ -13,6 +13,8 @@ class HeatingNetwork(CarrierBus):
         absolute_losses: float | int | ArrayLike | None = None,
         excess_cost: float | int | None = None,
         shortage_cost: float | int | None = None,
+        investment_fix_cost: float | int = 0,
+        annual_fix_cost: float | int = 0,
     ):
         """
         Heating Network Bus
@@ -33,6 +35,11 @@ class HeatingNetwork(CarrierBus):
         >>> hn = HeatingNetwork(name="Heating Network", absolute_losses=5)
         """
         self.name = name
+        self.absolute_losses = absolute_losses
+        self.excess_cost = excess_cost
+        self.shortage_cost = shortage_cost
+        self.investment_fix_cost = investment_fix_cost
+        self.annual_fix_cost = annual_fix_cost
 
         super().__init__(
             name=self.name,
