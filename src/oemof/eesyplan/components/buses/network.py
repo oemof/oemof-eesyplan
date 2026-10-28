@@ -6,6 +6,21 @@ from oemof.solph.components import Sink
 
 
 class HeatingNetwork(CarrierBus):
+    """
+    Heating Network Bus
+
+    Args:
+        name: |name|
+        absolute_losses: (optional) -- |absolute_losses|
+        excess_cost: (optional) -- |excess_cost|
+        shortage_cost: (optional) -- |shortage_cost|
+        investment_fix_cost: (optional) -- |investment_fix_cost|
+        annual_fix_cost: (optional) -- |annual_fix_cost|
+
+    Examples:
+        >>> hn = HeatingNetwork(name="Heating Network", absolute_losses=5)
+    """
+
     def __init__(
         self,
         name: str,
@@ -16,24 +31,6 @@ class HeatingNetwork(CarrierBus):
         investment_fix_cost: float | int = 0,
         annual_fix_cost: float | int = 0,
     ):
-        """
-        Heating Network Bus
-
-        Parameters
-        ----------
-        name : string
-            |name|
-        absolute_losses : float, int or array-like, optional (default: None)
-            |absolute_losses|
-        excess_cost : float or int, optional (default: None)
-            |excess_cost|
-        shortage_cost : float or int, optional (default: None)
-            |shortage_cost|
-
-        Examples
-        --------
-        >>> hn = HeatingNetwork(name="Heating Network", absolute_losses=5)
-        """
         self.name = name
         self.absolute_losses = absolute_losses
         self.excess_cost = excess_cost

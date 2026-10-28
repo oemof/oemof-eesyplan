@@ -7,12 +7,14 @@
     lifetime, the replacement costs of the asset will be taken into
     account [a] (Natural number).
 
+.. |annual_fix_cost| replace:: No text...for postprocessing calculations only!
+
 .. |auxiliary_heat_fraction| replace:: No text.
 
 .. |balanced| replace:: Choose whether the sum of all inflows into the
     bus must equal the sum of all outflows at every timestep (energy
     balance constraint) [-] (acceptable values are either True or
-    False; default is True).
+    False).
 
 .. |bus| replace:: Connected Bus component through which energy is
     exchanged with the utility grid (DSO). [object].
@@ -187,6 +189,8 @@
 .. |integer| replace:: Choose whether the investment decision variable of
     the asset should be restricted to integer values. [-] (acceptable
     values are either True or False).
+
+.. |investment_fix_cost| replace:: No text...for postprocessing calculations only!
 
 .. |lifetime| replace:: Number of operational years of the asset before it
     has to be replaced [a] (natural number).

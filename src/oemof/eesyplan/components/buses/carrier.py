@@ -5,32 +5,17 @@ from oemof.solph.components import Source
 
 
 class CarrierBus(SolphBus):
-    def __init__(
-        self,
-        name: str | tuple,
-        carrier: str | None = None,
-        balanced: bool = True,
-        excess_cost: float | int | None = None,
-        shortage_cost: float | int | None = None,
-    ):
-        """
-        Bus with carrier information
+    """
+    Bus with carrier information
 
-        Parameters
-        ----------
-        name : str or tuple
-            |name|
-        carrier : str, optional (default: None)
-            |carrier|
-        balanced : bool, optional (default: True)
-            |balanced|
-        excess_cost : float or int, optional (default: None)
-            |excess_cost|
-        shortage_cost : float or int, optional (default: None)
-            |shortage_cost|
+    Args:
+        name: |name|
+        carrier: (optional) -- |carrier|
+        balanced: (optional) -- |balanced|
+        excess_cost: (optional) -- |excess_cost|
+        shortage_cost: (optional) -- |shortage_cost|
 
-        Examples
-        --------
+    Examples:
         >>> electricity_bus = CarrierBus(name="grid", carrier="electricity",
         ...                      excess_cost=2)
         >>> electricity_bus.excess_cost
@@ -42,7 +27,16 @@ class CarrierBus(SolphBus):
         ...                     excess_cost=0, shortage_cost=99)
         >>> h2_bus
         <Bus 'h2_net', carrier='hydrogen', shortage: 99, excess: 0.0>
-        """
+    """
+
+    def __init__(
+        self,
+        name: str | tuple,
+        carrier: str | None = None,
+        balanced: bool = True,
+        excess_cost: float | int | None = None,
+        shortage_cost: float | int | None = None,
+    ):
         super().__init__(label=name, balanced=balanced)
         self.carrier = carrier
         self.name = name

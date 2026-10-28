@@ -12,9 +12,7 @@ from oemof.eesyplan.components.converters.chp_fixed_ratio import ChpFixedRatio
 from oemof.eesyplan.components.converters.chp_variable_ratio import (
     ChpVariableRatio,
 )
-from oemof.eesyplan.components.converters.diesel_generator import (
-    DieselGenerator,
-)
+from oemof.eesyplan.components.converters.diesel_generator import FuelGenerator
 from oemof.eesyplan.components.converters.electrical_transformator import (
     ElectricalTransformator,
 )
@@ -74,7 +72,6 @@ __all__ = [
     "ChpVariableRatio",
     "Commodity",
     "Demand",
-    "DieselGenerator",
     "DsoElectricity",
     "DsoFuel",
     "DsoHeat",
@@ -89,6 +86,7 @@ __all__ = [
     "FlowPricing",
     "FuelCell",
     "FuelDemand",
+    "FuelGenerator",
     "FuelStorage",
     "GeothermalPlant",
     "H2Demand",

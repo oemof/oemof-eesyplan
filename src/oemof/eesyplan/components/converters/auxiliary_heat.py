@@ -7,59 +7,33 @@ from oemof.solph.components import Converter
 
 
 class AuxiliaryHeat(Converter):
-    def __init__(
-        self,
-        name: str,
-        bus_in_heat: CarrierBus,
-        bus_in_heat_auxiliary: CarrierBus,
-        bus_out_heat: CarrierBus,
-        project_data: Project,
-        auxiliary_heat_fraction: float | int | ArrayLike,
-        installed_capacity: float | int | None = None,
-        maximum_capacity: float | int | None = None,
-        age_installed: float | int = 0,
-        capex_spec: float | int = 0,
-        opex_spec: float | int | ArrayLike = 0,  # CHECK
-        variable_costs: float | int | ArrayLike = 0,
-        lifetime: float | int = 20,
-    ):
-        """
-        This component can be used for heat sources whose temperature is too
-        low for the target heat flow. Consequently, additional energy is
-        required to heat the flow to the required temperature. By definition,
-        the auxiliary flow must have at least the flow temperature.
+    """
+    Auxiliary heat source for raising low-temperature heat to a target temperature.
 
-        Parameters
-        ----------
-        name : string
-            |name|
-        bus_in_heat : CarrierBus
-            |bus_in_heat|
-        bus_in_heat_auxiliary : CarrierBus
-            |bus_in_heat_auxiliary|
-        bus_out_heat : CarrierBus
-            |bus_out_heat|
-        project_data : Project object
-            |project_data|
-        auxiliary_heat_fraction : float or int or ArrayLike
-            |auxiliary_heat_fraction|
-        age_installed : float or int, optional (default: 0)
-            |age_installed|
-        installed_capacity : float or None (default: None)
-            |installed_capacity|
-        maximum_capacity : float or None (default: None)
-            |maximum_capacity|
-        capex_spec : float, optional (default: 0)
-            |capex_spec|
-        opex_spec : float, optional (default: 0)
-            |opex_spec|
-        variable_costs : float or array-like, optional (default: 0)
-            |variable_costs|
-        lifetime : int, optional (default: 20)
-            |lifetime|
+    This component models a heat source whose temperature is too low for the
+    target heat flow. Additional energy is required to heat the flow to the
+    required temperature. By definition, the auxiliary flow must have at least
+    the flow temperature. The component combines a main heat input and an
+    auxiliary heat input using the auxiliary heat fraction to determine the
+    conversion factors for each input.
 
-        Examples
-        --------
+    .. important::
+        Use importers to calculate the auxiliary heat fraction.
+
+    Args:
+        bus_in_heat_auxiliary: |bus_in_heat_auxiliary|
+        bus_out_heat: |bus_out_heat|
+        project_data: |project_data|
+        auxiliary_heat_fraction: |auxiliary_heat_fraction|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        age_installed: (optional) -- |age_installed|
+        capex_spec: (optional) -- |capex_spec|
+        opex_spec: (optional) -- |opex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        lifetime: (optional) -- |lifetime|
+
+    Example:
         >>> import numpy as np
         >>> from oemof.eesyplan import Project
         >>> from oemof.eesyplan import CarrierBus
@@ -91,8 +65,24 @@ class AuxiliaryHeat(Converter):
         [0.67, 1.0, 1.0]
         >>> np.round(cf[heat_bus_aux],2).tolist()
         [0.33, 0.0, 0.0]
+    """
 
-        """
+    def __init__(
+        self,
+        name: str,
+        bus_in_heat: CarrierBus,
+        bus_in_heat_auxiliary: CarrierBus,
+        bus_out_heat: CarrierBus,
+        project_data: Project,
+        auxiliary_heat_fraction: float | int | ArrayLike,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        age_installed: float | int = 0,
+        capex_spec: float | int = 0,
+        opex_spec: float | int | ArrayLike = 0,  # CHECK
+        variable_costs: float | int | ArrayLike = 0,
+        lifetime: float | int = 20,
+    ):
         self.name = name
         self.bus_in_heat = bus_in_heat
         self.bus_in_heat_auxiliary = bus_in_heat_auxiliary

@@ -10,7 +10,9 @@ def check_parameter(*args):
             raise ValueError("None is not allowed.")
 
 
-def to_array_or_number(x: Number | ArrayLike | None):
+def to_array_or_number(
+    x: Number | ArrayLike | None,
+) -> np.ndarray[tuple[int, ...]] | Number | None:
     """
     Gibt x unverändert zurück, falls es eine Zahl (int/float) ist.
     Andernfalls wird x in ein NumPy-Array umgewandelt.
