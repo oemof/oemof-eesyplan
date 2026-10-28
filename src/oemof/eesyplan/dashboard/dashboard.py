@@ -160,7 +160,12 @@ class DashboardResults(ImportResults):
 
     def __setitem__(self, key: str, value):
         if key not in self._data:
-            self._data[key] = value
+            if isinstance(value, pd.DataFrame) or isinstance(value, dict):
+                self._data[key] = value
+            else:
+                raise TypeError(
+                    f"The value you would like to assign to the DashboardResults instance under the key {key} is not a dataframe or a dict"
+                )
         else:
             if key in self._core_keys:
                 raise KeyError(
@@ -240,7 +245,7 @@ class DashboardResults(ImportResults):
 
             # here one should consider dict (figures), None (with warning) and DataFrame (tables)
 
-            if isinstance(value, str):
+            if isinstance(value, dict):
                 print(key)
                 print("it is a dict!")
                 # import pdb;pdb.set_trace()
@@ -262,7 +267,7 @@ class DashboardResults(ImportResults):
                     encoding="utf-8",
                 ) as f:
                     json.dump(
-                        json.loads(value),
+                        value,
                         f,
                         indent=4,
                     )
