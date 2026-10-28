@@ -175,10 +175,16 @@ class DashboardResults(ImportResults):
     def get(self, key, default=None):
         return self._data.get(key, default)
 
-    def list_extra_keys(self):
+    def autoassign_keys(self):
         for key in self.keys():
             if key not in self._core_keys:
-                print(key)
+                if isinstance(self[key], dict) and key not in self.figure_keys:
+                    self.figure_keys.append(key)
+                if (
+                    isinstance(self[key], pd.DataFrame)
+                    and key not in self.table_keys
+                ):
+                    self.table_keys.append(key)
 
     def add_capacities_graph(self):
         fig = graphs.capacities_graph(self["invest"], self.energy_system)
@@ -220,12 +226,10 @@ class DashboardResults(ImportResults):
     def _export_results_to_dir(self, base_path: Path, dashboard=False) -> None:
         if dashboard:
             dp_folder = "dashboard"
-            keys = self.figure_keys
+            keys = self.figure_keys + self.table_keys
         else:
             dp_folder = "results"
             keys = self.keys()
-
-        print(keys)
 
         results_root = base_path / dp_folder
 
@@ -246,9 +250,6 @@ class DashboardResults(ImportResults):
             # here one should consider dict (figures), None (with warning) and DataFrame (tables)
 
             if isinstance(value, dict):
-                print(key)
-                print("it is a dict!")
-                # import pdb;pdb.set_trace()
                 fname = f"{key}.json"
                 fpath = results_root / "elements" / fname
                 fpath.touch()
