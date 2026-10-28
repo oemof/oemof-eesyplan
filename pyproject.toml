@@ -44,6 +44,7 @@ Homepage = "https://github.com/oemof/oemof-eesyplan"
 solve_dp = "oemof.eesyplan.datapackage.energy_system:cli"
 
 [project.optional-dependencies]
+dashboard = ["plotly", "dash"]
 docs = ["sphinx", "sphinx_rtd_theme"]
 dummy = ["oemof"]
 examples = []
