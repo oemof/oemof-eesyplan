@@ -6,6 +6,7 @@ from oemof.eesyplan import ChpVariableRatio
 from oemof.eesyplan import EnergySystem
 from oemof.eesyplan import Project
 from oemof.eesyplan import optimise
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 
 NUMBER = 10
 
