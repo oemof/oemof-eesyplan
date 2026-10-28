@@ -1,6 +1,8 @@
 import json
+import zipfile
 from pathlib import Path
 
+import pandas as pd
 import plotly.graph_objects as go
 import pytest
 
@@ -130,7 +132,16 @@ def test_export_dashboard(
 
     json_figure = example_fig.to_plotly_json()
     results["test_figure"] = json_figure
-    results.figure_keys.append("test_figure")
+
+    df = pd.DataFrame(
+        {
+            "name": ["A", "B", "C"],
+            "value": [10, 20, 30],
+        }
+    )
+    results["dummy_table"] = df
+
+    results.autoassign_keys()
 
     results.export_results_to_datapackage(tmp_path)
 
@@ -142,6 +153,18 @@ def test_export_dashboard(
         exported_figure = json.load(f)
 
     assert exported_figure == json_figure
+
+    table_path = tmp_path / "dashboard" / "elements" / "dummy_table.csv"
+
+    assert table_path.exists()
+
+    exported_df = pd.read_csv(table_path, index_col=[0])
+    exported_df.index.name = None
+
+    pd.testing.assert_frame_equal(
+        exported_df,
+        df,
+    )
 
 
 def test_get_existing_key(imported_results, energy_system):
@@ -215,3 +238,34 @@ def test_assign_plotly_figure(imported_results, energy_system, example_fig):
     assert stored_figure["data"][0]["type"] == "scatter"
     assert list(stored_figure["data"][0]["x"]) == [1, 2, 3]
     assert list(stored_figure["data"][0]["y"]) == [4, 5, 6]
+
+
+def test_export_results_to_zip(
+    imported_results,
+    energy_system,
+    tmp_path,
+):
+    results = DashboardResults(imported_results, energy_system)
+
+    results["fig"] = {
+        "data": [],
+    }
+
+    results.figure_keys.append("fig")
+
+    zip_path = tmp_path / "dashboard_results.zip"
+
+    results.export_results_to_datapackage(
+        zip_path,
+        zip=True,
+    )
+
+    assert zip_path.exists()
+    assert zipfile.is_zipfile(zip_path)
+
+    with zipfile.ZipFile(zip_path, "r") as zf:
+        names = zf.namelist()
+
+    assert "datapackage.json" in names
+    assert any(name.startswith("results/") for name in names)
+    assert any(name.startswith("dashboard/") for name in names)
