@@ -1,11 +1,14 @@
+import logging
 import warnings
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import Demand
 from oemof.eesyplan import HeatDemand
+from oemof.eesyplan import Project
 from oemof.eesyplan.postprocessing.KPIs import LCOE
 from oemof.eesyplan.postprocessing.KPIs import _column_parts
 from oemof.eesyplan.postprocessing.KPIs import _component_cost_data
@@ -13,6 +16,7 @@ from oemof.eesyplan.postprocessing.KPIs import _component_costs
 from oemof.eesyplan.postprocessing.KPIs import _cost_table
 from oemof.eesyplan.postprocessing.KPIs import _edge_owner
 from oemof.eesyplan.postprocessing.KPIs import _effective_capacity
+from oemof.eesyplan.postprocessing.KPIs import _fix_cost_data
 from oemof.eesyplan.postprocessing.KPIs import _is_neutral
 from oemof.eesyplan.postprocessing.KPIs import _norm_label
 from oemof.eesyplan.postprocessing.KPIs import _numeric_variable_costs
@@ -355,6 +359,19 @@ def test_component_costs_installed():
     assert ccap == 20.0
 
 
+def test_component_costs_adds_fix_costs():
+    node = DummyNode("n", opex_spec=1.0)
+    cap = {node: 10.0}
+    invest_cost = {node: 20.0}
+    ccap, copex = _component_costs(
+        node, cap, invest_cost, {node: 7.0}, {node: 3.0}
+    )
+    # the annuity is reconstructed as investment_costs - opex, the flat
+    # fix costs must not distort that reconstruction
+    assert ccap == 17.0
+    assert copex == 13.0
+
+
 def test_component_cost_data():
     bus = CarrierBus(name="bus")
     owner = DummyNode("owner", opex_spec=1.0)
@@ -371,8 +388,81 @@ def test_component_cost_data():
             "variable_costs": var_costs,
         }
     )
-    _, capacity, _, _ = _component_cost_data(results, es)
+    _, capacity, _, _, _, _ = _component_cost_data(results, es)
     assert owner in capacity or len(capacity) >= 0
+
+
+def test_fix_cost_data_annualizes_with_project():
+    project = Project("p", tax=0.0, discount_factor=0.0, economic_period=20)
+    node = DummyNode(
+        "n",
+        investment_fix_cost=100.0,
+        annual_fix_cost=5.0,
+        lifetime=10,
+        project_data=project,
+    )
+    es = DummyES([node])
+    fix_investment_ann, fix_annual = _fix_cost_data(es, {})
+    assert fix_annual[node] == 5.0
+    assert fix_investment_ann[node] == project.calculate_annuity(100.0, 10)
+
+
+def test_fix_cost_data_uses_replacement_timing_for_installed():
+    project = Project("p", tax=0.0, discount_factor=0.05, economic_period=20)
+    node = DummyNode(
+        "n",
+        investment_fix_cost=100.0,
+        installed_capacity=5.0,
+        lifetime=10,
+        age_installed=4,
+        project_data=project,
+    )
+    es = DummyES([node])
+    fix_investment_ann, _fix_annual = _fix_cost_data(es, {})
+    assert fix_investment_ann[node] == project.calculate_annuity(
+        100.0, 10, year_of_investment=6
+    )
+
+
+def test_fix_cost_data_lifetime_fallback_to_economic_period(caplog):
+    project = Project("p", tax=0.0, discount_factor=0.0, economic_period=15)
+    node = DummyNode("n", investment_fix_cost=100.0, project_data=project)
+    es = DummyES([node])
+    with caplog.at_level(logging.WARNING):
+        fix_investment_ann, _fix_annual = _fix_cost_data(es, {})
+    assert "has no lifetime" in caplog.text
+    assert "has no age_installed" in caplog.text
+    assert fix_investment_ann[node] == project.calculate_annuity(100.0, 15)
+
+
+def test_fix_cost_data_fallback_without_project_and_lifetime(caplog):
+    node = DummyNode("n", investment_fix_cost=100.0)
+    es = DummyES([node])
+    with caplog.at_level(logging.WARNING):
+        fix_investment_ann, _fix_annual = _fix_cost_data(es, {})
+    assert "has no lifetime" in caplog.text
+    assert "has no project data" in caplog.text
+    # lifetime falls back to 20, the annuity is calculated linearly
+    assert fix_investment_ann[node] == pytest.approx(5.0)
+
+
+def test_fix_cost_data_warns_on_zero_capacity(caplog):
+    node = DummyNode("n", annual_fix_cost=5.0)
+    es = DummyES([node])
+    with caplog.at_level(logging.WARNING):
+        fix_investment_ann, fix_annual = _fix_cost_data(es, {})
+    assert "has no capacity" in caplog.text
+    assert fix_annual[node] == 5.0
+    assert fix_investment_ann == {}
+
+
+def test_fix_cost_data_warns_only_once(caplog):
+    node = DummyNode("n", annual_fix_cost=5.0)
+    es = DummyES([node])
+    with caplog.at_level(logging.WARNING):
+        _fix_cost_data(es, {})
+        _fix_cost_data(es, {})
+    assert caplog.text.count("has no capacity") == 1
 
 
 def test_cost_table():
@@ -432,6 +522,93 @@ def test_project_cost_table():
     project_cost_table(results, es, project_duration=20)
     table = results["eesyplan"]["project_cost_table"]
     assert isinstance(table, pd.DataFrame)
+
+
+def test_yearly_project_costs_with_fix_costs():
+    bus = CarrierBus(name="bus")
+    project = Project("p", tax=0.0, discount_factor=0.0, economic_period=20)
+    owner = DummyNode(
+        "owner_node",
+        opex_spec=1.0,
+        lifetime=10,
+        investment_fix_cost=100.0,
+        annual_fix_cost=5.0,
+        project_data=project,
+    )
+    owner.label = "owner_node"
+    es = DummyES([bus, owner])
+    invest = pd.DataFrame([[10.0]], columns=[("owner_node",)])
+    invest_costs = pd.DataFrame([[20.0]], columns=[("owner_node",)])
+    results = DummyResults(
+        data={"invest": invest, "investment_costs": invest_costs}
+    )
+    yearly_project_costs(results, es)
+    table = results["eesyplan"]["yearly_project_costs"]
+    row = table[table["component"] == "owner_node"].iloc[0]
+    # model annuity 10 (20 - 10 opex) + fix annuity 100/10
+    assert row["annualized investment cost"] == pytest.approx(20.0)
+    # opex 10 + annual fix 5
+    assert row["fix operational costs"] == pytest.approx(15.0)
+
+
+def test_project_cost_table_with_fix_costs():
+    bus = CarrierBus(name="bus")
+    project = Project("p", tax=0.0, discount_factor=0.0, economic_period=20)
+    owner = DummyNode(
+        "owner_node",
+        opex_spec=1.0,
+        capex_spec=5.0,
+        lifetime=10,
+        investment_fix_cost=100.0,
+        annual_fix_cost=5.0,
+        project_data=project,
+    )
+    owner.label = "owner_node"
+    es = DummyES([bus, owner])
+    invest = pd.DataFrame([[10.0]], columns=[("owner_node",)])
+    invest_costs = pd.DataFrame([[20.0]], columns=[("owner_node",)])
+    results = DummyResults(
+        data={"invest": invest, "investment_costs": invest_costs}
+    )
+    project_cost_table(results, es, project_duration=20)
+    table = results["eesyplan"]["project_cost_table"]
+    row = table[table["component"] == "owner_node"].iloc[0]
+    # capex_spec * capacity 5 * 10 + fix investment 100 in year 0
+    assert row["investment cost in year 0 (not including reinvestment)"] == (
+        pytest.approx(150.0)
+    )
+    # annualized investment 20 * 20 years
+    assert row[
+        "investment cost over the full project (including reinvestments)"
+    ] == pytest.approx(400.0)
+    # (opex 10 + annual fix 5) * 20 years
+    assert row["fix operational costs over project duration"] == (
+        pytest.approx(300.0)
+    )
+
+
+def test_project_cost_table_installed_without_fix_year0():
+    bus = CarrierBus(name="bus")
+    project = Project("p", tax=0.0, discount_factor=0.0, economic_period=20)
+    owner = DummyNode(
+        "owner_node",
+        installed_capacity=10.0,
+        installed_capex_spec_annualized=2.0,
+        opex_spec=1.0,
+        lifetime=10,
+        age_installed=2,
+        investment_fix_cost=100.0,
+        annual_fix_cost=3.0,
+        project_data=project,
+    )
+    owner.label = "owner_node"
+    es = DummyES([bus, owner])
+    results = DummyResults(data={})
+    project_cost_table(results, es, project_duration=20)
+    table = results["eesyplan"]["project_cost_table"]
+    row = table[table["component"] == "owner_node"].iloc[0]
+    # existing components paid their fix investment before the project
+    assert row["investment cost in year 0 (not including reinvestment)"] == 0.0
 
 
 def test_print_cost_table(capsys):
@@ -621,6 +798,54 @@ def test_total_cost_adds_installed_fixed_costs():
     results = DummyResults(data={}, solver=pd.Series({"objective": 100.0}))
     total_cost(results, es)
     assert results["eesyplan"]["total_cost"] == 130.0
+
+
+def test_total_cost_includes_fix_costs():
+    bus = CarrierBus(name="bus")
+    project = Project("p", tax=0.0, discount_factor=0.0, economic_period=20)
+    owner = DummyNode(
+        "owner_node",
+        opex_spec=1.0,
+        capex_spec=5.0,
+        lifetime=10,
+        investment_fix_cost=100.0,
+        annual_fix_cost=3.0,
+        project_data=project,
+    )
+    owner.label = "owner_node"
+    es = DummyES([bus, owner])
+    invest = pd.DataFrame([[10.0]], columns=[("owner_node",)])
+    invest_costs = pd.DataFrame([[20.0]], columns=[("owner_node",)])
+    results = DummyResults(
+        data={"invest": invest, "investment_costs": invest_costs},
+        solver=pd.Series({"objective": 100.0}),
+    )
+    total_cost(results, es)
+    # objective 100 + annualized fix investment 100/10 + annual fix 3
+    assert results["eesyplan"]["total_cost"] == pytest.approx(113.0)
+
+
+def test_total_cost_adds_fix_costs_of_installed_component():
+    bus = CarrierBus(name="bus")
+    project = Project("p", tax=0.0, discount_factor=0.0, economic_period=20)
+    owner = DummyNode(
+        "owner_node",
+        installed_capacity=10.0,
+        installed_capex_spec_annualized=2.0,
+        opex_spec=1.0,
+        lifetime=10,
+        age_installed=2,
+        investment_fix_cost=100.0,
+        annual_fix_cost=3.0,
+        project_data=project,
+    )
+    owner.label = "owner_node"
+    es = DummyES([bus, owner])
+    results = DummyResults(data={}, solver=pd.Series({"objective": 100.0}))
+    total_cost(results, es)
+    # 100 objective + 20 replacement capex + 10 opex
+    # + 10 fix investment annuity + 3 annual fix cost
+    assert results["eesyplan"]["total_cost"] == pytest.approx(143.0)
 
 
 def test_calculate_all_kpis():

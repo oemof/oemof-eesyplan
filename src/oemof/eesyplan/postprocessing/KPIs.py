@@ -171,7 +171,8 @@ def LCOE(results, es):
 
     The total cost is read from ``results["eesyplan"]["total_cost"]``, so
     :func:`total_cost` has to be calculated first. It includes the solver
-    objective and the annual fixed costs of installed capacities.
+    objective, the annual fixed costs of installed capacities and the
+    flat fix costs of the components.
 
     The demand nodes cannot be told apart from the results alone (internal
     sinks such as ``feedin_sink`` look the same), so the energy system is
@@ -313,13 +314,17 @@ def _column_parts(column):
 def _component_cost_data(results, es):
     """Per-component cost building blocks, shared by both cost tables.
 
-    Returns ``(components, capacity, investment_cost, variable)`` where
-    the last three are dicts keyed by the top-level component node:
+    Returns ``(components, capacity, investment_cost, variable,
+    fix_investment_ann, fix_annual)`` where all but the first are dicts
+    keyed by the top-level component node (``components`` is a list):
 
-    capacity         optimised capacity from ``invest``
-    investment_cost  annual model cost from ``investment_costs``
-                     (annualised capex + fixed opex)
-    variable         variable costs summed over the whole horizon
+    capacity            optimised capacity from ``invest``
+    investment_cost     annual model cost from ``investment_costs``
+                        (annualised capex + fixed opex)
+    variable            variable costs summed over the whole horizon
+    fix_investment_ann  annualised ``investment_fix_cost`` (a flat cost
+                        that is not tied to a capacity)
+    fix_annual          ``annual_fix_cost`` per year (flat as well)
     """
     owners = _owner_map(es)
     components = [
@@ -355,7 +360,130 @@ def _component_cost_data(results, es):
                 continue
             variable[owner] = variable.get(owner, 0.0) + costs[column].sum()
 
-    return components, capacity, investment_cost, variable
+    fix_investment_ann, fix_annual = _fix_cost_data(es, capacity)
+
+    return (
+        components,
+        capacity,
+        investment_cost,
+        variable,
+        fix_investment_ann,
+        fix_annual,
+    )
+
+
+def _fix_cost_data(es, capacity):
+    """Flat fix costs of every component, annualised where needed.
+
+    Components can carry two flat costs that are not tied to a capacity:
+    ``investment_fix_cost`` (one-time, annualised here) and
+    ``annual_fix_cost`` (per year). Both are counted for every component
+    that defines them, even if its capacity is zero. A component without
+    any capacity is unusual, so it is reported with a warning.
+
+    Returns ``(fix_investment_ann, fix_annual)`` dicts keyed by the
+    top-level component node. The result is cached on the energy system
+    so that the warnings are logged only once per component.
+    """
+    cached = getattr(es, "_eesyplan_fix_costs", None)
+    if cached is not None:
+        return cached
+
+    fix_investment_ann = {}
+    fix_annual = {}
+    for node in es.nodes:
+        if getattr(node, "parent", None) is not None:
+            continue
+        investment_fix_cost = getattr(node, "investment_fix_cost", None)
+        annual_fix_cost = getattr(node, "annual_fix_cost", None)
+        if not investment_fix_cost and not annual_fix_cost:
+            continue
+        if annual_fix_cost:
+            fix_annual[node] = float(annual_fix_cost)
+        if investment_fix_cost:
+            fix_investment_ann[node] = _annualized_fix_investment(
+                node, es, capacity, investment_fix_cost
+            )
+        if _effective_capacity(node, capacity) == 0:
+            logging.warning(
+                "Component '%s' carries fix costs but has no capacity. "
+                "The fix costs are counted anyway.",
+                _norm_label(node.label),
+            )
+
+    cached = (fix_investment_ann, fix_annual)
+    try:
+        es._eesyplan_fix_costs = cached
+    except AttributeError:
+        logging.debug(
+            "The energy system does not accept attributes. The fix cost "
+            "warnings will be logged again on the next call."
+        )
+    return cached
+
+
+def _annualized_fix_investment(node, es, capacity, investment_fix_cost):
+    """Annualised ``investment_fix_cost`` of one component.
+
+    The annuity is calculated with the project data (tax and discount
+    factor), like the capex of installed components in
+    :func:`_component_costs`. Components that already exist pay the fix
+    investment cost of their replacement, so the replacement timing
+    ``year_of_investment = lifetime - age_installed`` is used. New
+    components invest in year 0.
+
+    Fallbacks, each reported with a warning:
+
+    lifetime        ``economic_period`` of the project, or 20 if none is
+                    available
+    age_installed   0
+    project data    linear annualisation ``investment_fix_cost /
+                    lifetime`` without tax and discounting
+    """
+    project = (
+        getattr(node, "project_data", None)
+        or getattr(node, "_project_data", None)
+        or getattr(es, "project_data", None)
+    )
+    lifetime = getattr(node, "lifetime", None)
+    if lifetime is None:
+        lifetime = _economic_period(es) or 20
+        logging.warning(
+            "Component '%s' has no lifetime. Falling back to %s years "
+            "(the economic_period of the project or 20) to annualize "
+            "its investment_fix_cost.",
+            _norm_label(node.label),
+            lifetime,
+        )
+    age_installed = getattr(node, "age_installed", None)
+    if age_installed is None:
+        age_installed = 0
+        logging.warning(
+            "Component '%s' has no age_installed. Falling back to 0 "
+            "years to annualize its investment_fix_cost.",
+            _norm_label(node.label),
+        )
+    if project is None:
+        logging.warning(
+            "Component '%s' has no project data (tax, discount factor). "
+            "Annualizing its investment_fix_cost linearly over %s years.",
+            _norm_label(node.label),
+            lifetime,
+        )
+        return float(investment_fix_cost) / lifetime
+
+    installed = getattr(node, "installed_capacity", None)
+    if installed and node not in capacity:
+        year_of_investment = lifetime - age_installed
+    else:
+        year_of_investment = 0
+    return float(
+        project.calculate_annuity(
+            investment_fix_cost,
+            lifetime,
+            year_of_investment=year_of_investment,
+        )
+    )
 
 
 def _cost_table(rows, value_columns):
@@ -386,7 +514,9 @@ def _effective_capacity(node, capacity):
     return capacity.get(node, 0.0)
 
 
-def _component_costs(node, capacity, investment_cost):
+def _component_costs(
+    node, capacity, investment_cost, fix_investment_ann=None, fix_annual=None
+):
     """Annualised investment and fixed operational costs of a component.
 
     For optimised components the model bundles investment and fixed
@@ -399,16 +529,22 @@ def _component_costs(node, capacity, investment_cost):
     The annualised capex of that replacement is calculated from the
     component parameters.
 
+    The flat fix costs ``investment_fix_cost`` (annualised) and
+    ``annual_fix_cost`` are not tied to a capacity, so they are added to
+    the investment and the fixed operational costs as they are.
+
     Returns
     -------
     tuple
         ``(annualised investment cost, fixed operational costs)``
     """
+    fix_investment_ann = fix_investment_ann or {}
+    fix_annual = fix_annual or {}
     installed = getattr(node, "installed_capacity", None)
     opex_spec = getattr(node, "opex_spec", None) or 0.0
     cap = _effective_capacity(node, capacity)
 
-    component_opex = opex_spec * cap
+    base_opex = opex_spec * cap
 
     if installed and node not in capacity:
         # existing component: not optimised, so the model contains no
@@ -435,10 +571,12 @@ def _component_costs(node, capacity, investment_cost):
                         year_of_investment=year_of_investment,
                     )
                 )
-        component_capex = float(installed_capex_spec_annualized or 0.0) * cap
+        base_capex = float(installed_capex_spec_annualized or 0.0) * cap
     else:
-        component_capex = investment_cost.get(node, 0.0) - component_opex
+        base_capex = investment_cost.get(node, 0.0) - base_opex
 
+    component_capex = base_capex + fix_investment_ann.get(node, 0.0)
+    component_opex = base_opex + fix_annual.get(node, 0.0)
     return component_capex, component_opex
 
 
@@ -464,18 +602,31 @@ def yearly_project_costs(results, es):
     within the project duration is added as annualised investment cost
     (see :func:`_component_costs`).
 
+    The flat fix costs ``investment_fix_cost`` (annualised) and
+    ``annual_fix_cost`` are not tied to a capacity.  They are added to
+    the annualized investment cost and to the fix operational costs.
+
     The table is written to ``results["eesyplan"]["yearly_project_costs"]``.
     It contains one row per component that carries a cost plus a final
     ``total`` row.  Components without any cost are omitted.
     """
-    components, capacity, investment_cost, variable = _component_cost_data(
-        results, es
-    )
+    (
+        components,
+        capacity,
+        investment_cost,
+        variable,
+        fix_investment_ann,
+        fix_annual,
+    ) = _component_cost_data(results, es)
 
     rows = []
     for node in components:
         component_capex, component_opex = _component_costs(
-            node, capacity, investment_cost
+            node,
+            capacity,
+            investment_cost,
+            fix_investment_ann,
+            fix_annual,
         )
         rows.append(
             {
@@ -500,11 +651,8 @@ def yearly_project_costs(results, es):
     )
 
 
-def _project_duration(es, project_duration=None):
-    """Project duration from the energy system, with a warning fallback."""
-    if project_duration is not None:
-        return project_duration
-
+def _economic_period(es):
+    """Economic period of the project attached to the energy system."""
     projects = [getattr(es, "project_data", None)]
     projects.extend(
         getattr(node, "project_data", None)
@@ -515,6 +663,17 @@ def _project_duration(es, project_duration=None):
         duration = getattr(project, "economic_period", None)
         if duration is not None:
             return duration
+    return None
+
+
+def _project_duration(es, project_duration=None):
+    """Project duration from the energy system, with a warning fallback."""
+    if project_duration is not None:
+        return project_duration
+
+    duration = _economic_period(es)
+    if duration is not None:
+        return duration
 
     logging.warning(
         "No economic_period found in the energy system. Falling back to a "
@@ -545,6 +704,11 @@ def project_cost_table(results, es, project_duration=None):
     project duration.  Reinvestments for installed components are
     included based on their annualized replacement cost.
 
+    The flat fix costs are included as well: the ``investment_fix_cost``
+    of new components is part of the year 0 investment, its annualised
+    value is part of the investment over the full project and the
+    ``annual_fix_cost`` is part of the fixed operational costs.
+
     The project duration is read from the ``economic_period`` of the
     project attached to the energy system. If none is found, a warning is
     logged and 20 years are used. A duration can also be passed explicitly.
@@ -554,17 +718,32 @@ def project_cost_table(results, es, project_duration=None):
     ``total`` row.  Components without any cost are omitted.
     """
     project_duration = _project_duration(es, project_duration)
-    components, capacity, investment_cost, variable = _component_cost_data(
-        results, es
-    )
+    (
+        components,
+        capacity,
+        investment_cost,
+        variable,
+        fix_investment_ann,
+        fix_annual,
+    ) = _component_cost_data(results, es)
 
     rows = []
     for node in components:
         cap = capacity.get(node, 0.0)
         component_capex_ann, component_opex_ann = _component_costs(
-            node, capacity, investment_cost
+            node,
+            capacity,
+            investment_cost,
+            fix_investment_ann,
+            fix_annual,
         )
         investment_year0 = (getattr(node, "capex_spec", None) or 0.0) * cap
+        if not getattr(node, "installed_capacity", None):
+            # new components pay their fix investment cost in year 0 as
+            # well, existing ones paid it before the project started
+            investment_year0 += (
+                getattr(node, "investment_fix_cost", None) or 0.0
+            )
         investment_full = component_capex_ann * project_duration
         operational = component_opex_ann * project_duration
         rows.append(
@@ -634,27 +813,51 @@ def normalize_imported_results(results):
 
 
 def _additional_installed_costs(results, es):
-    """Annual fixed costs of installed capacities missing in the objective."""
-    components, capacity, investment_cost, _variable = _component_cost_data(
-        results, es
-    )
+    """Annual costs that are missing in the solver objective.
+
+    Two kinds of costs never reach the objective: the annual fixed costs
+    of already installed capacities (they are not part of the
+    optimisation) and the flat fix costs of the components
+    (``investment_fix_cost``, annualised, and ``annual_fix_cost``),
+    which cannot be mapped onto a capacity and are therefore unknown to
+    the model.
+    """
+    (
+        components,
+        capacity,
+        investment_cost,
+        _variable,
+        fix_investment_ann,
+        fix_annual,
+    ) = _component_cost_data(results, es)
     additional_fixed_costs = 0.0
     for node in components:
         installed = getattr(node, "installed_capacity", None)
         if installed and node not in capacity:
             component_capex, component_opex = _component_costs(
-                node, capacity, investment_cost
+                node,
+                capacity,
+                investment_cost,
+                fix_investment_ann,
+                fix_annual,
             )
             additional_fixed_costs += component_capex + component_opex
+        else:
+            # optimised components are already covered by the objective,
+            # only their flat fix costs are missing
+            additional_fixed_costs += fix_investment_ann.get(
+                node, 0.0
+            ) + fix_annual.get(node, 0.0)
     return additional_fixed_costs
 
 
 def total_cost(results, es):
     """Total cost of the energy system.
 
-    The solver objective only contains the costs of the optimisation. The
-    annual fixed costs of already installed capacities are missing, so they
-    are added here.
+    The solver objective only contains the costs of the optimisation.
+    The annual fixed costs of already installed capacities and the flat
+    fix costs of the components (``investment_fix_cost``, annualised,
+    and ``annual_fix_cost``) are missing, so they are added here.
 
     The result is written to ``results["eesyplan"]["total_cost"]``.
     """
