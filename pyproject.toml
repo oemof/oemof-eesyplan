@@ -60,7 +60,9 @@ test = [
   "oemof-visio",
   "pyproj",
   "mip",
-  "mock"
+  "mock",
+  "plotly",
+  "dash"
 ]
 
 [build-system]
