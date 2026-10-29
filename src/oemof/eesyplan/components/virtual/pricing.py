@@ -89,7 +89,7 @@ class FlowPricing(Node):
         name,
         bus_in,
         bus_out,
-        maximum_capacity=None,
+        maximum_capacity: float | int | None = None,
         cost_unlimited=0.0,
         cost_limited=None,
         full_load_time_limit=None,

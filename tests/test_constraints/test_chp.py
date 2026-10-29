@@ -11,6 +11,32 @@ from oemof.eesyplan.components.buses.carrier import CarrierBus
 NUMBER = 10
 
 
+def test_init_chp_variable_ratio_state_b(buses, project):
+    """Total efficiency of state b above 100 % raises."""
+    with pytest.raises(ValueError, match="Total efficiency at state b"):
+        build_chp_variable(
+            buses,
+            project,
+            installed=1,
+            maximum=None,
+            eff_elec_a=0.8,
+            eff_elec_b=0.9,
+        )
+
+
+def test_init_chp_variable_ratio_state_a(buses, project):
+    """Total efficiency of state a above 100 % raises."""
+    with pytest.raises(ValueError, match="Total efficiency at state a"):
+        build_chp_variable(
+            buses,
+            project,
+            installed=1,
+            maximum=None,
+            eff_elec_a=1.1,
+            eff_elec_b=0.32,
+        )
+
+
 @pytest.fixture
 def buses():
     gas_bus = CarrierBus(name="gas_bus", balanced=False)
@@ -52,7 +78,9 @@ def build_chp_fixed(buses, project, installed, maximum):
     )
 
 
-def build_chp_variable(buses, project, installed, maximum):
+def build_chp_variable(
+    buses, project, installed, maximum, eff_elec_a=0.55, eff_elec_b=0.32
+):
     gas_bus, heat_bus, el_bus = buses
     return ChpVariableRatio(
         name="fixed_ratio_chp",
@@ -61,9 +89,9 @@ def build_chp_variable(buses, project, installed, maximum):
         bus_out_electricity=el_bus,
         installed_capacity=installed,
         maximum_capacity=maximum,
-        efficiency_electricity_state_a=0.55,
+        efficiency_electricity_state_a=eff_elec_a,
         efficiency_heat_state_a=0,
-        efficiency_electricity_state_b=0.32,
+        efficiency_electricity_state_b=eff_elec_b,
         efficiency_heat_state_b=0.58,
         variable_costs=-1000,
         project_data=project,
