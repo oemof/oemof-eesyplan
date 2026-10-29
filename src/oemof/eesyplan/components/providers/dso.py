@@ -58,6 +58,7 @@ class DSO(Node):
         energy_price: float | int | ArrayLike | None = None,
         feedin_tariff: float | int | ArrayLike | None = None,
         maximum_capacity: float | int = float("inf"),
+        # ToDo: Parameter has no effect. Add implementation!
         maximum_feedin_capacity: float | int | None = None,
         peak_demand_pricing: float | int = 0,
         basic_amount=0,  # Warnung, weil nur für Profis :-)
