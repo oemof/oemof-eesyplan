@@ -176,7 +176,7 @@ COMPONENT_LABELS: dict[str, dict[str, str]] = {
         # (presumably CHPFixedRatio / CHPVariableRatio or similar).
         "chp_fixed_ratio": "CHP (Fixed Ratio)",
         "chp_variable_ratio": "CHP (Variable Ratio)",
-        "diesel_generator": "Diesel Generator",
+        "fuel_generator": "Fuel Generator",
         # TODO: confirm the actual class name.
         "electrical_transformator": "Electrical Transformer",
         "electrolyzer": "Electrolyser",

@@ -8,12 +8,12 @@ from oemof.eesyplan.components.converters.chp_fixed_ratio import ChpFixedRatio
 from oemof.eesyplan.components.converters.chp_variable_ratio import (
     ChpVariableRatio,
 )
-from oemof.eesyplan.components.converters.fuel_generator import FuelGenerator
 from oemof.eesyplan.components.converters.electrical_transformator import (
     ElectricalTransformator,
 )
 from oemof.eesyplan.components.converters.electrolyzer import Electrolyzer
 from oemof.eesyplan.components.converters.fuel_cell import FuelCell
+from oemof.eesyplan.components.converters.fuel_generator import FuelGenerator
 from oemof.eesyplan.components.converters.heat_pump import HeatPump
 from oemof.eesyplan.components.demand.demand import Demand
 from oemof.eesyplan.components.demand.electricity_demand import (
@@ -82,7 +82,7 @@ TYPEMAP = {
     "storage_charge_controller_in": ElectricalTransformator,
     "storage_charge_controller_out": ElectricalTransformator,
     "solar_inverter": ElectricalTransformator,
-    "diesel_generator": FuelGenerator,
+    "fuel_generator": FuelGenerator,
     "fuel_cell": FuelCell,
     "gas_boiler": Boiler,
     "electrolyzer": Electrolyzer,

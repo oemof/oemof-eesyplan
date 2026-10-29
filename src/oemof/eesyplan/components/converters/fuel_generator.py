@@ -8,7 +8,7 @@ from oemof.solph.components import Converter
 
 class FuelGenerator(Converter):
     """
-    Fuel generator for electricity generation e.g. diesel generator.
+    Fuel generator for electricity generation e.g. fuel generator.
 
     This class represents a fuel generator that converts fuel
     into electrical energy for backup or primary power generation.
@@ -40,8 +40,8 @@ class FuelGenerator(Converter):
         >>> from oemof.eesyplan import CarrierBus
         >>> fuel_bus = CarrierBus(name="fuel_bus")
         >>> el_bus = CarrierBus(name="el_bus")
-        >>> my_diesel_generator = FuelGenerator(
-        ...     name="DieselGenerator",
+        >>> my_fuel_generator = FuelGenerator(
+        ...     name="FuelGenerator",
         ...     bus_in_fuel=fuel_bus,
         ...     bus_out_electricity=el_bus,
         ...     age_installed=0,

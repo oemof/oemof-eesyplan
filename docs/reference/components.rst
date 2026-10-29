@@ -76,9 +76,9 @@ and CHP units.
         :show-inheritance:
 
 
-.. dropdown:: Diesel Generator
+.. dropdown:: Fuel Generator
 
-    .. automodule:: oemof.eesyplan.components.converters.diesel_generator
+    .. automodule:: oemof.eesyplan.components.converters.fuel_generator
         :members:
         :undoc-members:
         :show-inheritance:
