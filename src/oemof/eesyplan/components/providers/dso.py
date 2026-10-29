@@ -58,12 +58,14 @@ class DSO(Node):
         energy_price: float | int | ArrayLike | None = None,
         feedin_tariff: float | int | ArrayLike | None = None,
         maximum_capacity: float | int = float("inf"),
+        maximum_feedin_capacity: float | int | None = None,
         peak_demand_pricing: float | int = 0,
         basic_amount=0,  # Warnung, weil nur für Profis :-)
     ):
         self.name = name
         self.bus = bus
         self.maximum_capacity = maximum_capacity
+        self.maximum_feedin_capacity = maximum_feedin_capacity
         self.energy_price = to_array_or_number(energy_price)
         self.feedin_tariff = to_array_or_number(feedin_tariff)
         self.peak_demand_pricing = peak_demand_pricing

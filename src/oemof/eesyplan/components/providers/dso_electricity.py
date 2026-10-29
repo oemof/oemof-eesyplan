@@ -13,6 +13,7 @@ class DsoElectricity(DSO):
         feedin_tariff: float | int | ArrayLike | None = None,
         peak_demand_pricing: float | int = 0,
         maximum_capacity: float | int = float("inf"),
+        maximum_feedin_capacity: float | int | None = None,
     ):
         """
         Energy provider for electricity distribution.
@@ -66,4 +67,5 @@ class DsoElectricity(DSO):
             feedin_tariff=feedin_tariff,
             peak_demand_pricing=peak_demand_pricing,
             maximum_capacity=maximum_capacity,
+            maximum_feedin_capacity=maximum_feedin_capacity,
         )
