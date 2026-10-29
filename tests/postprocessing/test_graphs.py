@@ -162,10 +162,10 @@ def test_capacities_shows_installed_or_optimized_components_with_costs():
     assert list(fig.data[0].x) == ["wind", "pv", "battery", "legacy"]
     assert list(fig.data[0].y) == [390.0, 2.0, 8000.0, 5.0]
     assert list(fig.data[0].customdata) == [
-        "Optimized",
-        "Installed",
-        "Optimized",
-        "Installed",
+        ["Optimized", "390.0"],
+        ["Installed", "2.0"],
+        ["Optimized", "8 000.0"],
+        ["Installed", "5.0"],
     ]
 
 

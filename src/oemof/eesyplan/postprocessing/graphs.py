@@ -708,11 +708,15 @@ def capacities(imported_results, es, threshold=1e-6) -> go.Figure:
             },
         },
         customdata=[
-            "Installed" if inst > 0 else "Optimized"
-            for inst, opt in zip(installed, optimized, strict=True)
+            [
+                "Installed" if inst > 0 else "Optimized",
+                _format_number(cap, 1),
+            ]
+            for inst, cap in zip(installed, capacities, strict=True)
         ],
         hovertemplate=(
-            "%{x}<br>Type: %{customdata}<br>Capacity: %{y}<extra></extra>"
+            "%{x}<br>Type: %{customdata[0]}<br>"
+            "Capacity: %{customdata[1]}<extra></extra>"
         ),
     )
 
@@ -779,8 +783,10 @@ def plot_annual_costs(
             y=table[column],
             name=column,
             marker={"color": color},
+            customdata=[_format_number(value, 0) for value in table[column]],
             hovertemplate=(
-                f"<b>%{{x}}</b><br>{column}: %{{y:,.0f}} {unit}<extra></extra>"
+                f"<b>%{{x}}</b><br>{column}: %{{customdata}} {unit}"
+                "<extra></extra>"
             ),
         )
 
