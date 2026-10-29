@@ -731,6 +731,10 @@ def capacities(imported_results, es, threshold=1e-6) -> go.Figure:
                 "fgcolor": "#d64e12",
                 "bgcolor": "rgba(0,0,0,0)",
             },
+            "line": {
+                "color": "#d64e12",  # Same color as the bar
+                "width": 1.5,
+            },
         },
         customdata=[
             None if cap is None else _format_number(cap, 1)
@@ -808,7 +812,14 @@ def plot_annual_costs(
             x=table["component"].astype(str),
             y=table[column],
             name=column,
-            marker=_cost_type_marker("#d64e12", pattern),
+            #marker=_cost_type_marker("#d64e12", pattern),
+            marker={
+                **_cost_type_marker("#d64e12", pattern),
+                "line": {
+                    "color": "#d64e12",
+                    "width": 1.5,
+                },
+            },
             customdata=[_format_number(value, 0) for value in table[column]],
             hovertemplate=(
                 f"<b>%{{x}}</b><br>{column}: %{{customdata}} {unit}"
@@ -942,7 +953,14 @@ def compare_annual_costs(
                 name=scenario,
                 legendgroup=scenario,
                 showlegend=index == 0,
-                marker=_cost_type_marker(color, pattern),
+                #marker=_cost_type_marker(color, pattern),
+                marker={
+                    **_cost_type_marker(color, pattern),
+                    "line": {
+                        "color": color,  # Same color as the bar
+                        "width": 1.5,
+                    },
+                },
                 customdata=[
                     [
                         bar["component"],
@@ -959,6 +977,20 @@ def compare_annual_costs(
                     "<extra></extra>"
                 ),
             )
+
+    # Additional legend entries for the cost type patterns
+    for column, pattern in zip(
+        _COST_COLUMNS, _COST_PATTERNS, strict=True
+    ):
+        fig.add_bar(
+            x=[None],
+            y=[None],
+            name=column,
+            legendgroup=f"cost_type_{column}",
+            showlegend=True,
+            marker=_cost_type_marker("#808080", pattern),
+            hoverinfo="skip",
+        )
 
     fig.update_layout(
         barmode="relative",
