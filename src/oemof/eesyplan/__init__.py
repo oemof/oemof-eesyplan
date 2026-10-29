@@ -12,7 +12,7 @@ from oemof.eesyplan.components.converters.chp_fixed_ratio import ChpFixedRatio
 from oemof.eesyplan.components.converters.chp_variable_ratio import (
     ChpVariableRatio,
 )
-from oemof.eesyplan.components.converters.diesel_generator import FuelGenerator
+from oemof.eesyplan.components.converters.fuel_generator import FuelGenerator
 from oemof.eesyplan.components.converters.electrical_transformator import (
     ElectricalTransformator,
 )
