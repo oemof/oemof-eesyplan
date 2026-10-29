@@ -5,10 +5,25 @@ from typing import Any
 from zipfile import ZIP_DEFLATED
 from zipfile import ZipFile
 
+import dash
 import pandas as pd
+import plotly.graph_objs as go
+from dash import dash_table
+from dash import dcc
+from dash import html
+from dash.dependencies import Input
+from dash.dependencies import Output
 
 import oemof.eesyplan.postprocessing.graphs as graphs
 from oemof.datapackage.resultpackage.read import ImportResults
+from oemof.eesyplan import CarrierBus
+from oemof.eesyplan import export_results
+from oemof.eesyplan import import_results
+from oemof.eesyplan.dashboard.graphs_to_json import sankey_to_json
+from oemof.eesyplan.datapackage.energy_system import (
+    create_energy_system_from_dp,
+)
+from oemof.eesyplan.model import optimise
 
 
 def _normalize_df_for_csv(df: pd.DataFrame, key: str) -> pd.DataFrame:
@@ -361,3 +376,167 @@ class DashboardResults(ImportResults):
                 f,
                 indent=2,
             )
+
+
+def import_dashboard_results(scenario_path, results_path):
+    if isinstance(scenario_path, str):
+        scenario_path = Path(scenario_path)
+    if isinstance(results_path, str):
+        results_path = Path(results_path)
+
+    es = create_energy_system_from_dp(scenario_path)
+
+    if not results_path.exists():
+        results = optimise(es)
+        export_results(results=results, path=results_path)
+
+    imported_results = import_results(results_path, es)
+    imported_results = DashboardResults(imported_results, es)
+    return imported_results
+
+
+def prepare_dash_app(imported_results):
+    es = imported_results.energy_system
+    flows = imported_results["flow"]
+
+    bus_figures = []
+
+    busses = [n for n in es.nodes if isinstance(n, CarrierBus)]
+    for bus in busses:
+        fig = go.Figure(layout={"title": f"{bus} bus node"})
+        for col in flows.columns:
+            if bus in col:
+                idx_asset = abs(col.index(bus) - 1)
+                fig.add_trace(
+                    go.Scatter(
+                        x=flows[col].index,
+                        y=flows[col].values * pow(-1, idx_asset),
+                        name=str(
+                            col[idx_asset].label
+                            if hasattr(col[idx_asset], "label")
+                            else col[idx_asset]
+                        ),
+                    )
+                )
+
+        bus_figures.append(fig)
+
+    # Here define which figures should be displayed
+    capacity_fig_key = imported_results.add_capacities_graph()
+
+    imported_results["sankey"] = sankey_to_json(imported_results)
+    imported_results.figure_keys.append("sankey")
+
+    figures_to_plot = [capacity_fig_key]
+
+    # Here define which tables should be displayed
+    # imported_results["yearly_project_costs"] = yearly_project_costs(
+    #     imported_results, es
+    # )
+    # imported_results.table_keys.append("yearly_project_costs")
+    #
+    # imported_results["project_cost_table"] = project_cost_table(
+    #     imported_results, es
+    # )
+    # imported_results.table_keys.append("project_cost_table")
+
+    date_time_index = es.timeindex
+
+    options = {}
+    demo_app = dash.Dash(__name__, **options)
+
+    demo_app.layout = html.Div(
+        children=[html.H2("Scalar results"), html.H3("KPIS")]
+        + [
+            html.Div(
+                [
+                    html.H4(table),
+                    dash_table.DataTable(
+                        data=df.to_dict("records"),
+                        columns=[
+                            {"name": col, "id": col} for col in df.columns
+                        ],
+                    ),
+                ]
+            )
+            for table, df in imported_results.tables().items()
+        ]
+        + [
+            html.H2("Dynamic results"),
+            dcc.Slider(
+                id="ts_slice_slider",
+                value=1,
+                min=0,
+                max=len(date_time_index),
+                # marks={k: v for k, v in enumerate(date_time_index)},
+            ),
+            dcc.Dropdown(
+                id="ts_slice_select",
+                options=dict(enumerate(date_time_index)),
+                value=None,
+            ),
+            dcc.Graph(id="sankey", figure=imported_results["sankey"]),
+            html.H2("Graphs"),
+            html.H4("Aggregated sankey diagramm"),
+            dcc.Graph(
+                id="sankey_aggregated", figure=imported_results["sankey"]
+            ),
+        ]
+        + [
+            html.Div(
+                [
+                    html.H4(fig_num),
+                    dcc.Graph(
+                        id=f"batch_figure_{fig_num}-id",
+                        figure=fig,
+                    ),
+                ]
+            )
+            for fig_num, fig in imported_results.figures(
+                figures_to_plot
+            ).items()
+        ]
+        + [
+            html.H2("Bus results"),
+        ]
+        + [
+            dcc.Graph(
+                id=f"bus_{bus}-id",
+                figure=fig,
+            )
+            for bus, fig in zip(busses, bus_figures, strict=False)
+        ]
+    )
+
+    @demo_app.callback(
+        # The value of these components of the layout will be changed by this callback
+        [
+            Output(component_id="sankey", component_property="figure"),
+        ],
+        # Triggers the callback when the value of one of these components of the layout is changed
+        Input(component_id="ts_slice_select", component_property="value"),
+    )
+    def update_figures(ts):
+        if ts is None:
+            ts = "0"
+        ts = int(ts)
+
+        sankey_fig = sankey_to_json(imported_results, row=ts)
+        sankey_diagram = go.Figure(sankey_fig)
+
+        return [
+            sankey_diagram,
+        ]
+
+    @demo_app.callback(
+        # The value of these components of the layout will be changed by this callback
+        Output(component_id="ts_slice_select", component_property="value"),
+        # Triggers the callback when the value of one of these components of the layout is changed
+        Input(component_id="ts_slice_slider", component_property="value"),
+    )
+    def change_ts_value(val):
+        return val
+
+    return demo_app
+
+
