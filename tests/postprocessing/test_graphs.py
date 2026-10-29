@@ -3,6 +3,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pandas as pd
+import pytest
 
 from oemof.datapackage import datapackage  # noqa
 from oemof.eesyplan import CarrierBus
@@ -17,6 +18,7 @@ from oemof.eesyplan import optimise
 from oemof.eesyplan.datapackage import energy_system as es
 from oemof.eesyplan.postprocessing.graphs import capacities
 from oemof.eesyplan.postprocessing.graphs import capacities_graph
+from oemof.eesyplan.postprocessing.graphs import compare_annual_costs
 from oemof.eesyplan.postprocessing.graphs import plot_annual_costs
 from oemof.eesyplan.postprocessing.graphs import plot_renewable_vs_nonrenewable
 from oemof.eesyplan.postprocessing.graphs import sankey
@@ -278,6 +280,100 @@ def test_plot_annual_costs(monkeypatch):
     ]
     for trace in fig.data:
         assert list(trace.x) == ["component_a", "component_b"]
+
+
+def test_compare_annual_costs(monkeypatch):
+    class WindTurbine:
+        def __init__(self, label):
+            self.label = label
+            self.parent = None
+
+    class PvPlant:
+        def __init__(self, label):
+            self.label = label
+            self.parent = None
+
+    wind1 = WindTurbine("wind1")
+    wind2 = WindTurbine("wind2")
+    pv1 = PvPlant("pv1")
+    windplant = WindTurbine("windplant")
+
+    table1 = pd.DataFrame(
+        {
+            "component": ["wind1", "wind2", "pv1", "total"],
+            "annualized investment cost": [10.0, 20.0, 5.0, 35.0],
+            "fix operational costs": [1.0, 2.0, 0.5, 3.5],
+            "dispatch costs": [0.1, 0.2, 0.05, 0.35],
+        }
+    )
+    table2 = pd.DataFrame(
+        {
+            "component": ["windplant", "total"],
+            "annualized investment cost": [7.0, 7.0],
+            "fix operational costs": [0.7, 0.7],
+            "dispatch costs": [0.07, 0.07],
+        }
+    )
+    es1 = SimpleNamespace(nodes=[wind1, wind2, pv1])
+    es1.table = table1
+    es2 = SimpleNamespace(nodes=[windplant])
+    es2.table = table2
+
+    def fake_yearly_project_costs(results, es):
+        results["eesyplan"] = {"yearly_project_costs": es.table}
+
+    monkeypatch.setattr(
+        "oemof.eesyplan.postprocessing.graphs.yearly_project_costs",
+        fake_yearly_project_costs,
+    )
+
+    fig = compare_annual_costs(
+        {"scenario1": ({}, es1), "scenario2": ({}, es2)}
+    )
+
+    assert fig.layout.barmode == "relative"
+    assert [trace.name for trace in fig.data] == ["scenario1"] * 3 + [
+        "scenario2"
+    ] * 3
+    assert [trace.showlegend for trace in fig.data] == [
+        True,
+        False,
+        False,
+    ] * 2
+    assert [trace.legendgroup for trace in fig.data] == ["scenario1"] * 3 + [
+        "scenario2"
+    ] * 3
+    # pv1 forms its own type group, the wind turbines sit together
+    # behind the gap
+    assert list(fig.layout.xaxis.tickvals) == [0, 2, 3, 4]
+    assert list(fig.layout.xaxis.ticktext) == [
+        "pv1",
+        "wind1",
+        "wind2",
+        "windplant",
+    ]
+    assert list(fig.data[0].x) == [0, 2, 3]
+    assert list(fig.data[0].y) == [5.0, 10.0, 20.0]
+    assert list(fig.data[3].x) == [4]
+    assert list(fig.data[3].y) == [7.0]
+    assert list(fig.data[0].customdata) == [
+        ["pv1", "PvPlant", "5"],
+        ["wind1", "WindTurbine", "10"],
+        ["wind2", "WindTurbine", "20"],
+    ]
+    assert fig.data[0].marker.color == "#636EFA"
+    assert fig.data[3].marker.color == "#EF553B"
+    assert fig.data[1].marker.pattern.shape == "x"
+    assert fig.data[2].marker.pattern.shape == "/"
+    assert "Scenario: scenario1" in fig.data[0].hovertemplate
+
+
+def test_compare_annual_costs_validates_input():
+    with pytest.raises(ValueError, match="at least one scenario"):
+        compare_annual_costs({})
+
+    with pytest.raises(ValueError, match=r"\(results, es\) pair"):
+        compare_annual_costs({"scenario1": ({},)})
 
 
 def test_plot_renewable_vs_nonrenewable():

@@ -41,6 +41,14 @@ _COMPONENT_TYPE_COLORS = [
     "#17becf",  # transport
 ]
 
+_COST_COLUMNS = [
+    "annualized investment cost",
+    "fix operational costs",
+    "dispatch costs",
+]
+
+_COST_PATTERNS = ["", "x", "/"]
+
 
 def _format_number(value, decimals=1):
     """Format a number with space as thousands separator."""
@@ -50,6 +58,18 @@ def _format_number(value, decimals=1):
         return f"{float(value):,.{decimals}f}".replace(",", " ")
     except Exception:
         return str(value)
+
+
+def _cost_type_marker(color, pattern):
+    """Marker of one cost type: the colour with its fill pattern."""
+    marker = {"color": color}
+    if pattern:
+        marker["pattern"] = {
+            "shape": pattern,
+            "fgcolor": color,
+            "bgcolor": "rgba(0,0,0,0)",
+        }
+    return marker
 
 
 def _label_of(part):
@@ -778,32 +798,17 @@ def plot_annual_costs(
     plotly.graph_objects.Figure
         Stacked bar chart with one column per component.
     """
-    cost_columns = [
-        "annualized investment cost",
-        "fix operational costs",
-        "dispatch costs",
-    ]
-    patterns = ["", "x", "/"]
-    color = "#d64e12"
-
     yearly_project_costs(results, es)
     table = _eesyplan_kpis(results)["yearly_project_costs"]
     table = table[table["component"] != "total"].copy()
 
     fig = go.Figure()
-    for column, pattern in zip(cost_columns, patterns, strict=True):
-        marker = {"color": color}
-        if pattern:
-            marker["pattern"] = {
-                "shape": pattern,
-                "fgcolor": color,
-                "bgcolor": "rgba(0,0,0,0)",
-            }
+    for column, pattern in zip(_COST_COLUMNS, _COST_PATTERNS, strict=True):
         fig.add_bar(
             x=table["component"].astype(str),
             y=table[column],
             name=column,
-            marker=marker,
+            marker=_cost_type_marker("#d64e12", pattern),
             customdata=[_format_number(value, 0) for value in table[column]],
             hovertemplate=(
                 f"<b>%{{x}}</b><br>{column}: %{{customdata}} {unit}"
@@ -820,6 +825,151 @@ def plot_annual_costs(
         margin={"b": 150},
     )
 
+    return fig
+
+
+def compare_annual_costs(
+    datasets,
+    unit="EUR",
+    title="Annual project costs by scenario",
+) -> go.Figure:
+    """Compare the yearly project costs of several scenarios.
+
+    ``datasets`` maps the name of a scenario to its ``(results, es)``
+    pair.  The costs of every scenario are calculated with
+    :func:`oemof.eesyplan.postprocessing.KPIs.yearly_project_costs` and
+    plotted like in :func:`plot_annual_costs`: one bar per component,
+    stacked by the three cost types.
+
+    Components usually have different names in the different scenarios,
+    so the bars are grouped by their component type (the class of the
+    component, e.g. ``WindTurbine``).  Bars of the same type sit next to
+    each other, separated by a gap from the next type.  Every scenario
+    has its own colour and one legend entry; the cost types are told
+    apart by their fill pattern as in :func:`plot_annual_costs` and are
+    spelled out in the hover text.
+
+    Parameters
+    ----------
+    datasets : dict
+        Maps the scenario name to a ``(results, es)`` tuple of that
+        scenario.
+    unit : str, optional
+        Unit shown in the axis title and hover labels.  Defaults to
+        "EUR".
+    title : str, optional
+        Figure title.  Defaults to "Annual project costs by scenario".
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Stacked bar chart with one bar per component and scenario.
+
+    Raises
+    ------
+    ValueError
+        If ``datasets`` is empty or an entry is no ``(results, es)``
+        pair.
+    """
+    if not datasets:
+        raise ValueError(
+            "datasets must map at least one scenario to (results, es)."
+        )
+    for name, dataset in datasets.items():
+        if not isinstance(dataset, list | tuple) or len(dataset) != 2:
+            raise ValueError(
+                f"The entry of '{name}' must be a (results, es) pair."
+            )
+
+    # one entry per bar: (scenario, node, component type, table row)
+    bars = []
+    for scenario, (results, es) in datasets.items():
+        yearly_project_costs(results, es)
+        table = _eesyplan_kpis(results)["yearly_project_costs"]
+        table = table[table["component"] != "total"]
+        owners = _owner_map(es)
+        for _, row in table.iterrows():
+            node = owners.get(row["component"])
+            type_name = type(node).__name__ if node is not None else "other"
+            bars.append((scenario, node, type_name, row))
+
+    def _type_group_key(bar):
+        index = _component_type_index(bar[1])
+        return (index is None, index or 0, bar[2])
+
+    bars.sort(key=_type_group_key)
+
+    # numeric x positions: bars of one type sit next to each other, one
+    # empty position separates the type groups
+    tickvals = []
+    ticktext = []
+    position = 0
+    previous_type = None
+    plot_bars = []
+    for scenario, _node, type_name, row in bars:
+        if previous_type is not None and type_name != previous_type:
+            position += 1
+        plot_bars.append(
+            {
+                "position": position,
+                "scenario": scenario,
+                "type": type_name,
+                "component": str(row["component"]),
+                "row": row,
+            }
+        )
+        tickvals.append(position)
+        ticktext.append(str(row["component"]))
+        previous_type = type_name
+        position += 1
+
+    scenario_colors = {
+        scenario: qualitative.Plotly[index % len(qualitative.Plotly)]
+        for index, scenario in enumerate(datasets)
+    }
+
+    fig = go.Figure()
+    for scenario in datasets:
+        color = scenario_colors[scenario]
+        own = [bar for bar in plot_bars if bar["scenario"] == scenario]
+        x = [bar["position"] for bar in own]
+        for index, (column, pattern) in enumerate(
+            zip(_COST_COLUMNS, _COST_PATTERNS, strict=True)
+        ):
+            fig.add_bar(
+                x=x,
+                y=[float(bar["row"][column]) for bar in own],
+                name=scenario,
+                legendgroup=scenario,
+                showlegend=index == 0,
+                marker=_cost_type_marker(color, pattern),
+                customdata=[
+                    [
+                        bar["component"],
+                        bar["type"],
+                        _format_number(bar["row"][column], 0),
+                    ]
+                    for bar in own
+                ],
+                hovertemplate=(
+                    f"<b>%{{customdata[0]}}</b><br>"
+                    f"Scenario: {scenario}<br>"
+                    "Component type: %{customdata[1]}<br>"
+                    f"{column}: %{{customdata[2]}} {unit}"
+                    "<extra></extra>"
+                ),
+            )
+
+    fig.update_layout(
+        barmode="relative",
+        title=title,
+        xaxis_title="Component",
+        yaxis_title=f"Annual costs [{unit}]",
+        legend_title="Scenario",
+        margin={"b": 150},
+    )
+    if tickvals:
+        fig.update_xaxes(tickvals=tickvals, ticktext=ticktext)
     return fig
 
 
