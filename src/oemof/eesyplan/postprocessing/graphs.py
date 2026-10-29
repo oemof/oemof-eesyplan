@@ -653,7 +653,8 @@ def capacities(imported_results, es, threshold=1e-6) -> go.Figure:
     -------
     plotly.graph_objects.Figure
         Bar chart with one bar per shown component.  Installed components
-        are hatched, optimized components are solid.
+        are hatched, optimized components are solid.  The legend separates
+        the two types.
     """
     owners = _owner_map(es)
     optimized_capacity = {}
@@ -690,47 +691,56 @@ def capacities(imported_results, es, threshold=1e-6) -> go.Figure:
         for inst, opt in zip(installed, optimized, strict=True)
     ]
 
-    patterns = [
-        "x" if inst > 0 else ""
-        for inst, opt in zip(installed, optimized, strict=True)
+    installed_caps = [
+        cap if inst > 0 else None
+        for cap, inst in zip(capacities, installed, strict=True)
+    ]
+    optimized_caps = [
+        cap if inst == 0 else None
+        for cap, inst in zip(capacities, installed, strict=True)
     ]
 
     fig.add_bar(
         x=components,
-        y=capacities,
-        name="Capacity",
+        y=installed_caps,
+        name="Installed",
         marker={
             "color": "#d64e12",
             "pattern": {
-                "shape": patterns,
+                "shape": "x",
                 "fgcolor": "#d64e12",
                 "bgcolor": "rgba(0,0,0,0)",
             },
         },
         customdata=[
-            [
-                "Installed" if inst > 0 else "Optimized",
-                _format_number(cap, 1),
-            ]
-            for inst, cap in zip(installed, capacities, strict=True)
+            None if cap is None else _format_number(cap, 1)
+            for cap in installed_caps
         ],
         hovertemplate=(
-            "%{x}<br>Type: %{customdata[0]}<br>"
-            "Capacity: %{customdata[1]}<extra></extra>"
+            "%{x}<br>Type: Installed<br>Capacity: %{customdata}<extra></extra>"
+        ),
+    )
+    fig.add_bar(
+        x=components,
+        y=optimized_caps,
+        name="Optimized",
+        marker={"color": "#d64e12"},
+        customdata=[
+            None if cap is None else _format_number(cap, 1)
+            for cap in optimized_caps
+        ],
+        hovertemplate=(
+            "%{x}<br>Type: Optimized<br>Capacity: %{customdata}<extra></extra>"
         ),
     )
 
     fig.update_layout(
+        barmode="overlay",
+        showlegend=True,
         xaxis_title="Component",
         yaxis_title="Capacity",
         margin={"b": 150},
         title="Installed and Optimized Capacities",
-    )
-
-    fig.update_yaxes(
-        zeroline=True,
-        zerolinecolor="black",
-        zerolinewidth=2,
     )
 
     return fig
@@ -747,7 +757,10 @@ def plot_annual_costs(
     The cost table is created with
     :func:`oemof.eesyplan.postprocessing.KPIs.yearly_project_costs`.  Each
     component is one column, stacked by the three cost types.  Negative
-    costs are drawn downwards from zero.
+    costs are drawn downwards from zero.  The cost types are told apart
+    by their fill pattern: the annualized investment cost is solid, the
+    fix operational costs carry an ``x`` hatch and the dispatch costs a
+    ``/`` hatch.
 
     Parameters
     ----------
@@ -770,19 +783,27 @@ def plot_annual_costs(
         "fix operational costs",
         "dispatch costs",
     ]
-    colors = ["#1f77b4", "#ff7f0e", "#2ca02c"]
+    patterns = ["", "x", "/"]
+    color = "#d64e12"
 
     yearly_project_costs(results, es)
     table = _eesyplan_kpis(results)["yearly_project_costs"]
     table = table[table["component"] != "total"].copy()
 
     fig = go.Figure()
-    for column, color in zip(cost_columns, colors, strict=True):
+    for column, pattern in zip(cost_columns, patterns, strict=True):
+        marker = {"color": color}
+        if pattern:
+            marker["pattern"] = {
+                "shape": pattern,
+                "fgcolor": color,
+                "bgcolor": "rgba(0,0,0,0)",
+            }
         fig.add_bar(
             x=table["component"].astype(str),
             y=table[column],
             name=column,
-            marker={"color": color},
+            marker=marker,
             customdata=[_format_number(value, 0) for value in table[column]],
             hovertemplate=(
                 f"<b>%{{x}}</b><br>{column}: %{{customdata}} {unit}"

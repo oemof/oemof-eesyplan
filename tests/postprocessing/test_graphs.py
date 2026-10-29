@@ -158,15 +158,14 @@ def test_capacities_shows_installed_or_optimized_components_with_costs():
 
     fig = capacities(imported, es_stub)
 
-    assert len(fig.data) == 1
+    assert len(fig.data) == 2
+    assert fig.data[0].name == "Installed"
+    assert fig.data[1].name == "Optimized"
     assert list(fig.data[0].x) == ["wind", "pv", "battery", "legacy"]
-    assert list(fig.data[0].y) == [390.0, 2.0, 8000.0, 5.0]
-    assert list(fig.data[0].customdata) == [
-        ["Optimized", "390.0"],
-        ["Installed", "2.0"],
-        ["Optimized", "8 000.0"],
-        ["Installed", "5.0"],
-    ]
+    assert list(fig.data[0].y) == [None, 2.0, None, 5.0]
+    assert list(fig.data[1].y) == [390.0, None, 8000.0, None]
+    assert list(fig.data[0].customdata) == [None, "2.0", None, "5.0"]
+    assert list(fig.data[1].customdata) == ["390.0", None, "8 000.0", None]
 
 
 def test_capacities_without_investments():
@@ -176,9 +175,10 @@ def test_capacities_without_investments():
 
     fig = capacities({"invest": pd.DataFrame()}, es_stub)
 
-    assert len(fig.data) == 1
+    assert len(fig.data) == 2
     assert list(fig.data[0].x) == ["pv"]
     assert list(fig.data[0].y) == [2.0]
+    assert list(fig.data[1].y) == [None]
 
 
 def test_storage_exposes_cost_and_installed_capacity():
