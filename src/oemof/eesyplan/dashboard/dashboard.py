@@ -1,3 +1,4 @@
+import argparse
 import json
 import tempfile
 from pathlib import Path
@@ -24,6 +25,7 @@ from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
 )
 from oemof.eesyplan.model import optimise
+from oemof.tools.logger import define_logging
 
 
 def _normalize_df_for_csv(df: pd.DataFrame, key: str) -> pd.DataFrame:
@@ -540,3 +542,49 @@ def prepare_dash_app(imported_results):
     return demo_app
 
 
+def cli():
+    define_logging()
+    parser = argparse.ArgumentParser(
+        prog="Visualize eesyplan results datapackage",
+        description="Visualize eesyplan results datapackage",
+    )
+
+    parser.add_argument(
+        "scenario_path",
+        type=Path,
+        help="Path to the scenario file",
+    )
+    parser.add_argument(
+        "results_path",
+        type=Path,
+        help="Path to the results file",
+    )
+    parser.add_argument(
+        "-d",
+        "--display",
+        action="store_true",
+        help="Display the results in a dash app",
+    )
+    parser.add_argument("-o", "--output", default=None, type=Path)
+
+    args = parser.parse_args()
+
+    scenario_path = args.scenario_path
+    results_path = args.results_path
+
+    if scenario_path.suffix != ".zip" and scenario_path.suffix != ".json":
+        scenario_path = scenario_path / "datapackage.json"
+
+    imported_results = import_dashboard_results(scenario_path, results_path)
+
+    dashboard_path = args.output
+
+    if dashboard_path is not None:
+        imported_results.export_results_to_datapackage(dashboard_path)
+
+    app = prepare_dash_app(imported_results)
+    app.run(debug=True, port=8060)
+
+
+if __name__ == "__main__":
+    cli()
