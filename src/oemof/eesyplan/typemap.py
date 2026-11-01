@@ -62,6 +62,7 @@ TYPEMAP = {
     "j": HeatingPipe,
     "Battery": ElectricalStorage,
     "Bus": CarrierBus,
+    "CarrierBus": CarrierBus,  # back compatibility
     "HeatingNetwork": HeatingNetwork,
     "heating_network": HeatingNetwork,
     "demand": ElectricityDemand,
@@ -83,6 +84,7 @@ TYPEMAP = {
     "storage_charge_controller_out": ElectricalTransformator,
     "solar_inverter": ElectricalTransformator,
     "fuel_generator": FuelGenerator,
+    "diesel_generator": FuelGenerator,
     "fuel_cell": FuelCell,
     "gas_boiler": Boiler,
     "electrolyzer": Electrolyzer,
