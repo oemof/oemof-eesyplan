@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 import pandas as pd
 
@@ -18,6 +19,8 @@ def export_results(results, path):
             results._variables.pop(key)
     # ToDo End of temporary fix
 
+    if isinstance(path, str):
+        path = Path(str)
     write.export_results_to_datapackage(
         results=results, base_path=path, zip=False
     )

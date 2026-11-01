@@ -67,7 +67,9 @@ def test_solve_with_visio_plot(mock_create, mock_plot, mock_optimise):
 
 def test_simple_datapackage():
     path = Path(Path(__file__).parent, "test_data", "openPlan_package")
-    results_path = Path(Path.home(), "openplan")
+    results_path = Path(
+        Path(__file__).parent, "test_data", "openplan_results_test_package"
+    )
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=FutureWarning)
         result_path = es.solve_energy_system_from_dp(
