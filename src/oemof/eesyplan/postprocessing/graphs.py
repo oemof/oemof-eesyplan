@@ -812,7 +812,7 @@ def plot_annual_costs(
             x=table["component"].astype(str),
             y=table[column],
             name=column,
-            #marker=_cost_type_marker("#d64e12", pattern),
+            # marker=_cost_type_marker("#d64e12", pattern),
             marker={
                 **_cost_type_marker("#d64e12", pattern),
                 "line": {
@@ -953,7 +953,7 @@ def compare_annual_costs(
                 name=scenario,
                 legendgroup=scenario,
                 showlegend=index == 0,
-                #marker=_cost_type_marker(color, pattern),
+                # marker=_cost_type_marker(color, pattern),
                 marker={
                     **_cost_type_marker(color, pattern),
                     "line": {
@@ -979,9 +979,7 @@ def compare_annual_costs(
             )
 
     # Additional legend entries for the cost type patterns
-    for column, pattern in zip(
-        _COST_COLUMNS, _COST_PATTERNS, strict=True
-    ):
+    for column, pattern in zip(_COST_COLUMNS, _COST_PATTERNS, strict=True):
         fig.add_bar(
             x=[None],
             y=[None],
