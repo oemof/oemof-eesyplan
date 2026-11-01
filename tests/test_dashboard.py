@@ -1,4 +1,5 @@
 import json
+import sys
 import zipfile
 from pathlib import Path
 
@@ -11,6 +12,7 @@ from dash import dcc
 from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import import_results
 from oemof.eesyplan.dashboard import DashboardResults
+from oemof.eesyplan.dashboard import dashboard
 from oemof.eesyplan.dashboard import prepare_dash_app
 from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
@@ -401,3 +403,49 @@ def test_prepare_dash_app_creates_bus_graphs(
 
     for bus in busses:
         assert f"bus_{bus}-id" in component_ids
+
+
+def test_dashboard_cli(monkeypatch, tmp_path):
+    scenario_path = Path(
+        Path(__file__).parent, "test_data", "openPlan_package"
+    )
+    results_path = Path(
+        Path(__file__).parent, "test_data", "openPlan_results_package"
+    )
+
+    calls = {
+        "import": False,
+        "prepare": False,
+        "run": False,
+    }
+
+    class DummyApp:
+        def run(self, debug=False, port=None):
+            calls["run"] = True
+            assert debug is True
+            assert port == 8060
+
+    def mock_prepare_dash_app(results):
+        calls["prepare"] = True
+        return DummyApp()
+
+    monkeypatch.setattr(
+        dashboard,
+        "prepare_dash_app",
+        mock_prepare_dash_app,
+    )
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "dashboard",
+            str(scenario_path),
+            str(results_path),
+        ],
+    )
+
+    dashboard.cli()
+
+    assert calls["prepare"]
+    assert calls["run"]
