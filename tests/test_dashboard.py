@@ -2,12 +2,16 @@ import json
 import zipfile
 from pathlib import Path
 
+import dash
 import pandas as pd
 import plotly.graph_objects as go
 import pytest
+from dash import dcc
 
+from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import import_results
 from oemof.eesyplan.dashboard import DashboardResults
+from oemof.eesyplan.dashboard import prepare_dash_app
 from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
 )
@@ -269,3 +273,131 @@ def test_export_results_to_zip(
     assert "datapackage.json" in names
     assert any(name.startswith("results/") for name in names)
     assert any(name.startswith("dashboard/") for name in names)
+
+
+def test_prepare_dash_app(imported_results, energy_system, monkeypatch):
+    # Avoid testing plotting internals here
+    class DummyFigure:
+        def to_json(self):
+            return '{"data": [], "layout": {}}'
+
+    imported_results = DashboardResults(imported_results, energy_system)
+
+    monkeypatch.setattr(
+        imported_results,
+        "add_capacities_graph",
+        lambda: DummyFigure(),
+    )
+
+    app = prepare_dash_app(imported_results)
+
+    # App itself
+    assert isinstance(app, dash.Dash)
+
+    # Check components recursively
+    def find_component(component, component_id):
+        if getattr(component, "id", None) == component_id:
+            return component
+
+        children = getattr(component, "children", None)
+
+        if children is None:
+            return None
+
+        if not isinstance(children, list | tuple):
+            children = [children]
+
+        for child in children:
+            result = find_component(child, component_id)
+            if result is not None:
+                return result
+
+        return None
+
+    slider = find_component(
+        app.layout,
+        "ts_slice_slider",
+    )
+    dropdown = find_component(
+        app.layout,
+        "ts_slice_select",
+    )
+    sankey = find_component(
+        app.layout,
+        "sankey",
+    )
+    sankey_aggregated = find_component(
+        app.layout,
+        "sankey_aggregated",
+    )
+
+    assert isinstance(slider, dcc.Slider)
+    assert isinstance(dropdown, dcc.Dropdown)
+    assert isinstance(sankey, dcc.Graph)
+    assert isinstance(sankey_aggregated, dcc.Graph)
+
+    # Slider configuration
+    assert slider.min == 0
+    assert slider.max == len(imported_results.energy_system.timeindex)
+
+    # Dropdown configuration
+    assert dropdown.options == dict(
+        enumerate(imported_results.energy_system.timeindex)
+    )
+
+    # Dashboard figures were added
+    assert "sankey" in imported_results.figure_keys
+
+    # Check callback registration
+    assert "..sankey.figure.." in app.callback_map
+    assert "ts_slice_select.value" in app.callback_map
+
+
+def test_prepare_dash_app_creates_bus_graphs(
+    imported_results,
+    energy_system,
+    monkeypatch,
+):
+    class DummyFigure:
+        def to_json(self):
+            return '{"data": [], "layout": {}}'
+
+    imported_results = DashboardResults(imported_results, energy_system)
+
+    monkeypatch.setattr(
+        imported_results,
+        "add_capacities_graph",
+        lambda: DummyFigure(),
+    )
+
+    app = prepare_dash_app(imported_results)
+
+    busses = [
+        node
+        for node in imported_results.energy_system.nodes
+        if isinstance(node, CarrierBus)
+    ]
+
+    component_ids = []
+
+    def collect_ids(component):
+        component_id = getattr(component, "id", None)
+
+        if component_id is not None:
+            component_ids.append(component_id)
+
+        children = getattr(component, "children", None)
+
+        if children is None:
+            return
+
+        if not isinstance(children, list | tuple):
+            children = [children]
+
+        for child in children:
+            collect_ids(child)
+
+    collect_ids(app.layout)
+
+    for bus in busses:
+        assert f"bus_{bus}-id" in component_ids
