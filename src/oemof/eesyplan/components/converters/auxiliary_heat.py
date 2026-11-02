@@ -2,6 +2,7 @@ from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
+from oemof.eesyplan.type_checks import to_array_or_number
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 
@@ -88,7 +89,9 @@ class AuxiliaryHeat(Converter):
         self.bus_in_heat_auxiliary = bus_in_heat_auxiliary
         self.bus_out_heat = bus_out_heat
         self.project_data = project_data
-        self.auxiliary_heat_fraction = auxiliary_heat_fraction
+        self.auxiliary_heat_fraction = to_array_or_number(
+            auxiliary_heat_fraction
+        )
         self.installed_capacity = installed_capacity
         self.maximum_capacity = maximum_capacity
         self.age_installed = age_installed

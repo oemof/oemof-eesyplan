@@ -84,6 +84,10 @@ class DSO(Node):
             else:
                 installed_capacity = self.maximum_capacity
 
+            if self.maximum_feedin_capacity is not None:
+                if self.maximum_feedin_capacity < self.maximum_capacity:
+                    installed_capacity = self.maximum_feedin_capacity
+
             self.subnode(
                 Sink,
                 inputs={
