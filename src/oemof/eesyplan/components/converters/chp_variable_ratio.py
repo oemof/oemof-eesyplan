@@ -88,16 +88,16 @@ class ChpVariableRatio(VariableSplitConverter):
         variable_costs: float | int | ArrayLike = 0,
         lifetime: float | int = 20,
     ):
-        self.efficiency_electricity_state_a = to_array_or_number(
+        self.efficiency_electricity_state_a = ct(
             efficiency_electricity_state_a
         )
-        self.efficiency_heat_state_a = to_array_or_number(
+        self.efficiency_heat_state_a = ct(
             efficiency_heat_state_a
         )
-        self.efficiency_electricity_state_b = to_array_or_number(
+        self.efficiency_electricity_state_b = ct(
             efficiency_electricity_state_b
         )
-        self.efficiency_heat_state_b = to_array_or_number(
+        self.efficiency_heat_state_b = ct(
             efficiency_heat_state_b
         )
         if (

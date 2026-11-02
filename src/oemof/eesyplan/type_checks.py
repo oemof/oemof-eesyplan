@@ -2,6 +2,8 @@ from numbers import Number
 
 import numpy as np
 from numpy.typing import ArrayLike
+from oemof.network import Node
+from oemof.eesyplan.project import Project
 
 
 def check_parameter(*args):
@@ -10,13 +12,20 @@ def check_parameter(*args):
             raise ValueError("None is not allowed.")
 
 
-def to_array_or_number(
+def ct(
     x: Number | ArrayLike | None,
 ) -> np.ndarray[tuple[int, ...]] | Number | None:
     """
-    Gibt x unverändert zurück, falls es eine Zahl (int/float) ist.
-    Andernfalls wird x in ein NumPy-Array umgewandelt.
+    Clean Type.
+
+    Within eesyplan only some types are allowed but it is okay if non-allowed
+    values can be converted to allowed values. Furthermore, some read functions
+    will read None (NoneType) as "None" (string) which leads to errors.
     """
-    if isinstance(x, (Number | type(None))):
+    if isinstance(x, str):
+        if x == "None":
+            return None
+        return x
+    if isinstance(x, (Number | type(None) | Node | Project)):
         return x
     return np.asarray(x)

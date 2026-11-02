@@ -2,6 +2,7 @@ from oemof.solph import Bus as SolphBus
 from oemof.solph import Flow
 from oemof.solph.components import Sink
 from oemof.solph.components import Source
+from oemof.eesyplan.type_checks import ct
 
 
 class CarrierBus(SolphBus):
@@ -40,12 +41,10 @@ class CarrierBus(SolphBus):
         super().__init__(label=name, balanced=balanced)
         self.carrier = carrier
         self.name = name
-        if excess_cost is not None:
-            excess_cost = float(excess_cost)
-        self.excess_cost = excess_cost
-        self.shortage_cost = shortage_cost
+        self.excess_cost = ct(excess_cost)
+        self.shortage_cost = ct(shortage_cost)
 
-        if excess_cost is not None:
+        if self.excess_cost is not None:
             self.subnode(
                 Sink,
                 local_name="excess",
@@ -56,7 +55,7 @@ class CarrierBus(SolphBus):
                 },
             )
 
-        if shortage_cost is not None:
+        if self.shortage_cost is not None:
             self.subnode(
                 Source,
                 local_name="shortage",

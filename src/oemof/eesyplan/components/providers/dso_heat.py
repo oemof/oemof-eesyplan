@@ -12,7 +12,7 @@ class DsoHeat(DSO):
         energy_price: float | int | ArrayLike | None = None,
         feedin_tariff: float | int | ArrayLike | None = None,
         peak_demand_pricing: float | int = 0,
-        maximum_capacity: float | int = float("inf"),
+        maximum_capacity: float | int | None = None,
     ):
         """
         Energy provider for heat distribution.

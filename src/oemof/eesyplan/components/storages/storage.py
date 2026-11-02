@@ -1,6 +1,7 @@
 from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.type_checks import ct
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph import Investment
@@ -136,16 +137,19 @@ class EnergyStorage(GenericStorage):
         ...     fixed_losses_relative=0.1,
         ... )
         """
-
-        nv = project_data.create_invest_if_wanted(
-            capex_spec=capex_spec,
-            opex_spec=opex_spec,
-            lifetime=lifetime,
-            installed_capacity=installed_capacity,
-            maximum_capacity=maximum_capacity,
+        self.name = name
+        self.nv = project_data.create_invest_if_wanted(
+            capex_spec=ct(capex_spec),
+            opex_spec=ct(opex_spec),
+            lifetime=ct(lifetime),
+            installed_capacity=ct(installed_capacity),
+            maximum_capacity=ct(maximum_capacity),
         )
-        if c_rate_discharge is None:
+        if ct(c_rate_discharge) is None:
             c_rate_discharge = c_rate_charge
+
+        self.c_rate_discharge = ct(c_rate_discharge)
+        self.c_rate_charge = ct(c_rate_charge)
 
         self.efficiency_charge = efficiency_charge
         self.efficiency_discharge = efficiency_discharge
@@ -154,42 +158,49 @@ class EnergyStorage(GenericStorage):
         self.end_storage_level = end_storage_level
 
         if installed_capacity:
-            self.capacity_charge = nv * c_rate_charge
-            self.capacity_discharge = nv * c_rate_discharge
-            self.crate_charge = None
-            self.crate_discharge = None
+            self.capacity_charge = self.nv * self.c_rate_charge
+            self.capacity_discharge = self.nv * self.c_rate_discharge
+            self.c_rate_charge = None
+            self.c_rate_discharge = None
         else:
             self.capacity_charge = Investment()
             self.capacity_discharge = Investment()
-            self.crate_charge = c_rate_charge
-            self.crate_discharge = c_rate_discharge
 
-        if bus_out is None:
+        if ct(bus_out) is None:
             bus_out = bus_in
 
-        outputs = {bus_out: Flow(nominal_capacity=self.capacity_discharge)}
-        self.bus_out = bus_out
-        self.bus_in = bus_in
+        self.bus_out = ct(bus_out)
+        self.bus_in = ct(bus_in)
+        outputs = {
+            self.bus_out: Flow(nominal_capacity=self.capacity_discharge)
+        }
+        self.variable_costs = ct(variable_costs)
+        self.soc_min = ct(soc_min)
+        self.soc_max = ct(soc_max)
+        self.loss_rate = ct(loss_rate)
+        self.fixed_losses_relative = ct(fixed_losses_relative)
+        self.fixed_losses_absolute = ct(fixed_losses_absolute)
+        self.initial_storage_level = ct(initial_storage_level)
 
         super().__init__(
-            label=name,
-            nominal_capacity=nv,
+            label=self.name,
+            nominal_capacity=self.nv,
             inputs={
                 bus_in: Flow(
                     nominal_capacity=self.capacity_charge,
-                    variable_costs=variable_costs,
+                    variable_costs=self.variable_costs,
                 )
             },
             outputs=outputs,
-            min_storage_level=soc_min,
-            max_storage_level=soc_max,
+            min_storage_level=self.soc_min,
+            max_storage_level=self.soc_max,
             balanced=self.end_storage_level,
             initial_storage_level=self.initial_storage_level,
             inflow_conversion_factor=self.efficiency_charge,
             outflow_conversion_factor=self.efficiency_discharge,
-            invest_relation_input_capacity=self.crate_charge,
-            invest_relation_output_capacity=self.crate_discharge,
-            loss_rate=loss_rate,
-            fixed_losses_relative=fixed_losses_relative,
-            fixed_losses_absolute=fixed_losses_absolute,
+            invest_relation_input_capacity=self.c_rate_charge,
+            invest_relation_output_capacity=self.c_rate_discharge,
+            loss_rate=self.loss_rate,
+            fixed_losses_relative=self.fixed_losses_relative,
+            fixed_losses_absolute=self.fixed_losses_absolute,
         )
