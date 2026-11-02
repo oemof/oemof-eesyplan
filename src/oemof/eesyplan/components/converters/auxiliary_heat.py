@@ -1,9 +1,9 @@
 from numpy.typing import ArrayLike
-
-from oemof.eesyplan.components.buses.carrier import CarrierBus
-from oemof.eesyplan.project import Project
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Converter
+
+from oemof.eesyplan.project import Project
 
 
 class AuxiliaryHeat(Converter):
@@ -70,9 +70,9 @@ class AuxiliaryHeat(Converter):
     def __init__(
         self,
         name: str,
-        bus_in_heat: CarrierBus,
-        bus_in_heat_auxiliary: CarrierBus,
-        bus_out_heat: CarrierBus,
+        bus_in_heat: Bus,
+        bus_in_heat_auxiliary: Bus,
+        bus_out_heat: Bus,
         project_data: Project,
         auxiliary_heat_fraction: float | int | ArrayLike,
         installed_capacity: float | int | None = None,

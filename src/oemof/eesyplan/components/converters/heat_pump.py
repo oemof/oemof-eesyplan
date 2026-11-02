@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.solph import Bus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
@@ -13,9 +13,9 @@ class HeatPump(Converter):
         name: str,
         project_data: Project,
         cop: float | int | ArrayLike,
-        bus_in_electricity: CarrierBus,
-        bus_out_heat: CarrierBus,
-        bus_in_heat: CarrierBus | None = None,
+        bus_in_electricity: Bus,
+        bus_out_heat: Bus,
+        bus_in_heat: Bus | None = None,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
         age_installed: float | int = 0,
