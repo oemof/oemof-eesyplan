@@ -80,3 +80,13 @@ docs/_build
 /test_cases/*
 /ci/*.csv
 /examples/simple_script/tester/*
+
+# Examples: keep the example scripts and scenario inputs, ignore results
+!/examples/results/example_results/
+!/examples/results/example_results/*.py
+/examples/results/example_results/results/
+/examples/results/example_results/datapackage.json
+/examples/results/example_results/scenario_own_example/
+/examples/results/example_results/scenario_*/datapackage_solved/
+examples/results/**/__pycache__/
+examples/results/**/*.pyc
