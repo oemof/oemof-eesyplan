@@ -1,8 +1,6 @@
 import warnings
 from pathlib import Path
 
-from oemof.tools.debugging import ExperimentalFeatureWarning
-
 from oemof.eesyplan import ThermalStorage
 from oemof.eesyplan import export_results
 from oemof.eesyplan import import_results
@@ -12,6 +10,7 @@ from oemof.eesyplan.datapackage.energy_system import (
 from oemof.eesyplan.model import optimise
 from oemof.eesyplan.postprocessing import graphs
 from oemof.eesyplan.postprocessing.KPIs import normalize_imported_results
+from oemof.tools.debugging import ExperimentalFeatureWarning
 
 warnings.filterwarnings("ignore", category=ExperimentalFeatureWarning)
 
@@ -40,9 +39,7 @@ def load_scenario(scenario_name):
     exists yet.
     """
     scenario_path = EXAMPLE_PATH / scenario_name
-    es = create_energy_system_from_dp(
-        scenario_path, attributemap=LEGACY_NAMES
-    )
+    es = create_energy_system_from_dp(scenario_path, attributemap=LEGACY_NAMES)
     results_path = scenario_path / "datapackage_solved"
     if not (results_path / "datapackage.json").exists():
         results = optimise(es)
