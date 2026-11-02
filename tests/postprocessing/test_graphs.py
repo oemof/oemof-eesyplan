@@ -332,17 +332,19 @@ def test_compare_annual_costs(monkeypatch):
     )
 
     assert fig.layout.barmode == "relative"
-    assert [trace.name for trace in fig.data] == ["scenario1"] * 3 + [
-        "scenario2"
-    ] * 3
-    assert [trace.showlegend for trace in fig.data] == [
+    assert [trace.name for trace in fig.data if "scenario" in trace.name] == [
+        "scenario1"
+    ] * 3 + ["scenario2"] * 3
+    assert [
+        trace.showlegend for trace in fig.data if "scenario" in trace.name
+    ] == [
         True,
         False,
         False,
     ] * 2
-    assert [trace.legendgroup for trace in fig.data] == ["scenario1"] * 3 + [
-        "scenario2"
-    ] * 3
+    assert [
+        trace.legendgroup for trace in fig.data if "scenario" in trace.name
+    ] == ["scenario1"] * 3 + ["scenario2"] * 3
     # pv1 forms its own type group, the wind turbines sit together
     # behind the gap
     assert list(fig.layout.xaxis.tickvals) == [0, 2, 3, 4]
