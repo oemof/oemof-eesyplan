@@ -1,8 +1,8 @@
 import numpy as np
 from numpy.typing import ArrayLike
 
-from oemof.solph import Bus
 from oemof.eesyplan.project import Project
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 

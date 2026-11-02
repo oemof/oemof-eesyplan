@@ -103,8 +103,8 @@ class DSO(Node):
                 raise ValueError(
                     f"The maximum_feedin_capacity is "
                     f"{self.maximum_feedin_capacity} but no feedin_tariff is "
-                    f"defined.")
-
+                    f"defined."
+                )
 
         if energy_price is not None:
             if self.maximum_capacity is None:

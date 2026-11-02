@@ -1,11 +1,11 @@
 import numpy as np
 from numpy.typing import ArrayLike
-from oemof.solph import Bus
-from oemof.solph import Flow
-from oemof.solph.components import VariableSplitConverter
 
 from oemof.eesyplan.project import Project
 from oemof.eesyplan.type_checks import ct
+from oemof.solph import Bus
+from oemof.solph import Flow
+from oemof.solph.components import VariableSplitConverter
 
 
 class ChpVariableRatio(VariableSplitConverter):
@@ -91,15 +91,11 @@ class ChpVariableRatio(VariableSplitConverter):
         self.efficiency_electricity_state_a = ct(
             efficiency_electricity_state_a
         )
-        self.efficiency_heat_state_a = ct(
-            efficiency_heat_state_a
-        )
+        self.efficiency_heat_state_a = ct(efficiency_heat_state_a)
         self.efficiency_electricity_state_b = ct(
             efficiency_electricity_state_b
         )
-        self.efficiency_heat_state_b = ct(
-            efficiency_heat_state_b
-        )
+        self.efficiency_heat_state_b = ct(efficiency_heat_state_b)
         if (
             np.asarray(self.efficiency_electricity_state_a)
             + np.asarray(self.efficiency_heat_state_a)

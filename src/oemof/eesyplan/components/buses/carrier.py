@@ -1,8 +1,8 @@
+from oemof.eesyplan.type_checks import ct
 from oemof.solph import Bus as SolphBus
 from oemof.solph import Flow
 from oemof.solph.components import Sink
 from oemof.solph.components import Source
-from oemof.eesyplan.type_checks import ct
 
 
 class CarrierBus(SolphBus):

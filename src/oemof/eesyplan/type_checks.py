@@ -2,8 +2,9 @@ from numbers import Number
 
 import numpy as np
 from numpy.typing import ArrayLike
-from oemof.network import Node
+
 from oemof.eesyplan.project import Project
+from oemof.network import Node
 
 
 def check_parameter(*args):

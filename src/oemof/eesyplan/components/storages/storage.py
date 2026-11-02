@@ -1,8 +1,8 @@
 from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
-from oemof.eesyplan.type_checks import ct
 from oemof.eesyplan.project import Project
+from oemof.eesyplan.type_checks import ct
 from oemof.solph import Flow
 from oemof.solph import Investment
 from oemof.solph.components import GenericStorage
