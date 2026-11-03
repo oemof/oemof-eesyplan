@@ -1,4 +1,5 @@
 from numpy.typing import ArrayLike
+from oemof.solph import Bus
 
 from oemof.eesyplan.components.demand.demand import Demand
 from oemof.solph import Bus

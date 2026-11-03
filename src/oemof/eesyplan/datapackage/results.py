@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 import pandas as pd
 
@@ -15,9 +16,11 @@ def export_results(results, path):
         try:
             results[key]
         except KeyError:
-            results._variables.pop(key)
+            results._variables.pop(key, None)  # not all keys are variables
     # ToDo End of temporary fix
 
+    if isinstance(path, str):
+        path = Path(str)
     write.export_results_to_datapackage(
         results=results, base_path=path, zip=False
     )
