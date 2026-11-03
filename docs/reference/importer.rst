@@ -18,6 +18,20 @@ supply temperature.
         :show-inheritance:
 
 
+Auxiliary heat calculation
+--------------------------
+
+Calculate the performance factor using the temperature of the source and the
+supply temperature.
+
+.. dropdown:: Auxiliary heat calculation
+
+    .. automodule:: oemof.eesyplan.importer.auxiliary_heat_fraction
+        :members:
+        :undoc-members:
+        :show-inheritance:
+
+
 Load profiles
 -------------
 
