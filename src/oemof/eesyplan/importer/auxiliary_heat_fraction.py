@@ -61,9 +61,14 @@ def calculate_top_up_fraction(
 
     mask = temperature_source <= temperature_supply
 
-    top_up_fraction[mask] = ((temperature_supply - temperature_source) / (
-        temperature_supply - temperature_source + temperature_difference_source
-    ))[mask]
+    top_up_fraction[mask] = (
+        (temperature_supply - temperature_source)
+        / (
+            temperature_supply
+            - temperature_source
+            + temperature_difference_source
+        )
+    )[mask]
 
     return top_up_fraction
 
