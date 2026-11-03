@@ -1,11 +1,11 @@
 import numpy as np
 from numpy.typing import ArrayLike
-
-from oemof.eesyplan.components.buses.carrier import CarrierBus
-from oemof.eesyplan.project import Project
-from oemof.eesyplan.type_checks import to_array_or_number
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import VariableSplitConverter
+
+from oemof.eesyplan.project import Project
+from oemof.eesyplan.type_checks import ct
 
 
 class ChpVariableRatio(VariableSplitConverter):
@@ -72,9 +72,9 @@ class ChpVariableRatio(VariableSplitConverter):
     def __init__(
         self,
         name: str,
-        bus_in_fuel: CarrierBus,
-        bus_out_electricity: CarrierBus,
-        bus_out_heat: CarrierBus,
+        bus_in_fuel: Bus,
+        bus_out_electricity: Bus,
+        bus_out_heat: Bus,
         efficiency_electricity_state_a: float | int | ArrayLike,
         efficiency_electricity_state_b: float | int | ArrayLike,
         efficiency_heat_state_a: float | int | ArrayLike,

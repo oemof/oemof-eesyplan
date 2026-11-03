@@ -1,9 +1,10 @@
 from numpy.typing import ArrayLike
+from oemof.solph import Bus
+from oemof.solph import Flow
+from oemof.solph.components import Converter
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
-from oemof.solph import Flow
-from oemof.solph.components import Converter
 
 
 class ChpFixedRatio(Converter):
@@ -67,9 +68,9 @@ class ChpFixedRatio(Converter):
     def __init__(
         self,
         name: str,
-        bus_in_fuel: CarrierBus,
-        bus_out_electricity: CarrierBus,
-        bus_out_heat: CarrierBus,
+        bus_in_fuel: Bus,
+        bus_out_electricity: Bus,
+        bus_out_heat: Bus,
         efficiency_electricity_chp: float | int | ArrayLike,
         efficiency_heat_chp: float | int | ArrayLike,
         project_data: Project,
