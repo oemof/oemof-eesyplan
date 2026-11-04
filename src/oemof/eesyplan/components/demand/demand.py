@@ -20,33 +20,21 @@ class Demand(Sink):
         This class represents a demand that consumes energy according to a
         specified time series pattern.
 
-        Structure
-        ---------
-        *input*
-            1. from_bus : Carrier
+        Args:
+            name: |name|
+            bus_in: |bus_in|
+            input_timeseries: |input_timeseries|
+            carrier: (optional) -- |carrier|
 
-        Parameters
-        ----------
-        name : str
-            |name|
-        bus_in : oemof.eesyplan.CarrierBus
-            |bus_in|
-        input_timeseries : array-like
-            |input_timeseries|
-        carrier : str
-            |carrier|
-
-        Examples
-        --------
-        >>> from oemof.eesyplan import CarrierBus as Bus
-        >>> ebus = CarrierBus(name="electricity_bus")
-        >>> my_demand = Demand(
-        ...     name="office_demand",
-        ...     carrier="electricity",
-        ...     bus_in=ebus,
-        ...     input_timeseries="electricity_demand.csv",
-        ... )
-
+        Examples:
+            >>> from oemof.solph import Bus
+            >>> ebus = Bus(label="electricity_bus")
+            >>> my_demand = Demand(
+            ...     name="office_demand",
+            ...     carrier="electricity",
+            ...     bus_in=ebus,
+            ...     input_timeseries="electricity_demand.csv",
+            ... )
         """
 
         self.profile = input_timeseries
