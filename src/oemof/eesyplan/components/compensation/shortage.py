@@ -15,7 +15,7 @@ class Shortage(Source):
     the available supply in the system, by allowing the model to
     cover the deficit at a cost.
 
-    .. important ::
+    .. important::
         The cost parameter should usually be set high enough to
         discourage the optimisation from relying on this source,
         so that it only supplies energy when strictly necessary.

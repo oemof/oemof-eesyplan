@@ -15,7 +15,7 @@ class Excess(Sink):
     available in the system than can be consumed or stored, by
     allowing the model to dispose of excess energy at a cost.
 
-    .. important ::
+    .. important::
         The cost parameter should usually be set high enough to
         discourage the optimisation from relying on this sink,
         unless it is deliberately used to represent a cost-free

@@ -7,7 +7,7 @@ from oemof.solph.components import Source
 
 class CarrierBus(SolphBus):
     """
-    Bus with carrier information
+    Bus with carrier information.
 
     Args:
         name: |name|

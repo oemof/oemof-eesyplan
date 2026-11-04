@@ -7,7 +7,7 @@ from oemof.solph.components import Sink
 
 class HeatingNetwork(CarrierBus):
     """
-    Heating Network Bus
+    Heating Network Bus.
 
     Args:
         name: |name|

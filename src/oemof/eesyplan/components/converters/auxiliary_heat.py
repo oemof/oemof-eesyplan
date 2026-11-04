@@ -21,6 +21,8 @@ class AuxiliaryHeat(Converter):
         Use importers to calculate the auxiliary heat fraction.
 
     Args:
+        name: |name|
+        bus_in_heat: |bus_in_heat|
         bus_in_heat_auxiliary: |bus_in_heat_auxiliary|
         bus_out_heat: |bus_out_heat|
         project_data: |project_data|
@@ -33,7 +35,7 @@ class AuxiliaryHeat(Converter):
         variable_costs: (optional) -- |variable_costs|
         lifetime: (optional) -- |lifetime|
 
-    Example:
+    Examples:
         >>> import numpy as np
         >>> from oemof.eesyplan import Project
         >>> from oemof.eesyplan import CarrierBus

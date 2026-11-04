@@ -14,14 +14,14 @@ class ChpFixedRatio(Converter):
     ratio between heat and electricity generation, providing less
     operational flexibility but simpler control.
 
-    .. important ::
+    .. important::
         The fixed ratio constraint limits operational flexibility
         but ensures consistent heat-to-power ratios.
 
     Optimisation:
-        The characteristic quantity of the optimization is the
+        The characteristic quantity of the optimisation is the
         *maximum electricity power-output (active power)* of the CHP given in
-        kW
+        kW.
 
     Args:
         name: |name|

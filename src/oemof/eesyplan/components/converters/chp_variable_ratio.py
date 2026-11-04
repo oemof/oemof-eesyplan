@@ -16,7 +16,7 @@ class ChpVariableRatio(VariableSplitConverter):
     simultaneously generates electricity and useful heat from a
     single fuel source.
 
-    .. important ::
+    .. important::
         CHP systems achieve higher overall efficiency by utilising
         waste heat for useful purposes.
 
