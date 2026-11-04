@@ -32,7 +32,6 @@ class ElectricityDemand(Demand):
             ...     bus_in_electricity=ebus,
             ...     input_timeseries="electricity_demand.csv",
             ... )
-
         """
 
         super().__init__(
