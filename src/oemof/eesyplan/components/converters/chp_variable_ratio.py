@@ -2,7 +2,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 
 from oemof.eesyplan.project import Project
-from oemof.eesyplan.type_checks import ct
+from oemof.eesyplan.type_checks import normalise
 from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import VariableSplitConverter
@@ -88,14 +88,14 @@ class ChpVariableRatio(VariableSplitConverter):
         variable_costs: float | int | ArrayLike = 0,
         lifetime: float | int = 20,
     ):
-        self.efficiency_electricity_state_a = ct(
+        self.efficiency_electricity_state_a = normalise(
             efficiency_electricity_state_a
         )
-        self.efficiency_heat_state_a = ct(efficiency_heat_state_a)
-        self.efficiency_electricity_state_b = ct(
+        self.efficiency_heat_state_a = normalise(efficiency_heat_state_a)
+        self.efficiency_electricity_state_b = normalise(
             efficiency_electricity_state_b
         )
-        self.efficiency_heat_state_b = ct(efficiency_heat_state_b)
+        self.efficiency_heat_state_b = normalise(efficiency_heat_state_b)
         if (
             np.asarray(self.efficiency_electricity_state_a)
             + np.asarray(self.efficiency_heat_state_a)

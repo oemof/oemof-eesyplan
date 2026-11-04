@@ -1,4 +1,4 @@
-from oemof.eesyplan.type_checks import ct
+from oemof.eesyplan.type_checks import normalise
 from oemof.solph import Bus as SolphBus
 from oemof.solph import Flow
 from oemof.solph.components import Sink
@@ -41,8 +41,8 @@ class CarrierBus(SolphBus):
         super().__init__(label=name, balanced=balanced)
         self.carrier = carrier
         self.name = name
-        self.excess_cost = ct(excess_cost)
-        self.shortage_cost = ct(shortage_cost)
+        self.excess_cost = normalise(excess_cost)
+        self.shortage_cost = normalise(shortage_cost)
 
         if self.excess_cost is not None:
             self.subnode(

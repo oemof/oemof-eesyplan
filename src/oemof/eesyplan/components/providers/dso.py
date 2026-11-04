@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.type_checks import ct
+from oemof.eesyplan.type_checks import normalise
 from oemof.network import Node
 from oemof.solph import Bus
 from oemof.solph import Flow
@@ -66,14 +66,14 @@ class DSO(Node):
         peak_demand_pricing: float | int = 0,
         basic_amount=0,  # Warnung, weil nur für Profis :-)
     ):
-        self.name = ct(name)
-        self.bus = ct(bus)
-        self.maximum_capacity = ct(maximum_capacity)
-        self.maximum_feedin_capacity = ct(maximum_feedin_capacity)
-        self.energy_price = ct(energy_price)
-        self.feedin_tariff = ct(feedin_tariff)
-        self.peak_demand_pricing = ct(peak_demand_pricing)
-        self.fix_cost = ct(basic_amount)
+        self.name = name
+        self.bus = bus
+        self.maximum_capacity = normalise(maximum_capacity)
+        self.maximum_feedin_capacity = normalise(maximum_feedin_capacity)
+        self.energy_price = normalise(energy_price)
+        self.feedin_tariff = normalise(feedin_tariff)
+        self.peak_demand_pricing = normalise(peak_demand_pricing)
+        self.fix_cost = normalise(basic_amount)
 
         super().__init__(label=self.name)
 

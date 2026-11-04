@@ -1,7 +1,7 @@
 from numpy.typing import ArrayLike
 
 from oemof.eesyplan.project import Project
-from oemof.eesyplan.type_checks import ct
+from oemof.eesyplan.type_checks import normalise
 from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph import Investment
@@ -140,26 +140,26 @@ class EnergyStorage(GenericStorage):
     ):
         self.name = name
         self.nv = project_data.create_invest_if_wanted(
-            capex_spec=ct(capex_spec),
-            opex_spec=ct(opex_spec),
-            lifetime=ct(lifetime),
-            installed_capacity=ct(installed_capacity),
-            maximum_capacity=ct(maximum_capacity),
+            capex_spec=normalise(capex_spec),
+            opex_spec=normalise(opex_spec),
+            lifetime=normalise(lifetime),
+            installed_capacity=normalise(installed_capacity),
+            maximum_capacity=normalise(maximum_capacity),
         )
-        if ct(c_rate_discharge) is None:
+        if normalise(c_rate_discharge) is None:
             c_rate_discharge = c_rate_charge
 
-        self.c_rate_discharge = ct(c_rate_discharge)
-        self.c_rate_charge = ct(c_rate_charge)
+        self.c_rate_discharge = normalise(c_rate_discharge)
+        self.c_rate_charge = normalise(c_rate_charge)
 
-        self.efficiency_charge = ct(efficiency_charge)
-        self.efficiency_discharge = ct(efficiency_discharge)
-        self.age_installed = ct(age_installed)
-        self.installed_capacity = ct(installed_capacity)
-        self.capex_spec = ct(capex_spec)
-        self.opex_spec = ct(opex_spec)
-        self.initial_storage_level = ct(initial_storage_level)
-        self.end_storage_level = ct(end_storage_level)
+        self.efficiency_charge = normalise(efficiency_charge)
+        self.efficiency_discharge = normalise(efficiency_discharge)
+        self.age_installed = normalise(age_installed)
+        self.installed_capacity = normalise(installed_capacity)
+        self.capex_spec = normalise(capex_spec)
+        self.opex_spec = normalise(opex_spec)
+        self.initial_storage_level = normalise(initial_storage_level)
+        self.end_storage_level = end_storage_level
 
         if installed_capacity:
             self.capacity_charge = self.nv * self.c_rate_charge
@@ -170,21 +170,21 @@ class EnergyStorage(GenericStorage):
             self.capacity_charge = Investment()
             self.capacity_discharge = Investment()
 
-        if ct(bus_out) is None:
+        if normalise(bus_out) is None:
             bus_out = bus_in
 
-        self.bus_out = ct(bus_out)
-        self.bus_in = ct(bus_in)
+        self.bus_out = bus_out
+        self.bus_in = bus_in
         outputs = {
             self.bus_out: Flow(nominal_capacity=self.capacity_discharge)
         }
-        self.variable_costs = ct(variable_costs)
-        self.soc_min = ct(soc_min)
-        self.soc_max = ct(soc_max)
-        self.loss_rate = ct(loss_rate)
-        self.fixed_losses_relative = ct(fixed_losses_relative)
-        self.fixed_losses_absolute = ct(fixed_losses_absolute)
-        self.initial_storage_level = ct(initial_storage_level)
+        self.variable_costs = normalise(variable_costs)
+        self.soc_min = normalise(soc_min)
+        self.soc_max = normalise(soc_max)
+        self.loss_rate = normalise(loss_rate)
+        self.fixed_losses_relative = normalise(fixed_losses_relative)
+        self.fixed_losses_absolute = normalise(fixed_losses_absolute)
+        self.initial_storage_level = normalise(initial_storage_level)
 
         super().__init__(
             label=self.name,
