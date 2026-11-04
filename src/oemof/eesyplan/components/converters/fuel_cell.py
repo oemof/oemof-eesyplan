@@ -29,66 +29,49 @@ class FuelCell(Converter):
         This class represents a fuel cell that converts hydrogen or other
         fuels into electrical energy through electrochemical processes.
 
-        .. important ::
+        .. important::
             The efficiency of fuel cells is typically higher than
             combustion-based generators.
 
-        Structure
-        ---------
-          *input*
-            1. bus_in_hydrogen : H2
-          *output*
-            1. bus_out_electricity : Electricity
+        Optimisation:
+            The characteristic quantity of the optimisation is the
+            *maximum electricity power-output* of the fuel cell given in kW.
 
-        Parameters
-        ----------
-        name : str
-            |name|
-        bus_in_hydrogen : Bus
-            |bus_in_hydrogen|
-        bus_out_electricity : Bus
-            |bus_out_electricity|
-        age_installed : float or int, optional (default: 0)
-            |age_installed|
-        installed_capacity : float or None (default: None)
-            |installed_capacity|
-        maximum_capacity : float or None (default: None)
-            |maximum_capacity|
-        capex_spec : float, optional (default: 1000)
-            |capex_spec|
-        opex_spec : float, optional (default: 10)
-            |opex_spec|
-        variable_costs : float, optional (default: 0)
-            |variable_costs|
-        lifetime : int, optional (default: 20)
-            |lifetime|
-        efficiency : float, optional (default: 0.8)
-            |efficiency|
-        project_data : Project object or None, optional (default: None)
-            |project_data|
+        Args:
+            name: |name|
+            bus_in_hydrogen: |bus_in_hydrogen|
+            bus_out_electricity: |bus_out_electricity|
+            age_installed: (optional) -- |age_installed|
+            installed_capacity: (optional) -- |installed_capacity|
+            maximum_capacity: (optional) -- |maximum_capacity|
+            capex_spec: (optional) -- |capex_spec|
+            opex_spec: (optional) -- |opex_spec|
+            variable_costs: (optional) -- |variable_costs|
+            lifetime: (optional) -- |lifetime|
+            efficiency: (optional) -- |efficiency|
+            project_data: (optional) -- |project_data|
 
-        Examples
-        --------
-        >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import CarrierBus
-        >>> h2_bus = CarrierBus(name="hydrogen_bus")
-        >>> el_bus = CarrierBus(name="electricity_bus")
-        >>> my_fuel_cell = FuelCell(
-        ...     name="hydrogen_fuel_cell",
-        ...     bus_in_hydrogen=h2_bus,
-        ...     bus_out_electricity=el_bus,
-        ...     age_installed=0,
-        ...     maximum_capacity=1000,
-        ...     capex_spec=1000,
-        ...     opex_spec=1000,
-        ...     lifetime=20,
-        ...     efficiency=0.9,
-        ...     variable_costs=0,
-        ...     project_data=Project(
-        ...         name="Project_X", economic_period=20, tax=0,
-        ...         discount_factor=0.01,
-        ...     )
-        ... )
+        Examples:
+            >>> from oemof.eesyplan import Project
+            >>> from oemof.eesyplan import CarrierBus
+            >>> h2_bus = CarrierBus(name="hydrogen_bus")
+            >>> el_bus = CarrierBus(name="electricity_bus")
+            >>> my_fuel_cell = FuelCell(
+            ...     name="hydrogen_fuel_cell",
+            ...     bus_in_hydrogen=h2_bus,
+            ...     bus_out_electricity=el_bus,
+            ...     age_installed=0,
+            ...     maximum_capacity=1000,
+            ...     capex_spec=1000,
+            ...     opex_spec=1000,
+            ...     lifetime=20,
+            ...     efficiency=0.9,
+            ...     variable_costs=0,
+            ...     project_data=Project(
+            ...         name="Project_X", economic_period=20, tax=0,
+            ...         discount_factor=0.01,
+            ...     )
+            ... )
         """
 
         nv = project_data.create_invest_if_wanted(
