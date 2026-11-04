@@ -31,78 +31,58 @@ class HeatPump(Converter):
         low-temperature source and delivers it at a higher temperature
         using electrical energy.
 
-        .. important ::
+        .. important::
             Heat pumps typically achieve efficiencies (COP) greater
             than 1.0, making them very efficient heating systems.
 
-        Structure
-        ---------
-          *input*
-            1. electricity_bus : Electricity
-            2. heat_bus : Heat
-          *output*
-            1. to_bus : Heat
+        Optimisation:
+            The characteristic quantity of the optimisation is the
+            *maximum heat power-output* of the heat pump given in kW.
 
-        Parameters
-        ----------
-        name : str
-            |name|
-        project_data : Project object
-            |project_data|
-        cop : float or list-like
-            |cop|
-        bus_in_electricity : Bus
-            |bus_in_electricity|
-        bus_out_heat : Bus
-            |bus_out_heat|
-        bus_in_heat : Bus or None, optional (default: None)
-            |bus_in_heat|
-        age_installed : int, default=0
-            |age_installed|
-        installed_capacity : float or None (default: None)
-            |installed_capacity|
-        maximum_capacity : float or None (default: None)
-            |maximum_capacity|
-        capex_spec : float, default=0
-            |capex_spec|
-        variable_costs : float, default=0
-            |variable_costs|
-        opex_spec : float, default=0
-            |opex_spec|
-        lifetime : int, default=20
-            |lifetime|
+        Args:
+            name: |name|
+            project_data: |project_data|
+            cop: |cop|
+            bus_in_electricity: |bus_in_electricity|
+            bus_out_heat: |bus_out_heat|
+            bus_in_heat: (optional) -- |bus_in_heat|
+            installed_capacity: (optional) -- |installed_capacity|
+            maximum_capacity: (optional) -- |maximum_capacity|
+            age_installed: (optional) -- |age_installed|
+            capex_spec: (optional) -- |capex_spec|
+            variable_costs: (optional) -- |variable_costs|
+            opex_spec: (optional) -- |opex_spec|
+            lifetime: (optional) -- |lifetime|
 
-        Examples
-        --------
-        >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import CarrierBus
-        >>> el_bus = CarrierBus(name="electricity_bus")
-        >>> ambient_heat_bus = CarrierBus(name="ambient_heat_bus")
-        >>> heat_bus = CarrierBus(name="heat_bus")
-        >>> my_heat_pump = HeatPump(
-        ...     name="air_source_heat_pump",
-        ...     bus_in_electricity=el_bus,
-        ...     bus_out_heat=heat_bus,
-        ...     installed_capacity=15,
-        ...     cop=3.5,
-        ...     project_data=Project(
-        ...         name="Project_X", economic_period=20, tax=0,
-        ...         discount_factor=0.01,
-        ...     )
-        ... )
-        >>> my_heat_pump2 = HeatPump(
-        ...     name="air_source_heat_pump",
-        ...     bus_in_electricity=el_bus,
-        ...     bus_in_heat=ambient_heat_bus,
-        ...     bus_out_heat=heat_bus,
-        ...     installed_capacity=15,
-        ...     cop=[3.5] * 5,
-        ...     project_data=Project(
-        ...         name="Project_X", economic_period=20, tax=0,
-        ...         discount_factor=0.01,
-        ...     )
-        ... )
-
+        Examples:
+            >>> from oemof.eesyplan import Project
+            >>> from oemof.eesyplan import CarrierBus
+            >>> el_bus = CarrierBus(name="electricity_bus")
+            >>> ambient_heat_bus = CarrierBus(name="ambient_heat_bus")
+            >>> heat_bus = CarrierBus(name="heat_bus")
+            >>> my_heat_pump = HeatPump(
+            ...     name="air_source_heat_pump",
+            ...     bus_in_electricity=el_bus,
+            ...     bus_out_heat=heat_bus,
+            ...     installed_capacity=15,
+            ...     cop=3.5,
+            ...     project_data=Project(
+            ...         name="Project_X", economic_period=20, tax=0,
+            ...         discount_factor=0.01,
+            ...     )
+            ... )
+            >>> my_heat_pump2 = HeatPump(
+            ...     name="air_source_heat_pump",
+            ...     bus_in_electricity=el_bus,
+            ...     bus_in_heat=ambient_heat_bus,
+            ...     bus_out_heat=heat_bus,
+            ...     installed_capacity=15,
+            ...     cop=[3.5] * 5,
+            ...     project_data=Project(
+            ...         name="Project_X", economic_period=20, tax=0,
+            ...         discount_factor=0.01,
+            ...     )
+            ... )
         """
 
         if isinstance(cop, list):
