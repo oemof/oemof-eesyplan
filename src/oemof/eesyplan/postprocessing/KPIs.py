@@ -358,7 +358,13 @@ def _component_cost_data(results, es):
             owner = _edge_owner(column, owners)
             if owner is None:
                 continue
-            variable[owner] = variable.get(owner, 0.0) + costs[column].sum()
+            try:
+                variable[owner] = (
+                    variable.get(owner, 0.0) + costs[column].sum()
+                )
+            except TypeError:
+                # todo fix this issue
+                variable[owner] = variable.get(owner, 0.0)
 
     fix_investment_ann, fix_annual = _fix_cost_data(es, capacity)
 
