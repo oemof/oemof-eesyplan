@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Source
 
@@ -9,7 +9,7 @@ class Commodity(Source):
     def __init__(
         self,
         name: str,
-        bus_out: CarrierBus,
+        bus_out: Bus,
         commodity: str | None = None,
         capacity: float | int | None = None,
         full_load_time_max: float | int | None = None,

@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.solph import Bus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
@@ -10,8 +10,8 @@ class ElectricalTransformator(Converter):
     def __init__(
         self,
         name: str,
-        bus_in_electricity: CarrierBus,
-        bus_out_electricity: CarrierBus,
+        bus_in_electricity: Bus,
+        bus_out_electricity: Bus,
         project_data: Project,
         efficiency: float | int | ArrayLike = 0.3,  # CHECK
         age_installed: float | int = 0,
@@ -47,9 +47,9 @@ class ElectricalTransformator(Converter):
         ----------
         name : str
             |name|
-        bus_in_electricity : CarrierBus
+        bus_in_electricity : Bus
             |bus_in_electricity|
-        bus_out_electricity : CarrierBus
+        bus_out_electricity : Bus
             |bus_out_electricity|
         project_data : Project object
             |project_data|
@@ -72,7 +72,6 @@ class ElectricalTransformator(Converter):
 
         Examples
         --------
-
         >>> from oemof.eesyplan import Project
         >>> from oemof.eesyplan import CarrierBus
         >>> el_bus_in = CarrierBus(name="el_bus_in")

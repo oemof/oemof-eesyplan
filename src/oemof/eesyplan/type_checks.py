@@ -1,10 +1,12 @@
 from numbers import Number
+from typing import Any, SupportsFloat
 
 import numpy as np
 from numpy.typing import ArrayLike
+from numpy.typing import NDArray
+from oemof.network import Node
 
 from oemof.eesyplan.project import Project
-from oemof.network import Node
 
 
 def check_parameter(*args):
@@ -14,8 +16,8 @@ def check_parameter(*args):
 
 
 def ct(
-    x: Number | ArrayLike | None,
-) -> np.ndarray[tuple[int, ...]] | Number | None:
+    x: SupportsFloat | ArrayLike | str | Project | Node | None,
+) -> NDArray[Any] | float | str | Node | None | Project:
     """
     Clean Type.
 
@@ -27,6 +29,8 @@ def ct(
         if x == "None":
             return None
         return x
-    if isinstance(x, (Number | type(None) | Node | Project)):
+    elif isinstance(x, SupportsFloat):
+        return float(x)
+    elif x is None or isinstance(x, (Node, Project)):
         return x
     return np.asarray(x)

@@ -51,9 +51,9 @@ class HeatPump(Converter):
             |project_data|
         cop : float or list-like
             |cop|
-        bus_in_electricity : CarrierBus
+        bus_in_electricity : Bus
             |bus_in_electricity|
-        bus_out_heat : CarrierBus
+        bus_out_heat : Bus
             |bus_out_heat|
         bus_in_heat : Bus or None, optional (default: None)
             |bus_in_heat|

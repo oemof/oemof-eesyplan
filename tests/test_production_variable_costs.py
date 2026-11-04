@@ -24,6 +24,7 @@ def test_passes_variable_costs_to_output_flow(plant_class, bus_keyword):
     )
     bus = CarrierBus(name="test_bus")
     plant = plant_class(
+        installed_capacity=10,
         project_data=project,
         name="test_plant",
         input_timeseries=[1, 2, 3],

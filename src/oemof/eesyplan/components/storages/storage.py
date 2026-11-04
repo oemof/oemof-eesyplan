@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.solph import Bus
 from oemof.eesyplan.project import Project
 from oemof.eesyplan.type_checks import ct
 from oemof.solph import Flow
@@ -13,8 +13,8 @@ class EnergyStorage(GenericStorage):
         self,
         name: str,
         project_data: Project,
-        bus_in: CarrierBus,
-        bus_out: CarrierBus | None = None,
+        bus_in: Bus,
+        bus_out: Bus | None = None,
         age_installed: float | int = 0,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
@@ -58,7 +58,7 @@ class EnergyStorage(GenericStorage):
         project_data : Project object
             |project_data|
 
-        bus_in : CarrierBus
+        bus_in : Bus
             |bus_in|
         bus_out : Bus | None, optional (default: None)
             |bus_out|
@@ -151,14 +151,14 @@ class EnergyStorage(GenericStorage):
         self.c_rate_discharge = ct(c_rate_discharge)
         self.c_rate_charge = ct(c_rate_charge)
 
-        self.efficiency_charge = efficiency_charge
-        self.efficiency_discharge = efficiency_discharge
-        self.age_installed = age_installed
-        self.installed_capacity = installed_capacity
-        self.capex_spec = capex_spec
-        self.opex_spec = opex_spec
-        self.initial_storage_level = initial_storage_level
-        self.end_storage_level = end_storage_level
+        self.efficiency_charge = ct(efficiency_charge)
+        self.efficiency_discharge = ct(efficiency_discharge)
+        self.age_installed = ct(age_installed)
+        self.installed_capacity = ct(installed_capacity)
+        self.capex_spec = ct(capex_spec)
+        self.opex_spec = ct(opex_spec)
+        self.initial_storage_level = ct(initial_storage_level)
+        self.end_storage_level = ct(end_storage_level)
 
         if installed_capacity:
             self.capacity_charge = self.nv * self.c_rate_charge

@@ -6,6 +6,12 @@ from oemof.solph import Results as SolphResults
 from oemof.solph import create_time_index
 
 
+from pyomo.environ import Objective
+from decimal import Decimal
+from pyomo.core.expr.visitor import identify_components
+from pyomo.core.expr.numvalue import NumericValue
+
+
 class EnergySystem(SolphES):
     def __init__(
         self,
@@ -90,5 +96,15 @@ def optimise(energy_system, solver="cbc", debug=False):
         skwargs = {"tee": True, "keepfiles": False}
     else:
         skwargs = {}
+
+    def find_decimals_in_expression(expr):
+        """Gibt Decimal-Konstanten und Pyomo-Variablen in einem Ausdruck zurück."""
+        for node in identify_components(expr, {NumericValue}):
+            if isinstance(node, Decimal):
+                yield node
+
+    for obj in optimization_model.component_data_objects(ctype=Objective, active=True):
+        print(f"Zielfunktion: {obj.name}")
+        print("Decimal-Werte:", list(find_decimals_in_expression(obj.expr)))
     results = optimization_model.solve(solver=solver, solve_kwargs=skwargs)
     return results

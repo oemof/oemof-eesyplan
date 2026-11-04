@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.solph import Bus
 from oemof.eesyplan.components.demand.demand import Demand
 
 
@@ -8,7 +8,7 @@ class H2Demand(Demand):
     def __init__(
         self,
         name: str,
-        bus_in_hydrogen: CarrierBus,
+        bus_in_hydrogen: Bus,
         input_timeseries: ArrayLike | str,  # CHECK: str (Dateiname) korrekt?
         carrier: str = "hydrogen",
     ):

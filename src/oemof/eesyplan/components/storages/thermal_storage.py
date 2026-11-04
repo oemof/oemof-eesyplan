@@ -58,7 +58,7 @@ class ThermalStorage(EnergyStorage):
             |installed_capacity|
         maximum_capacity : float or None (default: None)
             |maximum_capacity|
-        bus_in_heat : CarrierBus
+        bus_in_heat : Bus
             |bus_in_heat|
         bus_out_heat : Bus | None, optional (default: None)
             |bus_out_heat|

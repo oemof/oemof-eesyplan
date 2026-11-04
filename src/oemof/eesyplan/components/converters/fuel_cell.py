@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.solph import Bus
 from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Converter
@@ -10,8 +10,8 @@ class FuelCell(Converter):
     def __init__(
         self,
         name: str,
-        bus_in_hydrogen: CarrierBus,
-        bus_out_electricity: CarrierBus,
+        bus_in_hydrogen: Bus,
+        bus_out_electricity: Bus,
         age_installed: float | int = 0,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
@@ -44,9 +44,9 @@ class FuelCell(Converter):
         ----------
         name : str
             |name|
-        bus_in_hydrogen : CarrierBus
+        bus_in_hydrogen : Bus
             |bus_in_hydrogen|
-        bus_out_electricity : CarrierBus
+        bus_out_electricity : Bus
             |bus_out_electricity|
         age_installed : float or int, optional (default: 0)
             |age_installed|

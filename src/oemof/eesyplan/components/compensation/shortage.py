@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.solph import Bus
 from oemof.solph.components import Source
 from oemof.solph.flows import Flow
 
@@ -36,7 +36,7 @@ class Shortage(Source):
     def __init__(
         self,
         name: str,
-        bus_out: CarrierBus,
+        bus_out: Bus,
         cost: float | int | ArrayLike = 0,
     ):
         super().__init__(

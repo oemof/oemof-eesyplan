@@ -11,8 +11,8 @@ class HeatingPipe(Node):
     def __init__(
         self,
         name: str,
-        bus_1_heat: CarrierBus,
-        bus_2_heat: CarrierBus,
+        bus_1_heat: Bus,
+        bus_2_heat: Bus,
         absolute_losses: float
         | int
         | ArrayLike
@@ -36,9 +36,9 @@ class HeatingPipe(Node):
         ----------
         name : string
             |name|
-        bus_1_heat : CarrierBus
+        bus_1_heat : Bus
             |bus_1_heat|
-        bus_2_heat : CarrierBus
+        bus_2_heat : Bus
             |bus_2_heat|
         absolute_losses : float, int or array-like, optional (default: None)
             |absolute_losses|

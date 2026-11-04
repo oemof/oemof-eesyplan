@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Sink
 
@@ -9,7 +9,7 @@ class Demand(Sink):
     def __init__(
         self,
         name: str,
-        bus_in: CarrierBus,
+        bus_in: Bus,
         input_timeseries: ArrayLike
         | str,  # CHECK: str (Dateiname) korrekt - TODO Docstring anpassen?
         carrier: str | None = None,

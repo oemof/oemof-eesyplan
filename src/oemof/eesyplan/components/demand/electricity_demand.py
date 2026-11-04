@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.solph import Bus
 from oemof.eesyplan.components.demand.demand import Demand
 
 
@@ -8,7 +8,7 @@ class ElectricityDemand(Demand):
     def __init__(
         self,
         name: str,
-        bus_in_electricity: CarrierBus,
+        bus_in_electricity: Bus,
         input_timeseries: ArrayLike | str,  # CHECK: str (Dateiname) korrekt?
         carrier: str = "electricity",
     ):
@@ -18,32 +18,20 @@ class ElectricityDemand(Demand):
         This class represents an electricity demand that consumes
         electrical energy according to a specified time series pattern.
 
-        Structure
-        ---------
-        *input*
-            1. from_bus : Electricity
+        Args:
+            name: |name|
+            bus_in_electricity: |bus_in_electricity|
+            input_timeseries: |input_timeseries|
+            carrier: (optional) -- |carrier|
 
-        carrier : str, optional (default: "electricity")
-            |carrier|
-
-        Parameters
-        ----------
-        name : str
-            |name|
-        bus_in_electricity : oemof.eesyplan.CarrierBus
-            |bus_in_electricity|
-        input_timeseries : array-like
-            |input_timeseries|
-
-        Examples
-        --------
-        >>> from oemof.eesyplan import CarrierBus as Bus
-        >>> ebus = CarrierBus(name="electricity_bus")
-        >>> my_demand = ElectricityDemand(
-        ...     name="office_demand",
-        ...     bus_in_electricity=ebus,
-        ...     input_timeseries="electricity_demand.csv",
-        ... )
+        Examples:
+            >>> from oemof.eesyplan import CarrierBus
+            >>> ebus = CarrierBus(name="electricity_bus")
+            >>> my_demand = ElectricityDemand(
+            ...     name="office_demand",
+            ...     bus_in_electricity=ebus,
+            ...     input_timeseries="electricity_demand.csv",
+            ... )
 
         """
 

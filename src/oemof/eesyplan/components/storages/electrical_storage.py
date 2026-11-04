@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.solph import Bus
 from oemof.eesyplan.components.storages.storage import EnergyStorage
 from oemof.eesyplan.project import Project
 
@@ -109,8 +109,8 @@ class ElectricalStorage(EnergyStorage):
         self,
         name: str,
         project_data: Project,
-        bus_in_electricity: CarrierBus,
-        bus_out_electricity: CarrierBus | None = None,
+        bus_in_electricity: Bus,
+        bus_out_electricity: Bus | None = None,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
         age_installed: float | int = 0,
