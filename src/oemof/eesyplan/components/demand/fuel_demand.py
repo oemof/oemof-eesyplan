@@ -18,32 +18,20 @@ class FuelDemand(Demand):
         This class represents a fuel demand that consumes fuel
         according to a specified time series pattern.
 
-        Structure
-        ---------
-            *input*
-                1. from_bus : Fuel
+        Args:
+            name: |name|
+            bus_in_fuel: |bus_in_fuel|
+            input_timeseries: |input_timeseries|
+            carrier: (optional) -- |carrier|
 
-        Parameters
-        ----------
-        name : str
-            |name|
-        bus_in_fuel : oemof.eesyplan.CarrierBus
-            |bus_in_fuel|
-        input_timeseries : array-like
-            |input_timeseries|
-        carrier : str, optional (default: "fuel")
-            |carrier|
-
-        Examples
-        --------
-        >>> from oemof.eesyplan import CarrierBus as Bus
-        >>> fuel_bus = CarrierBus(name="fuel_bus")
-        >>> my_demand = FuelDemand(
-        ...     name="office_demand",
-        ...     bus_in_fuel=fuel_bus,
-        ...     input_timeseries="fuel_demand.csv",
-        ... )
-
+        Examples:
+            >>> from oemof.solph import Bus
+            >>> fuel_bus = Bus(label="fuel_bus")
+            >>> my_demand = FuelDemand(
+            ...     name="office_demand",
+            ...     bus_in_fuel=fuel_bus,
+            ...     input_timeseries="fuel_demand.csv",
+            ... )
         """
 
         super().__init__(
