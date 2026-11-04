@@ -34,90 +34,69 @@ class Electrolyzer(Converter):
         energy into hydrogen gas through electrolysis, producing both
         hydrogen and waste heat.
 
-        .. important ::
+        .. important::
             The efficiency parameter determines the conversion rate
             from electricity to hydrogen.
 
-        Structure
-        ---------
-          *input*
-            1. el_bus : Electricity
-          *output*
-            1. heat_bus : Heat
-            2. h2_bus : H2
+        Optimisation:
+            The characteristic quantity of the optimisation is the
+            *maximum electricity power-input* of the electrolyzer given
+            in kW.
 
-        Parameters
-        ----------
-        name : str
-            |name|
-        bus_in_electricity : Bus
-            |bus_in_electricity|
-        bus_out_hydrogen : Bus
-            |bus_out_hydrogen|
-        project_data : Project object
-            |project_data|
-        bus_out_heat : Bus or None, optional (default: None)
-            |bus_out_heat|
-        efficiency : float, optional (default: 0.3)
-            |efficiency|
-        efficiency_heat : float, optional (default: 0.6)
-            |efficiency_heat|
-        age_installed : float or int, optional (default: 0)
-            |age_installed|
-        installed_capacity : float or None (default: None)
-            |installed_capacity|
-        maximum_capacity : float or None (default: None)
-            |maximum_capacity|
-        capex_spec : float, optional (default: 1000)
-            |capex_spec|
-        opex_spec : float, optional (default: 10)
-            |opex_spec|
-        variable_costs : float, optional (default: 0)
-            |variable_costs|
-        lifetime : int, optional (default: 20)
-            |lifetime|
+        Args:
+            name: |name|
+            bus_in_electricity: |bus_in_electricity|
+            bus_out_hydrogen: |bus_out_hydrogen|
+            project_data: |project_data|
+            bus_out_heat: (optional) -- |bus_out_heat|
+            efficiency: (optional) -- |efficiency|
+            efficiency_heat: (optional) -- |efficiency_heat|
+            age_installed: (optional) -- |age_installed|
+            installed_capacity: (optional) -- |installed_capacity|
+            maximum_capacity: (optional) -- |maximum_capacity|
+            capex_spec: (optional) -- |capex_spec|
+            opex_spec: (optional) -- |opex_spec|
+            variable_costs: (optional) -- |variable_costs|
+            lifetime: (optional) -- |lifetime|
 
-        Examples
-        --------
-
-        >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import CarrierBus
-        >>> el_bus_in = CarrierBus(name="el_bus_in")
-        >>> heat_bus_out = CarrierBus(name="heat_bus_out")
-        >>> h2_bus_out = CarrierBus(name="h2_bus_out")
-        >>> my_electrolyzer = Electrolyzer(
-        ...     name="Electrolyzer",
-        ...     bus_in_electricity=el_bus_in,
-        ...     bus_out_heat=heat_bus_out,
-        ...     bus_out_hydrogen=h2_bus_out,
-        ...     age_installed=0,
-        ...     maximum_capacity=1000,
-        ...     capex_spec=1000,
-        ...     opex_spec=1000,
-        ...     lifetime=20,
-        ...     efficiency=0.9,
-        ...     efficiency_heat=0.1,
-        ...     variable_costs=0,
-        ...     project_data=Project(
-        ...         name="Project_X", economic_period=20, tax=0,
-        ...         discount_factor=0.01),
-        ...     )
-        >>> electrolyzer_no_heat = Electrolyzer(
-        ...     name="Electrolyzer",
-        ...     bus_in_electricity=el_bus_in,
-        ...     bus_out_hydrogen=h2_bus_out,
-        ...     age_installed=0,
-        ...     maximum_capacity=1000,
-        ...     capex_spec=1000,
-        ...     opex_spec=1000,
-        ...     lifetime=20,
-        ...     efficiency=0.9,
-        ...     variable_costs=0,
-        ...     project_data=Project(
-        ...         name="Project_X", economic_period=20, tax=0,
-        ...         discount_factor=0.01),
-        ...     )
-
+        Examples:
+            >>> from oemof.eesyplan import Project
+            >>> from oemof.eesyplan import CarrierBus
+            >>> el_bus_in = CarrierBus(name="el_bus_in")
+            >>> heat_bus_out = CarrierBus(name="heat_bus_out")
+            >>> h2_bus_out = CarrierBus(name="h2_bus_out")
+            >>> my_electrolyzer = Electrolyzer(
+            ...     name="Electrolyzer",
+            ...     bus_in_electricity=el_bus_in,
+            ...     bus_out_heat=heat_bus_out,
+            ...     bus_out_hydrogen=h2_bus_out,
+            ...     age_installed=0,
+            ...     maximum_capacity=1000,
+            ...     capex_spec=1000,
+            ...     opex_spec=1000,
+            ...     lifetime=20,
+            ...     efficiency=0.9,
+            ...     efficiency_heat=0.1,
+            ...     variable_costs=0,
+            ...     project_data=Project(
+            ...         name="Project_X", economic_period=20, tax=0,
+            ...         discount_factor=0.01),
+            ...     )
+            >>> electrolyzer_no_heat = Electrolyzer(
+            ...     name="Electrolyzer",
+            ...     bus_in_electricity=el_bus_in,
+            ...     bus_out_hydrogen=h2_bus_out,
+            ...     age_installed=0,
+            ...     maximum_capacity=1000,
+            ...     capex_spec=1000,
+            ...     opex_spec=1000,
+            ...     lifetime=20,
+            ...     efficiency=0.9,
+            ...     variable_costs=0,
+            ...     project_data=Project(
+            ...         name="Project_X", economic_period=20, tax=0,
+            ...         discount_factor=0.01),
+            ...     )
         """
         nv = project_data.create_invest_if_wanted(
             capex_spec=capex_spec,
