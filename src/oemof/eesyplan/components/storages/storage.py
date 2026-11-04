@@ -170,7 +170,7 @@ class EnergyStorage(GenericStorage):
             self.capacity_charge = Investment()
             self.capacity_discharge = Investment()
 
-        if normalise(bus_out) is None:
+        if bus_out is None:
             bus_out = bus_in
 
         self.bus_out = bus_out

@@ -27,7 +27,7 @@ class CarrierBus(SolphBus):
         >>> h2_bus = CarrierBus(name="h2_net", carrier="hydrogen",
         ...                     excess_cost=0, shortage_cost=99)
         >>> h2_bus
-        <Bus 'h2_net', carrier='hydrogen', shortage: 99, excess: 0.0>
+        <Bus 'h2_net', carrier='hydrogen', shortage: 99.0, excess: 0.0>
     """
 
     def __init__(
