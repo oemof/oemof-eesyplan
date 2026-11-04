@@ -2,7 +2,9 @@ import numpy as np
 import pandas as pd  # type: ignore[import-untyped]
 import pytest
 
-from oemof.eesyplan.type_checks import normalise  # type: ignore[import-untyped]
+from oemof.eesyplan.type_checks import (
+    normalise,  # type: ignore[import-untyped]
+)
 
 
 class TestToArrayOrNumber:

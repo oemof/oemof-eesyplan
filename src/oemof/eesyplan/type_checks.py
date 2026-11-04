@@ -1,4 +1,6 @@
-from typing import Any, TypeAlias, overload
+from typing import Any
+from typing import TypeAlias
+from typing import overload
 
 import numpy as np
 import numpy.typing as npt
