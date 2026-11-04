@@ -31,6 +31,4 @@ def ct(
         return x
     elif isinstance(x, SupportsFloat):
         return float(x)
-    elif x is None or isinstance(x, (Node, Project)):
-        return x
     return np.asarray(x)
