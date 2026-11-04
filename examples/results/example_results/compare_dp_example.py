@@ -55,6 +55,7 @@ if __name__ == "__main__":
         datasets[name] = (results, es)
 
     fig = graphs.compare_annual_costs(datasets)
+    fig_capacities = graphs.compare_capacities(datasets)
 
     for name, (results, _es) in datasets.items():
         table = results["eesyplan"]["yearly_project_costs"]
@@ -62,3 +63,4 @@ if __name__ == "__main__":
         print(f"Total annual costs ({name}): {total:.2f} EUR")
 
     fig.show()
+    fig_capacities.show()
