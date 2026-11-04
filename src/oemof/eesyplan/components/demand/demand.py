@@ -29,7 +29,6 @@ class Demand(Sink):
         ... )
     """
 
-
     def __init__(
         self,
         name: str,

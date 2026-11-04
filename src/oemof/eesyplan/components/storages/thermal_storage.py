@@ -108,7 +108,6 @@ class ThermalStorage(EnergyStorage):
     ... )
     """
 
-
     def __init__(
         self,
         name: str,

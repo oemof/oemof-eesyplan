@@ -1,7 +1,7 @@
 from numpy.typing import ArrayLike
 
-from oemof.solph import Bus
 from oemof.eesyplan.project import Project
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Source
 
@@ -59,7 +59,6 @@ class PvPlant(Source):
         ...     renewable_asset=True,
         ... )
     """
-
 
     def __init__(
         self,

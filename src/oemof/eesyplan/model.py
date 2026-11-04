@@ -1,15 +1,14 @@
 import logging
+from decimal import Decimal
+
+from pyomo.core.expr.numvalue import NumericValue
+from pyomo.core.expr.visitor import identify_components
+from pyomo.environ import Objective
 
 from oemof.solph import EnergySystem as SolphES
 from oemof.solph import Model
 from oemof.solph import Results as SolphResults
 from oemof.solph import create_time_index
-
-
-from pyomo.environ import Objective
-from decimal import Decimal
-from pyomo.core.expr.visitor import identify_components
-from pyomo.core.expr.numvalue import NumericValue
 
 
 class EnergySystem(SolphES):
@@ -103,7 +102,9 @@ def optimise(energy_system, solver="cbc", debug=False):
             if isinstance(node, Decimal):
                 yield node
 
-    for obj in optimization_model.component_data_objects(ctype=Objective, active=True):
+    for obj in optimization_model.component_data_objects(
+        ctype=Objective, active=True
+    ):
         print(f"Zielfunktion: {obj.name}")
         print("Decimal-Werte:", list(find_decimals_in_expression(obj.expr)))
     results = optimization_model.solve(solver=solver, solve_kwargs=skwargs)

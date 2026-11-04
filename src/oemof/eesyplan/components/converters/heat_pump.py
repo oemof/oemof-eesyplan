@@ -69,7 +69,6 @@ class HeatPump(Converter):
         ... )
     """
 
-
     def __init__(
         self,
         name: str,

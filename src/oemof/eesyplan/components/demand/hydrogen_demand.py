@@ -1,7 +1,7 @@
 from numpy.typing import ArrayLike
 
-from oemof.solph import Bus
 from oemof.eesyplan.components.demand.demand import Demand
+from oemof.solph import Bus
 
 
 class H2Demand(Demand):
@@ -26,7 +26,6 @@ class H2Demand(Demand):
         ...     input_timeseries="hydrogen_demand.csv",
         ... )
     """
-
 
     def __init__(
         self,

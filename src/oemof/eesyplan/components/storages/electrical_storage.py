@@ -1,8 +1,8 @@
 from numpy.typing import ArrayLike
 
-from oemof.solph import Bus
 from oemof.eesyplan.components.storages.storage import EnergyStorage
 from oemof.eesyplan.project import Project
+from oemof.solph import Bus
 
 
 class ElectricalStorage(EnergyStorage):

@@ -1,12 +1,12 @@
-from numbers import Number
-from typing import Any, SupportsFloat
+from typing import Any
+from typing import SupportsFloat
 
 import numpy as np
 from numpy.typing import ArrayLike
 from numpy.typing import NDArray
-from oemof.network import Node
 
 from oemof.eesyplan.project import Project
+from oemof.network import Node
 
 
 def check_parameter(*args):
