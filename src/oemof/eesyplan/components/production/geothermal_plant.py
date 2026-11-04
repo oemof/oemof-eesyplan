@@ -28,73 +28,51 @@ class GeothermalPlant(Source):
         This class represents a geothermal plant that extracts thermal
         energy from the Earth's subsurface for heat generation.
 
-        .. important ::
+        .. important::
             This is a renewable energy source that provides consistent
             baseload heat generation.
 
-        Structure
-        ---------
-          *output*
-            1. to_bus : Heat
+        Optimisation:
+            The characteristic quantity of the optimisation is the *nominal
+            power-output* of the geothermal plant given in kW.
 
-        Optimisation
-        ------------
-          The characteristic quantity of the optimization is the *nominal
-          power-output* of the geothermal plant given in kW
+        Args:
+            name: |name|
+            project_data: |project_data|
+            bus_out_heat: |bus_out_heat|
+            input_timeseries: |input_timeseries|
+            age_installed: (optional) -- |age_installed|
+            installed_capacity: (optional) -- |installed_capacity|
+            maximum_capacity: (optional) -- |maximum_capacity|
+            capex_spec: (optional) -- |capex_spec|
+            opex_spec: (optional) -- |opex_spec|
+            variable_costs: (optional) -- |variable_costs|
+            lifetime: (optional) -- |lifetime|
+            renewable_asset: (optional) -- |renewable_asset|
 
-        Parameters
-        ----------
-        project_data : Project object
-            |project_data|
-        bus_out_heat : bus object
-            |bus_out_heat|
-        input_timeseries : array-like
-            |input_timeseries|
-        name : str
-            |name|
-        age_installed : int, default=0
-            |age_installed|
-        installed_capacity : float or None (default: None)
-            |installed_capacity|
-        maximum_capacity : float or None (default: None)
-            |maximum_capacity|
-        capex_spec : float, default=1000
-            |capex_spec|
-        opex_spec : float, default=10
-            |opex_spec|
-        variable_costs : float, default=0
-            |variable_costs|
-        lifetime : int, default=20
-            |lifetime|
-        renewable_asset : bool, default=True
-            |renewable_asset|
-
-
-        Examples
-        --------
-        >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import CarrierBus
-        >>> my_project = Project(
-        ...         name="my_project",
-        ...         economic_period=20,
-        ...         tax=0,
-        ...         discount_factor=0.01
-        ...     )
-        >>> heat_bus = CarrierBus(name="my_heat_bus")
-        >>> my_geothermal = GeothermalPlant(
-        ...     bus_out_heat=heat_bus,
-        ...     name="my_geothermal_plant",
-        ...     age_installed=0, # a
-        ...     capex_spec=1000, # €/kW
-        ...     opex_spec=10, # €/kW/a
-        ...     variable_costs=0, # €/kWh
-        ...     lifetime=25, # a
-        ...     maximum_capacity=1000, # kW
-        ...     renewable_asset=True,
-        ...     input_timeseries=[1,2,3],
-        ...     project_data=my_project,
-        ...  )
-
+        Examples:
+            >>> from oemof.eesyplan import Project
+            >>> from oemof.eesyplan import CarrierBus
+            >>> my_project = Project(
+            ...         name="my_project",
+            ...         economic_period=20,
+            ...         tax=0,
+            ...         discount_factor=0.01
+            ...     )
+            >>> heat_bus = CarrierBus(name="my_heat_bus")
+            >>> my_geothermal = GeothermalPlant(
+            ...     project_data=my_project,
+            ...     bus_out_heat=heat_bus,
+            ...     input_timeseries=[1,2,3],
+            ...     name="my_geothermal_plant",
+            ...     age_installed=0, # a
+            ...     capex_spec=1000, # €/kW
+            ...     opex_spec=10, # €/kW/a
+            ...     variable_costs=0, # €/kWh
+            ...     lifetime=25, # a
+            ...     maximum_capacity=1000, # kW
+            ...     renewable_asset=True,
+            ... )
         """
 
         nv = project_data.create_invest_if_wanted(
