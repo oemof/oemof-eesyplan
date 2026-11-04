@@ -18,32 +18,20 @@ class HeatDemand(Demand):
         This class represents a heat demand that consumes
         heat energy according to a specified time series pattern.
 
-        Structure
-        ---------
-        *input*
-            1. from_bus : Heat
-        carrier : str, optional (default: "heat")
-            |carrier|
+        Args:
+            name: |name|
+            bus_in_heat: |bus_in_heat|
+            input_timeseries: |input_timeseries|
+            carrier: (optional) -- |carrier|
 
-        Parameters
-        ----------
-        name : str
-            |name|
-        bus_in_heat : oemof.eesyplan.CarrierBus
-            |bus_in_heat|
-        input_timeseries : array-like
-            |input_timeseries|
-
-        Examples
-        --------
-        >>> from oemof.eesyplan import CarrierBus as Bus
-        >>> heat_bus = CarrierBus(name="heat_bus")
-        >>> my_demand = HeatDemand(
-        ...     name="office_demand",
-        ...     bus_in_heat=heat_bus,
-        ...     input_timeseries="heat_demand.csv",
-        ... )
-
+        Examples:
+            >>> from oemof.solph import Bus
+            >>> heat_bus = Bus(label="heat_bus")
+            >>> my_demand = HeatDemand(
+            ...     name="office_demand",
+            ...     bus_in_heat=heat_bus,
+            ...     input_timeseries="heat_demand.csv",
+            ... )
         """
 
         super().__init__(
