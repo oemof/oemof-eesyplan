@@ -295,6 +295,8 @@
     that the temperature of the auxiliary heat is assumed to be above this
     temperature. [°C] (real number above 0).
 
+.. |value| replace:: No TEXT
+
 .. |variable_costs| replace:: Costs associated with a flow through or out of
     the asset, e.g. fuel costs for sources such as biogas or oil, or
     operation-dependent costs of a thermal power plant [€/kWh] (acceptable
