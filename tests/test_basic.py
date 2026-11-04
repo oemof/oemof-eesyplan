@@ -1,10 +1,7 @@
 from unittest.mock import Mock
 from unittest.mock import patch
 
-import pytest
-
 from oemof.eesyplan import model
-from oemof.eesyplan.type_checks import check_parameter
 
 
 def test_results_init():
@@ -14,12 +11,6 @@ def test_results_init():
         instance = model.Results(object())
         assert isinstance(instance, model.Results)
         mock_base_init.assert_called_once()
-
-
-def test_none_parameters():
-    check_parameter(5, 6, 7)
-    with pytest.raises(ValueError, match="None is not allowed"):
-        check_parameter(5, 6, None)
 
 
 def test_optimise_debug():

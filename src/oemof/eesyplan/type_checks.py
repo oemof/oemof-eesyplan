@@ -1,13 +1,12 @@
 from typing import Any
-from typing import TypeAlias
 from typing import overload
 
 import numpy as np
 import numpy.typing as npt
 
-ArrayLikeInput: TypeAlias = npt.ArrayLike  # no pd.Series, so no Any
-ScalarInput: TypeAlias = int | float | np.integer[Any] | np.floating[Any]
-ArrayOutput: TypeAlias = npt.NDArray[np.float64]
+type ArrayLikeInput = npt.ArrayLike  # no pd.Series, so no Any
+type ScalarInput = int | float | np.integer[Any] | np.floating[Any]
+type ArrayOutput = npt.NDArray[np.float64]
 
 
 @overload
