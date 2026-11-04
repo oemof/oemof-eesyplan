@@ -7,6 +7,60 @@ from oemof.solph.components import Source
 
 
 class PvPlant(Source):
+    """
+    Photovoltaic power plant for solar electricity generation.
+
+    This class represents a photovoltaic plant that converts solar
+    irradiation into electrical energy using photovoltaic panels.
+
+    .. important::
+        This is a renewable energy source that contributes to the
+        renewable share of the system.
+
+    Optimisation:
+        The characteristic quantity of the optimisation is the *nominal
+        power-output* of the PV plant given in kWp.
+
+    Args:
+        name: |name|
+        project_data: |project_data|
+        bus_out_electricity: |bus_out_electricity|
+        input_timeseries: |input_timeseries|
+        age_installed: (optional) -- |age_installed|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        capex_spec: (optional) -- |capex_spec|
+        opex_spec: (optional) -- |opex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        lifetime: (optional) -- |lifetime|
+        renewable_asset: (optional) -- |renewable_asset|
+
+    Examples:
+        >>> from oemof.eesyplan import Project
+        >>> from oemof.eesyplan import CarrierBus
+        >>> my_project = Project(
+        ...         name="my_project",
+        ...         economic_period=20,
+        ...         tax=0,
+        ...         discount_factor=0.01
+        ...     )
+        >>> el_bus = CarrierBus(name="my_electricity_bus")
+        >>> my_pv = PvPlant(
+        ...     project_data=my_project,
+        ...     bus_out_electricity=el_bus,
+        ...     input_timeseries=[1,2,3],
+        ...     name="my_pv_plant",
+        ...     age_installed=0, # a
+        ...     capex_spec=1000, # €/kWp
+        ...     opex_spec=10, # €/kWp/a
+        ...     variable_costs=0, # €/kWh
+        ...     lifetime=25, # a
+        ...     maximum_capacity=1000, # kWp
+        ...     renewable_asset=True,
+        ... )
+    """
+
+
     def __init__(
         self,
         project_data: Project,
@@ -22,59 +76,6 @@ class PvPlant(Source):
         lifetime: float | int = 20,
         renewable_asset: bool = True,
     ):
-        """
-        Photovoltaic power plant for solar electricity generation.
-
-        This class represents a photovoltaic plant that converts solar
-        irradiation into electrical energy using photovoltaic panels.
-
-        .. important::
-            This is a renewable energy source that contributes to the
-            renewable share of the system.
-
-        Optimisation:
-            The characteristic quantity of the optimisation is the *nominal
-            power-output* of the PV plant given in kWp.
-
-        Args:
-            name: |name|
-            project_data: |project_data|
-            bus_out_electricity: |bus_out_electricity|
-            input_timeseries: |input_timeseries|
-            age_installed: (optional) -- |age_installed|
-            installed_capacity: (optional) -- |installed_capacity|
-            maximum_capacity: (optional) -- |maximum_capacity|
-            capex_spec: (optional) -- |capex_spec|
-            opex_spec: (optional) -- |opex_spec|
-            variable_costs: (optional) -- |variable_costs|
-            lifetime: (optional) -- |lifetime|
-            renewable_asset: (optional) -- |renewable_asset|
-
-        Examples:
-            >>> from oemof.eesyplan import Project
-            >>> from oemof.eesyplan import CarrierBus
-            >>> my_project = Project(
-            ...         name="my_project",
-            ...         economic_period=20,
-            ...         tax=0,
-            ...         discount_factor=0.01
-            ...     )
-            >>> el_bus = CarrierBus(name="my_electricity_bus")
-            >>> my_pv = PvPlant(
-            ...     project_data=my_project,
-            ...     bus_out_electricity=el_bus,
-            ...     input_timeseries=[1,2,3],
-            ...     name="my_pv_plant",
-            ...     age_installed=0, # a
-            ...     capex_spec=1000, # €/kWp
-            ...     opex_spec=10, # €/kWp/a
-            ...     variable_costs=0, # €/kWh
-            ...     lifetime=25, # a
-            ...     maximum_capacity=1000, # kWp
-            ...     renewable_asset=True,
-            ... )
-        """
-
         nv = project_data.create_invest_if_wanted(
             capex_spec=capex_spec,
             opex_spec=opex_spec,

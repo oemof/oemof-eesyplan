@@ -7,6 +7,57 @@ from oemof.solph.components import Converter
 
 
 class FuelCell(Converter):
+    """
+    Fuel cell for electricity generation.
+
+    This class represents a fuel cell that converts hydrogen or other
+    fuels into electrical energy through electrochemical processes.
+
+    .. important::
+        The efficiency of fuel cells is typically higher than
+        combustion-based generators.
+
+    Optimisation:
+        The characteristic quantity of the optimisation is the
+        *maximum electricity power-output* of the fuel cell given in kW.
+
+    Args:
+        name: |name|
+        bus_in_hydrogen: |bus_in_hydrogen|
+        bus_out_electricity: |bus_out_electricity|
+        age_installed: (optional) -- |age_installed|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        capex_spec: (optional) -- |capex_spec|
+        opex_spec: (optional) -- |opex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        lifetime: (optional) -- |lifetime|
+        efficiency: (optional) -- |efficiency|
+        project_data: (optional) -- |project_data|
+
+    Examples:
+        >>> from oemof.eesyplan import Project
+        >>> from oemof.eesyplan import CarrierBus
+        >>> h2_bus = CarrierBus(name="hydrogen_bus")
+        >>> el_bus = CarrierBus(name="electricity_bus")
+        >>> my_fuel_cell = FuelCell(
+        ...     name="hydrogen_fuel_cell",
+        ...     bus_in_hydrogen=h2_bus,
+        ...     bus_out_electricity=el_bus,
+        ...     age_installed=0,
+        ...     maximum_capacity=1000,
+        ...     capex_spec=1000,
+        ...     opex_spec=1000,
+        ...     lifetime=20,
+        ...     efficiency=0.9,
+        ...     variable_costs=0,
+        ...     project_data=Project(
+        ...         name="Project_X", economic_period=20, tax=0,
+        ...         discount_factor=0.01,
+        ...     )
+        ... )
+    """
+
     def __init__(
         self,
         name: str,
@@ -20,60 +71,10 @@ class FuelCell(Converter):
         variable_costs: float | int | ArrayLike = 0,
         lifetime: float | int = 20,
         efficiency: float | int | ArrayLike = 0.8,  # CHECK
-        project_data: Project
-        | None = None,  # CHECK: see Punkt D - project_data defaults to None but is used immediately below without a None-check
+        project_data: (
+            Project | None
+        ) = None,  # CHECK: see Punkt D - project_data defaults to None but is used immediately below without a None-check
     ):
-        """
-        Fuel cell for electricity generation.
-
-        This class represents a fuel cell that converts hydrogen or other
-        fuels into electrical energy through electrochemical processes.
-
-        .. important::
-            The efficiency of fuel cells is typically higher than
-            combustion-based generators.
-
-        Optimisation:
-            The characteristic quantity of the optimisation is the
-            *maximum electricity power-output* of the fuel cell given in kW.
-
-        Args:
-            name: |name|
-            bus_in_hydrogen: |bus_in_hydrogen|
-            bus_out_electricity: |bus_out_electricity|
-            age_installed: (optional) -- |age_installed|
-            installed_capacity: (optional) -- |installed_capacity|
-            maximum_capacity: (optional) -- |maximum_capacity|
-            capex_spec: (optional) -- |capex_spec|
-            opex_spec: (optional) -- |opex_spec|
-            variable_costs: (optional) -- |variable_costs|
-            lifetime: (optional) -- |lifetime|
-            efficiency: (optional) -- |efficiency|
-            project_data: (optional) -- |project_data|
-
-        Examples:
-            >>> from oemof.eesyplan import Project
-            >>> from oemof.eesyplan import CarrierBus
-            >>> h2_bus = CarrierBus(name="hydrogen_bus")
-            >>> el_bus = CarrierBus(name="electricity_bus")
-            >>> my_fuel_cell = FuelCell(
-            ...     name="hydrogen_fuel_cell",
-            ...     bus_in_hydrogen=h2_bus,
-            ...     bus_out_electricity=el_bus,
-            ...     age_installed=0,
-            ...     maximum_capacity=1000,
-            ...     capex_spec=1000,
-            ...     opex_spec=1000,
-            ...     lifetime=20,
-            ...     efficiency=0.9,
-            ...     variable_costs=0,
-            ...     project_data=Project(
-            ...         name="Project_X", economic_period=20, tax=0,
-            ...         discount_factor=0.01,
-            ...     )
-            ... )
-        """
-
         nv = project_data.create_invest_if_wanted(
             capex_spec=capex_spec,
             opex_spec=opex_spec,

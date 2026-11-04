@@ -7,6 +7,60 @@ from oemof.solph.components import Source
 
 
 class BiogasPlant(Source):
+    """
+    Biogas power plant for renewable gas generation.
+
+    This class represents a biogas plant that produces renewable gas
+    from organic waste materials through anaerobic digestion.
+
+    .. important::
+        This is a renewable energy source that produces carbon-neutral
+        gas fuel.
+
+    Optimisation:
+        The characteristic quantity of the optimisation is the *nominal
+        power-output* of the biogas power plant given in kW.
+
+    Args:
+        name: |name|
+        project_data: |project_data|
+        bus_out_fuel: |bus_out_fuel|
+        input_timeseries: |input_timeseries|
+        age_installed: (optional) -- |age_installed|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        capex_spec: (optional) -- |capex_spec|
+        opex_spec: (optional) -- |opex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        lifetime: (optional) -- |lifetime|
+        renewable_asset: (optional) -- |renewable_asset|
+
+    Examples:
+        >>> from oemof.eesyplan import Project
+        >>> from oemof.eesyplan import CarrierBus
+        >>> my_project = Project(
+        ...         name="my_project",
+        ...         economic_period=20,
+        ...         tax=0,
+        ...         discount_factor=0.01
+        ...     )
+        >>> fuel_bus = CarrierBus(name="my_fuel_bus")
+        >>> my_biogas = BiogasPlant(
+        ...     project_data=my_project,
+        ...     bus_out_fuel=fuel_bus,
+        ...     input_timeseries=[1,2,3],
+        ...     name="my_biogas_plant",
+        ...     age_installed=0, # a
+        ...     capex_spec=1000, # €/kW
+        ...     opex_spec=10, # €/kW/a
+        ...     variable_costs=0, # €/kWh
+        ...     lifetime=25, # a
+        ...     maximum_capacity=1000, # kW
+        ...     renewable_asset=True,
+        ... )
+    """
+
+
     def __init__(
         self,
         project_data: Project,
@@ -22,59 +76,6 @@ class BiogasPlant(Source):
         lifetime: float | int = 20,
         renewable_asset: bool = True,
     ):
-        """
-        Biogas power plant for renewable gas generation.
-
-        This class represents a biogas plant that produces renewable gas
-        from organic waste materials through anaerobic digestion.
-
-        .. important::
-            This is a renewable energy source that produces carbon-neutral
-            gas fuel.
-
-        Optimisation:
-            The characteristic quantity of the optimisation is the *nominal
-            power-output* of the biogas power plant given in kW.
-
-        Args:
-            name: |name|
-            project_data: |project_data|
-            bus_out_fuel: |bus_out_fuel|
-            input_timeseries: |input_timeseries|
-            age_installed: (optional) -- |age_installed|
-            installed_capacity: (optional) -- |installed_capacity|
-            maximum_capacity: (optional) -- |maximum_capacity|
-            capex_spec: (optional) -- |capex_spec|
-            opex_spec: (optional) -- |opex_spec|
-            variable_costs: (optional) -- |variable_costs|
-            lifetime: (optional) -- |lifetime|
-            renewable_asset: (optional) -- |renewable_asset|
-
-        Examples:
-            >>> from oemof.eesyplan import Project
-            >>> from oemof.eesyplan import CarrierBus
-            >>> my_project = Project(
-            ...         name="my_project",
-            ...         economic_period=20,
-            ...         tax=0,
-            ...         discount_factor=0.01
-            ...     )
-            >>> fuel_bus = CarrierBus(name="my_fuel_bus")
-            >>> my_biogas = BiogasPlant(
-            ...     project_data=my_project,
-            ...     bus_out_fuel=fuel_bus,
-            ...     input_timeseries=[1,2,3],
-            ...     name="my_biogas_plant",
-            ...     age_installed=0, # a
-            ...     capex_spec=1000, # €/kW
-            ...     opex_spec=10, # €/kW/a
-            ...     variable_costs=0, # €/kWh
-            ...     lifetime=25, # a
-            ...     maximum_capacity=1000, # kW
-            ...     renewable_asset=True,
-            ... )
-        """
-
         nv = project_data.create_invest_if_wanted(
             capex_spec=capex_spec,
             opex_spec=opex_spec,

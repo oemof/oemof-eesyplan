@@ -7,6 +7,55 @@ from oemof.solph.components import Converter
 
 
 class ElectricalTransformator(Converter):
+    """
+    Electrical transformator, e.g. for different voltage levels.
+
+    This class represents an electrical conversion of any kind.
+
+    .. important::
+        The efficiency parameter determines the conversion rate
+        from electricity input to electricity output.
+
+    Optimisation:
+        The characteristic quantity of the optimisation is the *maximum
+        power-output* of the transformer given in kW.
+
+    Args:
+        name: |name|
+        bus_in_electricity: |bus_in_electricity|
+        bus_out_electricity: |bus_out_electricity|
+        project_data: |project_data|
+        efficiency: (optional) -- |efficiency|
+        age_installed: (optional) -- |age_installed|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        capex_spec: (optional) -- |capex_spec|
+        opex_spec: (optional) -- |opex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        lifetime: (optional) -- |lifetime|
+
+    Examples:
+        >>> from oemof.eesyplan import Project
+        >>> from oemof.eesyplan import CarrierBus
+        >>> el_bus_in = CarrierBus(name="el_bus_in")
+        >>> el_bus_out = CarrierBus(name="el_bus_out")
+        >>> my_el_transformer = ElectricalTransformator(
+        ...     name="ElectricalTransformator",
+        ...     bus_in_electricity=el_bus_in,
+        ...     bus_out_electricity=el_bus_out,
+        ...     age_installed=0,
+        ...     maximum_capacity=1000,
+        ...     capex_spec=1000,
+        ...     opex_spec=1000,
+        ...     lifetime=20,
+        ...     efficiency=0.9,
+        ...     variable_costs=0,
+        ...     project_data=Project(
+        ...         name="Project_X", economic_period=20, tax=0,
+        ...         discount_factor=0.01),
+        ...     )
+    """
+
     def __init__(
         self,
         name: str,
@@ -22,54 +71,6 @@ class ElectricalTransformator(Converter):
         variable_costs: float | int | ArrayLike = 0,
         lifetime: float | int = 20,
     ):
-        """
-        Electrical transformator, e.g. for different voltage levels.
-
-        This class represents an electrical conversion of any kind.
-
-        .. important::
-            The efficiency parameter determines the conversion rate
-            from electricity input to electricity output.
-
-        Optimisation:
-            The characteristic quantity of the optimisation is the *maximum
-            power-output* of the transformer given in kW.
-
-        Args:
-            name: |name|
-            bus_in_electricity: |bus_in_electricity|
-            bus_out_electricity: |bus_out_electricity|
-            project_data: |project_data|
-            efficiency: (optional) -- |efficiency|
-            age_installed: (optional) -- |age_installed|
-            installed_capacity: (optional) -- |installed_capacity|
-            maximum_capacity: (optional) -- |maximum_capacity|
-            capex_spec: (optional) -- |capex_spec|
-            opex_spec: (optional) -- |opex_spec|
-            variable_costs: (optional) -- |variable_costs|
-            lifetime: (optional) -- |lifetime|
-
-        Examples:
-            >>> from oemof.eesyplan import Project
-            >>> from oemof.eesyplan import CarrierBus
-            >>> el_bus_in = CarrierBus(name="el_bus_in")
-            >>> el_bus_out = CarrierBus(name="el_bus_out")
-            >>> my_el_transformer = ElectricalTransformator(
-            ...     name="ElectricalTransformator",
-            ...     bus_in_electricity=el_bus_in,
-            ...     bus_out_electricity=el_bus_out,
-            ...     age_installed=0,
-            ...     maximum_capacity=1000,
-            ...     capex_spec=1000,
-            ...     opex_spec=1000,
-            ...     lifetime=20,
-            ...     efficiency=0.9,
-            ...     variable_costs=0,
-            ...     project_data=Project(
-            ...         name="Project_X", economic_period=20, tax=0,
-            ...         discount_factor=0.01),
-            ...     )
-        """
         nv = project_data.create_invest_if_wanted(
             capex_spec=capex_spec,
             opex_spec=opex_spec,

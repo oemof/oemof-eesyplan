@@ -6,6 +6,109 @@ from oemof.solph import Bus
 
 
 class ThermalStorage(EnergyStorage):
+    """
+    Heat Energy Storage System (HESS).
+
+    This class represents a complete thermal energy storage system
+    for thermal energy storage and dispatch.
+
+    .. important ::
+       This is a simplified representation of a complete HESS
+       including all necessary components.
+
+    Structure
+    ---------
+    *input*
+        charge : Heat
+    *output*
+        discharge : Heat
+
+    Parameters
+    ----------
+    name : string
+        |name|
+    project_data : Project object
+        |project_data|
+    installed_capacity : float or None (default: None)
+        |installed_capacity|
+    maximum_capacity : float or None (default: None)
+        |maximum_capacity|
+    bus_in_heat : Bus
+        |bus_in_heat|
+    bus_out_heat : Bus | None, optional (default: None)
+        |bus_out_heat|
+    age_installed : float or int, optional (default: 0)
+        |age_installed|
+    capex_spec : float, optional (default: 0.0)
+        |capex_spec|
+    opex_spec : float, optional (default: 0.0)
+        |opex_spec|
+    variable_costs : float, optional (default: 0.0)
+        |variable_costs|
+    lifetime : int, optional (default: 20)
+        |lifetime|
+    soc_max : float, optional (default: 1.0)
+        |soc_max|
+    soc_min : float, optional (default: 0.0)
+        |soc_min|
+    loss_rate : float, optional (default: 0.0)
+        |loss_rate|
+    fixed_losses_relative : float, optional (default: 0.0)
+        |fixed_losses_relative|
+    fixed_losses_absolute : float, optional (default: 0.0)
+        |fixed_losses_absolute|
+    efficiency_charge : float, optional (default: 1.0)
+        |efficiency_charge|
+    efficiency_discharge : float, optional (default: 1.0)
+        |efficiency_discharge|
+    c_rate_charge : float, optional (default: 1.0)
+        |c_rate_charge|
+    c_rate_discharge : float, optional (default: None)
+        |c_rate_discharge|
+    initial_storage_level : float or None, optional (default: None)
+        |initial_storage_level|
+    end_storage_level : bool, optional (default: True)
+        |end_storage_level|
+
+    Examples
+    --------
+    >>> from oemof.eesyplan import Project
+    >>> from oemof.eesyplan import CarrierBus
+    >>> my_project = Project(
+    ...         name="my_project",
+    ...         economic_period=20,
+    ...         tax=0,
+    ...         discount_factor=0.01
+    ...     )
+    >>> heat_bus = CarrierBus(name="my_heat_bus")
+    >>> my_storage = ThermalStorage(
+    ...     name="thermal_storage",
+    ...     project_data=my_project,
+    ...     bus_in_heat=heat_bus,
+    ...     installed_capacity=10,
+    ... )
+    >>> my_invest_storage = ThermalStorage(
+    ...     name="thermal_storage_extension",
+    ...     bus_in_heat=heat_bus,
+    ...     bus_out_heat=heat_bus,
+    ...     age_installed=0,
+    ...     maximum_capacity=1000,
+    ...     capex_spec=3,
+    ...     opex_spec=5,
+    ...     variable_costs=0,
+    ...     lifetime=10,
+    ...     soc_max=1,
+    ...     soc_min=0,
+    ...     c_rate_charge=1,
+    ...     c_rate_discharge=1,
+    ...     efficiency_charge=0.99,
+    ...     project_data=my_project,
+    ...     loss_rate=0.06,
+    ...     fixed_losses_relative=0.02,
+    ... )
+    """
+
+
     def __init__(
         self,
         name: str,
@@ -31,108 +134,6 @@ class ThermalStorage(EnergyStorage):
         initial_storage_level: float | int | None = None,
         end_storage_level: bool = True,
     ):
-        """
-        Heat Energy Storage System (HESS).
-
-        This class represents a complete thermal energy storage system
-        for thermal energy storage and dispatch.
-
-        .. important ::
-           This is a simplified representation of a complete HESS
-           including all necessary components.
-
-        Structure
-        ---------
-        *input*
-            charge : Heat
-        *output*
-            discharge : Heat
-
-        Parameters
-        ----------
-        name : string
-            |name|
-        project_data : Project object
-            |project_data|
-        installed_capacity : float or None (default: None)
-            |installed_capacity|
-        maximum_capacity : float or None (default: None)
-            |maximum_capacity|
-        bus_in_heat : Bus
-            |bus_in_heat|
-        bus_out_heat : Bus | None, optional (default: None)
-            |bus_out_heat|
-        age_installed : float or int, optional (default: 0)
-            |age_installed|
-        capex_spec : float, optional (default: 0.0)
-            |capex_spec|
-        opex_spec : float, optional (default: 0.0)
-            |opex_spec|
-        variable_costs : float, optional (default: 0.0)
-            |variable_costs|
-        lifetime : int, optional (default: 20)
-            |lifetime|
-        soc_max : float, optional (default: 1.0)
-            |soc_max|
-        soc_min : float, optional (default: 0.0)
-            |soc_min|
-        loss_rate : float, optional (default: 0.0)
-            |loss_rate|
-        fixed_losses_relative : float, optional (default: 0.0)
-            |fixed_losses_relative|
-        fixed_losses_absolute : float, optional (default: 0.0)
-            |fixed_losses_absolute|
-        efficiency_charge : float, optional (default: 1.0)
-            |efficiency_charge|
-        efficiency_discharge : float, optional (default: 1.0)
-            |efficiency_discharge|
-        c_rate_charge : float, optional (default: 1.0)
-            |c_rate_charge|
-        c_rate_discharge : float, optional (default: None)
-            |c_rate_discharge|
-        initial_storage_level : float or None, optional (default: None)
-            |initial_storage_level|
-        end_storage_level : bool, optional (default: True)
-            |end_storage_level|
-
-        Examples
-        --------
-        >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import CarrierBus
-        >>> my_project = Project(
-        ...         name="my_project",
-        ...         economic_period=20,
-        ...         tax=0,
-        ...         discount_factor=0.01
-        ...     )
-        >>> heat_bus = CarrierBus(name="my_heat_bus")
-        >>> my_storage = ThermalStorage(
-        ...     name="thermal_storage",
-        ...     project_data=my_project,
-        ...     bus_in_heat=heat_bus,
-        ...     installed_capacity=10,
-        ... )
-        >>> my_invest_storage = ThermalStorage(
-        ...     name="thermal_storage_extension",
-        ...     bus_in_heat=heat_bus,
-        ...     bus_out_heat=heat_bus,
-        ...     age_installed=0,
-        ...     maximum_capacity=1000,
-        ...     capex_spec=3,
-        ...     opex_spec=5,
-        ...     variable_costs=0,
-        ...     lifetime=10,
-        ...     soc_max=1,
-        ...     soc_min=0,
-        ...     c_rate_charge=1,
-        ...     c_rate_discharge=1,
-        ...     efficiency_charge=0.99,
-        ...     project_data=my_project,
-        ...     loss_rate=0.06,
-        ...     fixed_losses_relative=0.02,
-        ... )
-        """
-
         super().__init__(
             name,
             project_data=project_data,

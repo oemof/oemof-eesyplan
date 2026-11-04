@@ -5,6 +5,52 @@ from oemof.solph import Bus
 
 
 class DsoElectricity(DSO):
+    """
+    Energy provider for electricity distribution.
+
+    This class represents a distribution system operator (DSO) that
+    provides electricity from the utility grid with pricing and
+    feedin capabilities.
+
+    .. important ::
+        The renewable share affects the overall system renewable
+        factor calculation.
+
+    Structure
+    ---------
+    *input* & *output*
+        bus : Electricity
+
+    Parameters
+    ----------
+    name
+        |name|
+    bus_electricity
+        |bus|
+    maximum_capacity
+        |maximum_capacity|
+    energy_price
+        |energy_price|
+    feedin_tariff
+        |feedin_tariff|
+    peak_demand_pricing
+        |peak_demand_pricing|
+
+    Examples
+    --------
+    >>> from oemof.eesyplan import CarrierBus
+    >>> ebus = CarrierBus(name="electricity_bus")
+    >>> my_dso = DsoElectricity(
+    ...     name="main_grid",
+    ...     bus_electricity=ebus,
+    ...     energy_price=0.25,
+    ...     feedin_tariff=0.08,
+    ... )
+    >>> my_dso.name
+    'main_grid'
+
+    """
+
     def __init__(
         self,
         name: str,
@@ -15,51 +61,6 @@ class DsoElectricity(DSO):
         maximum_capacity: float | int | None = None,
         maximum_feedin_capacity: float | int | None = None,
     ):
-        """
-        Energy provider for electricity distribution.
-
-        This class represents a distribution system operator (DSO) that
-        provides electricity from the utility grid with pricing and
-        feedin capabilities.
-
-        .. important ::
-            The renewable share affects the overall system renewable
-            factor calculation.
-
-        Structure
-        ---------
-        *input* & *output*
-            bus : Electricity
-
-        Parameters
-        ----------
-        name
-            |name|
-        bus_electricity
-            |bus|
-        maximum_capacity
-            |maximum_capacity|
-        energy_price
-            |energy_price|
-        feedin_tariff
-            |feedin_tariff|
-        peak_demand_pricing
-            |peak_demand_pricing|
-
-        Examples
-        --------
-        >>> from oemof.eesyplan import CarrierBus
-        >>> ebus = CarrierBus(name="electricity_bus")
-        >>> my_dso = DsoElectricity(
-        ...     name="main_grid",
-        ...     bus_electricity=ebus,
-        ...     energy_price=0.25,
-        ...     feedin_tariff=0.08,
-        ... )
-        >>> my_dso.name
-        'main_grid'
-
-        """
         super().__init__(
             name=name,
             bus=bus_electricity,

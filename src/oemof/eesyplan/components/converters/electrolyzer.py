@@ -7,6 +7,78 @@ from oemof.solph.components import Converter
 
 
 class Electrolyzer(Converter):
+    """
+    Electrolyzer for hydrogen production.
+
+    This class represents an electrolyzer that converts electrical
+    energy into hydrogen gas through electrolysis, producing both
+    hydrogen and waste heat.
+
+    .. important::
+        The efficiency parameter determines the conversion rate
+        from electricity to hydrogen.
+
+    Optimisation:
+        The characteristic quantity of the optimisation is the
+        *maximum electricity power-input* of the electrolyzer given
+        in kW.
+
+    Args:
+        name: |name|
+        bus_in_electricity: |bus_in_electricity|
+        bus_out_hydrogen: |bus_out_hydrogen|
+        project_data: |project_data|
+        bus_out_heat: (optional) -- |bus_out_heat|
+        efficiency: (optional) -- |efficiency|
+        efficiency_heat: (optional) -- |efficiency_heat|
+        age_installed: (optional) -- |age_installed|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        capex_spec: (optional) -- |capex_spec|
+        opex_spec: (optional) -- |opex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        lifetime: (optional) -- |lifetime|
+
+    Examples:
+        >>> from oemof.eesyplan import Project
+        >>> from oemof.eesyplan import CarrierBus
+        >>> el_bus_in = CarrierBus(name="el_bus_in")
+        >>> heat_bus_out = CarrierBus(name="heat_bus_out")
+        >>> h2_bus_out = CarrierBus(name="h2_bus_out")
+        >>> my_electrolyzer = Electrolyzer(
+        ...     name="Electrolyzer",
+        ...     bus_in_electricity=el_bus_in,
+        ...     bus_out_heat=heat_bus_out,
+        ...     bus_out_hydrogen=h2_bus_out,
+        ...     age_installed=0,
+        ...     maximum_capacity=1000,
+        ...     capex_spec=1000,
+        ...     opex_spec=1000,
+        ...     lifetime=20,
+        ...     efficiency=0.9,
+        ...     efficiency_heat=0.1,
+        ...     variable_costs=0,
+        ...     project_data=Project(
+        ...         name="Project_X", economic_period=20, tax=0,
+        ...         discount_factor=0.01),
+        ...     )
+        >>> electrolyzer_no_heat = Electrolyzer(
+        ...     name="Electrolyzer",
+        ...     bus_in_electricity=el_bus_in,
+        ...     bus_out_hydrogen=h2_bus_out,
+        ...     age_installed=0,
+        ...     maximum_capacity=1000,
+        ...     capex_spec=1000,
+        ...     opex_spec=1000,
+        ...     lifetime=20,
+        ...     efficiency=0.9,
+        ...     variable_costs=0,
+        ...     project_data=Project(
+        ...         name="Project_X", economic_period=20, tax=0,
+        ...         discount_factor=0.01),
+        ...     )
+    """
+
     def __init__(
         self,
         name: str,
@@ -27,77 +99,6 @@ class Electrolyzer(Converter):
         variable_costs: float | int | ArrayLike = 0,
         lifetime: float | int = 20,
     ):
-        """
-        Electrolyzer for hydrogen production.
-
-        This class represents an electrolyzer that converts electrical
-        energy into hydrogen gas through electrolysis, producing both
-        hydrogen and waste heat.
-
-        .. important::
-            The efficiency parameter determines the conversion rate
-            from electricity to hydrogen.
-
-        Optimisation:
-            The characteristic quantity of the optimisation is the
-            *maximum electricity power-input* of the electrolyzer given
-            in kW.
-
-        Args:
-            name: |name|
-            bus_in_electricity: |bus_in_electricity|
-            bus_out_hydrogen: |bus_out_hydrogen|
-            project_data: |project_data|
-            bus_out_heat: (optional) -- |bus_out_heat|
-            efficiency: (optional) -- |efficiency|
-            efficiency_heat: (optional) -- |efficiency_heat|
-            age_installed: (optional) -- |age_installed|
-            installed_capacity: (optional) -- |installed_capacity|
-            maximum_capacity: (optional) -- |maximum_capacity|
-            capex_spec: (optional) -- |capex_spec|
-            opex_spec: (optional) -- |opex_spec|
-            variable_costs: (optional) -- |variable_costs|
-            lifetime: (optional) -- |lifetime|
-
-        Examples:
-            >>> from oemof.eesyplan import Project
-            >>> from oemof.eesyplan import CarrierBus
-            >>> el_bus_in = CarrierBus(name="el_bus_in")
-            >>> heat_bus_out = CarrierBus(name="heat_bus_out")
-            >>> h2_bus_out = CarrierBus(name="h2_bus_out")
-            >>> my_electrolyzer = Electrolyzer(
-            ...     name="Electrolyzer",
-            ...     bus_in_electricity=el_bus_in,
-            ...     bus_out_heat=heat_bus_out,
-            ...     bus_out_hydrogen=h2_bus_out,
-            ...     age_installed=0,
-            ...     maximum_capacity=1000,
-            ...     capex_spec=1000,
-            ...     opex_spec=1000,
-            ...     lifetime=20,
-            ...     efficiency=0.9,
-            ...     efficiency_heat=0.1,
-            ...     variable_costs=0,
-            ...     project_data=Project(
-            ...         name="Project_X", economic_period=20, tax=0,
-            ...         discount_factor=0.01),
-            ...     )
-            >>> electrolyzer_no_heat = Electrolyzer(
-            ...     name="Electrolyzer",
-            ...     bus_in_electricity=el_bus_in,
-            ...     bus_out_hydrogen=h2_bus_out,
-            ...     age_installed=0,
-            ...     maximum_capacity=1000,
-            ...     capex_spec=1000,
-            ...     opex_spec=1000,
-            ...     lifetime=20,
-            ...     efficiency=0.9,
-            ...     variable_costs=0,
-            ...     project_data=Project(
-            ...         name="Project_X", economic_period=20, tax=0,
-            ...         discount_factor=0.01),
-            ...     )
-        """
         nv = project_data.create_invest_if_wanted(
             capex_spec=capex_spec,
             opex_spec=opex_spec,
