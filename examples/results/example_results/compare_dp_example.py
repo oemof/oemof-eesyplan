@@ -9,6 +9,8 @@ from oemof.eesyplan.datapackage.energy_system import (
 )
 from oemof.eesyplan.model import optimise
 from oemof.eesyplan.postprocessing import graphs
+from oemof.eesyplan.postprocessing.KPIs import compare_KPIs
+from oemof.eesyplan.postprocessing.KPIs import format_KPIs
 from oemof.eesyplan.postprocessing.KPIs import normalize_imported_results
 from oemof.tools.debugging import ExperimentalFeatureWarning
 
@@ -54,7 +56,10 @@ if __name__ == "__main__":
         normalize_imported_results(results)
         datasets[name] = (results, es)
 
+    print(format_KPIs(compare_KPIs(datasets)))
+
     fig = graphs.compare_annual_costs(datasets)
+    fig_capacities = graphs.compare_capacities(datasets)
 
     for name, (results, _es) in datasets.items():
         table = results["eesyplan"]["yearly_project_costs"]
@@ -62,3 +67,4 @@ if __name__ == "__main__":
         print(f"Total annual costs ({name}): {total:.2f} EUR")
 
     fig.show()
+    fig_capacities.show()
