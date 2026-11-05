@@ -27,7 +27,7 @@ classifiers = [
   "Topic :: Utilities",
 ]
 dependencies = [
-  "oemof-datapackage @ git+https://github.com/oemof/oemof-datapackage.git@op1.3.0",
+  "oemof-datapackage @ git+https://github.com/oemof/oemof-datapackage.git@dev",
   "oemof-demand",
   "oemof-network",
   "oemof.solph[solver] @ git+https://github.com/oemof/oemof-solph.git@a4611edb8a225ee6faa360f86afc49d2986c1105",
