@@ -52,7 +52,7 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--filename", default=None, type=str)
     parser.add_argument("-p", "--plot", default="graph", type=str)
 
-    scenario_path = Path(__file__).parent / "scenario_Luft-Wärmepumpe_und_PV"
+    scenario_path = Path(__file__).parent / "scenario_Erd-Wärmepumpe_und_BHKW"
     results_path = scenario_path / "datapackage_solved"
     if (results_path / "datapackage.json").exists():
         es = create_energy_system_from_dp(

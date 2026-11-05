@@ -23,6 +23,8 @@ from oemof.eesyplan import import_results
 from oemof.eesyplan.model import optimise
 from oemof.eesyplan.postprocessing import graphs
 from oemof.eesyplan.postprocessing.KPIs import calculate_all_kpis
+from oemof.eesyplan.postprocessing.KPIs import compare_KPIs
+from oemof.eesyplan.postprocessing.KPIs import format_KPIs
 from oemof.eesyplan.postprocessing.KPIs import normalize_imported_results
 from oemof.eesyplan.postprocessing.print_results import print_results
 from oemof.solph import EnergySystem
@@ -249,6 +251,7 @@ if __name__ == "__main__":
 
     # --- 1. show how the whole object is built -------------------------------
     print_results(imported_results)
+    print(format_KPIs(compare_KPIs(imported_results, es)))
 
     # --- 2. the existing checks ----------------------------------------------
     fig, df = graphs.sankey_2(imported_results, es)

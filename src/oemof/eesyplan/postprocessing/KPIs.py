@@ -35,6 +35,94 @@ def calculate_all_kpis(results, es, project_duration=None):
     project_cost_table(results, es, project_duration=project_duration)
 
 
+def compare_KPIs(datasets, es=None, name="Scenario") -> pd.DataFrame:
+    """Compare key KPIs of one or more scenarios in a single table.
+
+    ``datasets`` maps the name of a scenario to its ``(results, es)``
+    pair.  A single scenario can also be passed directly as a
+    ``(results, es)`` pair or as two arguments ``(results, es)``; its
+    column is then named ``name``.  The KPIs of every scenario are
+    calculated with :func:`calculate_all_kpis` and the results are
+    written into the ``eesyplan`` namespace of the results object.
+
+    Parameters
+    ----------
+    datasets : dict or tuple
+        Maps the scenario name to a ``(results, es)`` tuple of that
+        scenario, or is the single ``(results, es)`` pair itself.
+    es : EnergySystem, optional
+        Energy system of a single scenario if ``datasets`` only holds
+        the results.
+    name : str, optional
+        Column name of a single scenario.  Defaults to "Scenario".
+
+    Returns
+    -------
+    pandas.DataFrame
+        One row per KPI and one column per scenario.  The rows are
+        "Total investment costs (year 0) [€]", "Total yearly costs
+        [€/yr]", "LCOE [ct/kWh]" and "Share of renewables [%]".  All
+        values are numeric; use :func:`format_KPIs` to display them with
+        one decimal.
+
+    Raises
+    ------
+    ValueError
+        If ``datasets`` is empty or an entry is no ``(results, es)``
+        pair.
+    """
+    if es is not None:
+        datasets = {name: (datasets, es)}
+    elif isinstance(datasets, list | tuple) and len(datasets) == 2:
+        datasets = {name: datasets}
+    if not datasets:
+        raise ValueError(
+            "datasets must map at least one scenario to (results, es)."
+        )
+    for entry_name, dataset in datasets.items():
+        if not isinstance(dataset, list | tuple) or len(dataset) != 2:
+            raise ValueError(
+                f"The entry of '{entry_name}' must be a (results, es) pair."
+            )
+
+    year0_column = "investment cost in year 0 (not including reinvestment)"
+    rows = {
+        "Total investment costs (year 0) [€]": {},
+        "Total yearly costs [€/yr]": {},
+        "LCOE [ct/kWh]": {},
+        "Share of renewables [%]": {},
+    }
+
+    for scenario, (results, es) in datasets.items():
+        calculate_all_kpis(results, es)
+        kpis = _eesyplan_kpis(results)
+        project_costs = kpis["project_cost_table"]
+        year0 = project_costs.loc[
+            project_costs["component"] == "total", year0_column
+        ].iloc[0]
+        rows["Total investment costs (year 0) [€]"][scenario] = float(year0)
+        rows["Total yearly costs [€/yr]"][scenario] = float(kpis["total_cost"])
+        rows["LCOE [ct/kWh]"][scenario] = float(kpis["lcoe"]) * 100.0
+        rows["Share of renewables [%]"][scenario] = (
+            float(kpis["renewable_share"]) * 100.0
+        )
+
+    table = pd.DataFrame.from_dict(rows, orient="index")
+    table.index.name = "KPI"
+    return table
+
+
+def format_KPIs(table) -> str:
+    """Format a KPI table for display with one decimal per value.
+
+    The units are part of the row labels, so only the numbers are
+    formatted here.  A space is used as thousands separator.
+    """
+    return table.to_string(
+        float_format=lambda value: f"{value:,.1f}".replace(",", " ")
+    )
+
+
 def _eesyplan_kpis(results):
     """Return the KPI dictionary stored under ``results["eesyplan"]``.
 
