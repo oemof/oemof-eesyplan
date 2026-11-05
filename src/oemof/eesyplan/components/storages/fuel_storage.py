@@ -7,75 +7,75 @@ from oemof.solph import Bus
 
 class FuelStorage(EnergyStorage):
     """
-     Fuel energy storage system.
+    Fuel energy storage system.
 
-     This component models a fuel storage for storing and dispatching fuel
-     energy carriers via a charge flow and a discharge flow. If bus_out_fuel
-     is not given, the storage is connected to bus_in_fuel only, so charge
-     and discharge share the same bus.
+    This component models a fuel storage for storing and dispatching fuel
+    energy carriers via a charge flow and a discharge flow. If bus_out_fuel
+    is not given, the storage is connected to bus_in_fuel only, so charge
+    and discharge share the same bus.
 
-     .. important::
-         This storage is not restricted to a specific fuel. It can hold
-         various fuel types, such as natural gas or biogas.
+    .. important::
+        This storage is not restricted to a specific fuel. It can hold
+        various fuel types, such as natural gas or biogas.
 
-     Args:
-         name: |name|
-         project_data: |project_data|
-         bus_in_fuel: |bus_in_fuel|
-         bus_out_fuel: (optional) -- |bus_out_fuel|
-         age_installed: (optional) -- |age_installed|
-         installed_capacity: (optional) -- |installed_capacity|
-         maximum_capacity: (optional) -- |maximum_capacity|
-         capex_spec: (optional) -- |capex_spec|
-         opex_spec: (optional) -- |opex_spec|
-         variable_costs: (optional) -- |variable_costs|
-         lifetime: (optional) -- |lifetime|
-         soc_max: (optional) -- |soc_max|
-         soc_min: (optional) -- |soc_min|
-         c_rate_charge: (optional) -- |c_rate_charge|
-         c_rate_discharge: (optional) -- |c_rate_discharge|
-         efficiency_charge: (optional) -- |efficiency_charge|
-         efficiency_discharge: (optional) -- |efficiency_discharge|
-         loss_rate: (optional) -- |loss_rate|
+    Args:
+        name: |name|
+        project_data: |project_data|
+        bus_in_fuel: |bus_in_fuel|
+        bus_out_fuel: (optional) -- |bus_out_fuel|
+        age_installed: (optional) -- |age_installed|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        capex_spec: (optional) -- |capex_spec|
+        opex_spec: (optional) -- |opex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        lifetime: (optional) -- |lifetime|
+        soc_max: (optional) -- |soc_max|
+        soc_min: (optional) -- |soc_min|
+        c_rate_charge: (optional) -- |c_rate_charge|
+        c_rate_discharge: (optional) -- |c_rate_discharge|
+        efficiency_charge: (optional) -- |efficiency_charge|
+        efficiency_discharge: (optional) -- |efficiency_discharge|
+        loss_rate: (optional) -- |loss_rate|
 
-     Examples:
-         >>> from oemof.eesyplan import Project
-         >>> from oemof.eesyplan import CarrierBus
-         >>> my_project = Project(
-         ...     name="my_project",
-         ...     economic_period=20,
-         ...     tax=0,
-         ...     discount_factor=0.01,
-         ...     )
-         >>> fuel_bus = CarrierBus(name="fuel_bus")
-         >>> my_bess = FuelStorage(
-         ...     name="fuel storage tank",
-         ...     project_data=my_project,
-         ...     bus_in_fuel=fuel_bus,
-         ...     installed_capacity=10,
-         ...     c_rate_charge=0.7,
-         ...     c_rate_discharge=0.8,
-         ...     loss_rate=0.0001,
-         ...     )
-         >>> my_invest_bess = FuelStorage(
-         ...     name="fuel storage tank extension",
-         ...     bus_in_fuel=fuel_bus,
-         ...     bus_out_fuel=fuel_bus,
-         ...     age_installed=0,
-         ...     maximum_capacity=1000,
-         ...     capex_spec=3,
-         ...     opex_spec=5,
-         ...     variable_costs=0,
-         ...     lifetime=10,
-         ...     soc_max=1,
-         ...     soc_min=0,
-         ...     c_rate_charge=0.7,
-         ...     c_rate_discharge=0.8,
-         ...     efficiency_charge=0.99,
-         ...     project_data=my_project,
-         ...     loss_rate=0.0001,
-         ...     )
-     """
+    Examples:
+        >>> from oemof.eesyplan import Project
+        >>> from oemof.eesyplan import CarrierBus
+        >>> my_project = Project(
+        ...     name="my_project",
+        ...     economic_period=20,
+        ...     tax=0,
+        ...     discount_factor=0.01,
+        ...     )
+        >>> fuel_bus = CarrierBus(name="fuel_bus")
+        >>> my_bess = FuelStorage(
+        ...     name="fuel storage tank",
+        ...     project_data=my_project,
+        ...     bus_in_fuel=fuel_bus,
+        ...     installed_capacity=10,
+        ...     c_rate_charge=0.7,
+        ...     c_rate_discharge=0.8,
+        ...     loss_rate=0.0001,
+        ...     )
+        >>> my_invest_bess = FuelStorage(
+        ...     name="fuel storage tank extension",
+        ...     bus_in_fuel=fuel_bus,
+        ...     bus_out_fuel=fuel_bus,
+        ...     age_installed=0,
+        ...     maximum_capacity=1000,
+        ...     capex_spec=3,
+        ...     opex_spec=5,
+        ...     variable_costs=0,
+        ...     lifetime=10,
+        ...     soc_max=1,
+        ...     soc_min=0,
+        ...     c_rate_charge=0.7,
+        ...     c_rate_discharge=0.8,
+        ...     efficiency_charge=0.99,
+        ...     project_data=my_project,
+        ...     loss_rate=0.0001,
+        ...     )
+    """
 
     def __init__(
         self,

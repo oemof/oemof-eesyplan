@@ -11,43 +11,43 @@ from oemof.solph.components import Source
 
 class DSO(Node):
     """
-     Distribution system operator for grid energy exchange.
+    Distribution system operator for grid energy exchange.
 
-     This component models a distribution system operator (DSO) that
-     supplies energy to a bus and optionally absorbs energy from it. Energy
-     supplied to the bus is priced with the energy price, and absorbed
-     energy is credited with the feedin tariff. A basic amount can be added
-     as a fixed cost.
+    This component models a distribution system operator (DSO) that
+    supplies energy to a bus and optionally absorbs energy from it. Energy
+    supplied to the bus is priced with the energy price, and absorbed
+    energy is credited with the feedin tariff. A basic amount can be added
+    as a fixed cost.
 
-     .. important::
-         At least one of energy_price and feedin_tariff must be set. Setting
-         a maximum_feedin_capacity without a feedin_tariff raises a
-         ValueError.
+    .. important::
+        At least one of energy_price and feedin_tariff must be set. Setting
+        a maximum_feedin_capacity without a feedin_tariff raises a
+        ValueError.
 
-     Args:
-         name: |name|
-         bus: |bus|
-         energy_price: (optional) -- |energy_price|
-         feedin_tariff: (optional) -- |feedin_tariff|
-         maximum_capacity: (optional) -- |maximum_capacity|
-         maximum_feedin_capacity: (optional) -- |maximum_feedin_capacity|
-         peak_demand_pricing: (optional) -- |peak_demand_pricing|
-         basic_amount: (optional) -- |basic_amount|
+    Args:
+        name: |name|
+        bus: |bus|
+        energy_price: (optional) -- |energy_price|
+        feedin_tariff: (optional) -- |feedin_tariff|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        maximum_feedin_capacity: (optional) -- |maximum_feedin_capacity|
+        peak_demand_pricing: (optional) -- |peak_demand_pricing|
+        basic_amount: (optional) -- |basic_amount|
 
-     Examples:
-         >>> from oemof.eesyplan import CarrierBus
-         >>> ebus = CarrierBus(name="any_bus")
-         >>> my_dso = DSO(
-         ...     name="any_network",
-         ...     bus=ebus,
-         ...     energy_price=0.25,
-         ...     )
-         >>> feedin_dso = DSO(
-         ...     name="any_network",
-         ...     bus=ebus,
-         ...     feedin_tariff=0.15,
-         ...     )
-     """
+    Examples:
+        >>> from oemof.eesyplan import CarrierBus
+        >>> ebus = CarrierBus(name="any_bus")
+        >>> my_dso = DSO(
+        ...     name="any_network",
+        ...     bus=ebus,
+        ...     energy_price=0.25,
+        ...     )
+        >>> feedin_dso = DSO(
+        ...     name="any_network",
+        ...     bus=ebus,
+        ...     feedin_tariff=0.15,
+        ...     )
+    """
 
     def __init__(
         self,
