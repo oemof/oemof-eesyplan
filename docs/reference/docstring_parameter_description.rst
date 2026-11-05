@@ -20,6 +20,9 @@
     balance constraint) [-] (acceptable values are either True or
     False).
 
+.. |basic_amount| replace:: Fixed cost charged independently of the energy
+   exchanged with the grid.
+
 .. |bus| replace:: Connected Bus component through which energy is
     exchanged with the utility grid (DSO). [object].
 
