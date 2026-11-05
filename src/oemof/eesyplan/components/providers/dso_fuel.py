@@ -6,47 +6,33 @@ from oemof.solph import Bus
 
 class DsoFuel(DSO):
     """
-    Energy provider for electricity distribution.
+    Distribution system operator for fuel exchange.
 
-    This class represents a distribution system operator (DSO) that
-    provides electricity from the utility grid with pricing and
-    feedin capabilities.
+    This component models a distribution system operator (DSO) that
+    supplies fuel to a bus and optionally absorbs fuel from it. It applies
+    the energy price to supplied fuel and the feedin tariff to absorbed
+    fuel.
 
-    .. important ::
-        The renewable share affects the overall system renewable
-        factor calculation.
+    .. important::
+        At least one of energy_price and feedin_tariff must be set.
 
-    Structure
-    ---------
-    *input* & *output*
-        bus : Fuel
+    Args:
+        name: |name|
+        bus_fuel: |bus|
+        energy_price: (optional) -- |energy_price|
+        feedin_tariff: (optional) -- |feedin_tariff|
+        peak_demand_pricing: (optional) -- |peak_demand_pricing|
+        maximum_capacity: (optional) -- |maximum_capacity|
 
-    Parameters
-    ----------
-    name
-        |name|
-    bus_fuel
-        |bus|
-    maximum_capacity
-        |maximum_capacity|
-    energy_price
-        |energy_price|
-    feedin_tariff
-        |feedin_tariff|
-    peak_demand_pricing
-        |peak_demand_pricing|
-
-    Examples
-    --------
-    >>> from oemof.eesyplan import CarrierBus
-    >>> fbus = CarrierBus(name="fuel_bus")
-    >>> my_dso = DsoFuel(
-    ...     name="main_grid",
-    ...     bus_fuel=fbus,
-    ...     energy_price=0.25,
-    ...     feedin_tariff=0.08,
-    ... )
-
+    Examples:
+        >>> from oemof.eesyplan import CarrierBus
+        >>> fbus = CarrierBus(name="fuel_bus")
+        >>> my_dso = DsoFuel(
+        ...     name="main_grid",
+        ...     bus_fuel=fbus,
+        ...     energy_price=0.25,
+        ...     feedin_tariff=0.08,
+        ...     )
     """
 
     def __init__(
