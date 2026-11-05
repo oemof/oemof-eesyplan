@@ -10,107 +10,77 @@ from oemof.solph.components import GenericStorage
 
 class EnergyStorage(GenericStorage):
     """
-    Energy Storage System (ESS).
+    Energy storage system.
 
-    This class represents a complete energy storage system for energy
-    storage and dispatch.
+    This component models a generic energy storage for storing and
+    dispatching energy via a charge flow and a discharge flow. If bus_out
+    is not given, the storage is connected to bus_in only, so charge and
+    discharge share the same bus.
 
-    .. important ::
-       This is a simplified representation of a complete ESS
-       including all necessary components.
+    .. important::
+        This is a simplified representation of a complete energy storage
+        system and does not cover every component such a system may
+        comprise.
 
-    Structure
-    ---------
-    *input*
-        charge : Energy
-    *output*
-        discharge : Energy
+    Args:
+        name: |name|
+        project_data: |project_data|
+        bus_in: |bus_in|
+        bus_out: (optional) -- |bus_out|
+        age_installed: (optional) -- |age_installed|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        capex_spec: (optional) -- |capex_spec|
+        opex_spec: (optional) -- |opex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        lifetime: (optional) -- |lifetime|
+        soc_max: (optional) -- |soc_max|
+        soc_min: (optional) -- |soc_min|
+        loss_rate: (optional) -- |loss_rate|
+        fixed_losses_relative: (optional) -- |fixed_losses_relative|
+        fixed_losses_absolute: (optional) -- |fixed_losses_absolute|
+        efficiency_charge: (optional) -- |efficiency_charge|
+        efficiency_discharge: (optional) -- |efficiency_discharge|
+        c_rate_charge: (optional) -- |c_rate_charge|
+        c_rate_discharge: (optional) -- |c_rate_discharge|
+        initial_storage_level: (optional) -- |initial_storage_level|
+        end_storage_level: (optional) -- |end_storage_level|
 
-    Parameters
-    ----------
-    name : string
-        |name|
-    project_data : Project object
-        |project_data|
-
-    bus_in : Bus
-        |bus_in|
-    bus_out : Bus | None, optional (default: None)
-        |bus_out|
-    age_installed : float or int, optional (default: 0)
-        |age_installed|
-    installed_capacity : float or None (default: None)
-        |installed_capacity|
-    maximum_capacity : float or None (default: None)
-        |maximum_capacity|
-    capex_spec : float, optional (default: 0)
-        |capex_spec|
-    opex_spec : float, optional (default: 0)
-        |opex_spec|
-    variable_costs : float, optional (default: 0)
-        |variable_costs|
-    lifetime : int, optional (default: 20)
-        |lifetime|
-    soc_max : float, optional (default: 1)
-        |soc_max|
-    soc_min : float, optional (default: 0)
-        |soc_min|
-    loss_rate : float, optional (default: 0.0)
-        |loss_rate|
-    fixed_losses_relative : float, optional (default: 0.0)
-        |fixed_losses_relative|
-    fixed_losses_absolute : float, optional (default: 0.0)
-        |fixed_losses_absolute|
-    efficiency_charge : float, optional (default: 1.0)
-        |efficiency_charge|
-    efficiency_discharge : float, optional (default: 1.0)
-        |efficiency_discharge|
-    c_rate_charge : float, optional (default: 1.0)
-        |c_rate_charge|
-    c_rate_discharge : float, optional (default: None)
-        |c_rate_discharge|
-    initial_storage_level : float or None, optional (default: None)
-        |initial_storage_level|
-    end_storage_level : bool, optional (default: True)
-        |end_storage_level|
-
-
-    Examples
-    --------
-    >>> from oemof.eesyplan import Project
-    >>> from oemof.eesyplan import CarrierBus
-    >>> my_project = Project(
-    ...         name="my_project",
-    ...         economic_period=20,
-    ...         tax=0,
-    ...         discount_factor=0.01
-    ...     )
-    >>> heat_bus = CarrierBus(name="my_bus")
-    >>> my_minimal_storage = EnergyStorage(
-    ...     name="energy_storage",
-    ...     project_data=my_project,
-    ...     installed_capacity=10,
-    ...     bus_in=heat_bus,
-    ... )
-    >>> my_invest_storage = EnergyStorage(
-    ...     name="energy_storage_extension",
-    ...     bus_in=heat_bus,
-    ...     bus_out=heat_bus,
-    ...     age_installed=0,
-    ...     maximum_capacity=1000,
-    ...     capex_spec=3,
-    ...     opex_spec=5,
-    ...     variable_costs=0,
-    ...     lifetime=10,
-    ...     soc_max=1,
-    ...     soc_min=0,
-    ...     c_rate_charge=1,
-    ...     c_rate_discharge=1,
-    ...     efficiency_charge=0.99,
-    ...     project_data=my_project,
-    ...     loss_rate=0.6,
-    ...     fixed_losses_relative=0.1,
-    ... )
+    Examples:
+        >>> from oemof.eesyplan import Project
+        >>> from oemof.eesyplan import CarrierBus
+        >>> my_project = Project(
+        ...     name="my_project",
+        ...     economic_period=20,
+        ...     tax=0,
+        ...     discount_factor=0.01,
+        ...     )
+        >>> heat_bus = CarrierBus(name="my_bus")
+        >>> my_minimal_storage = EnergyStorage(
+        ...     name="energy_storage",
+        ...     project_data=my_project,
+        ...     installed_capacity=10,
+        ...     bus_in=heat_bus,
+        ...     )
+        >>> my_invest_storage = EnergyStorage(
+        ...     name="energy_storage_extension",
+        ...     bus_in=heat_bus,
+        ...     bus_out=heat_bus,
+        ...     age_installed=0,
+        ...     maximum_capacity=1000,
+        ...     capex_spec=3,
+        ...     opex_spec=5,
+        ...     variable_costs=0,
+        ...     lifetime=10,
+        ...     soc_max=1,
+        ...     soc_min=0,
+        ...     c_rate_charge=1,
+        ...     c_rate_discharge=1,
+        ...     efficiency_charge=0.99,
+        ...     project_data=my_project,
+        ...     loss_rate=0.6,
+        ...     fixed_losses_relative=0.1,
+        ...     )
     """
 
     def __init__(
