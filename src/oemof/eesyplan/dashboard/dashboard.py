@@ -17,13 +17,13 @@ from dash.dependencies import Output
 
 import oemof.eesyplan.postprocessing.graphs as graphs
 from oemof.datapackage.resultpackage.read import ImportResults
-from oemof.eesyplan import CarrierBus
-from oemof.eesyplan import export_results
-from oemof.eesyplan import import_results
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.dashboard.graphs_to_json import sankey_to_json
 from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
 )
+from oemof.eesyplan.datapackage.results import export_results
+from oemof.eesyplan.datapackage.results import import_results
 from oemof.eesyplan.model import optimise
 from oemof.tools.logger import define_logging
 
