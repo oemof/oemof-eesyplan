@@ -1,17 +1,18 @@
+from numpy.typing import ArrayLike
+
 from oemof.eesyplan.components.providers.dso import DSO
+from oemof.solph import Bus
 
 
 class DsoFuel(DSO):
     def __init__(
         self,
-        name,
-        bus_fuel,
-        energy_price=0.3,
-        feedin_tariff=0.1,
-        peak_demand_pricing=0,
-        peak_demand_pricing_period=1,
-        renewable_share=0.44,
-        feedin_cap=None,
+        name: str,
+        bus_fuel: Bus,
+        energy_price: float | int | ArrayLike | None = None,
+        feedin_tariff: float | int | ArrayLike | None = None,
+        peak_demand_pricing: float | int = 0,
+        maximum_capacity: float | int = float("inf"),
     ):
         """
         Energy provider for electricity distribution.
@@ -24,34 +25,33 @@ class DsoFuel(DSO):
             The renewable share affects the overall system renewable
             factor calculation.
 
-        :Structure:
-          *input* & *output*
+        Structure
+        ---------
+        *input* & *output*
             bus : Fuel
 
         Parameters
         ----------
-        name : str
+        name
             |name|
-        energy_price : float, default=0.3
-            |energy_prices|
-        feedin_tariff : float, default=0.1
+        bus_fuel
+            |bus|
+        maximum_capacity
+            |maximum_capacity|
+        energy_price
+            |energy_price|
+        feedin_tariff
             |feedin_tariff|
-        peak_demand_pricing : float, default=0
+        peak_demand_pricing
             |peak_demand_pricing|
-        peak_demand_pricing_period : int, default=1
-            |peak_demand_period|
-        renewable_share : float, default=0.44
-            |renewable_share|
-        feedin_cap : float or None, default=None
-            |feedin_cap|
 
         Examples
         --------
         >>> from oemof.eesyplan import CarrierBus
-        >>> gbus = CarrierBus(name="gas_bus")
+        >>> fbus = CarrierBus(name="fuel_bus")
         >>> my_dso = DsoFuel(
         ...     name="main_grid",
-        ...     bus_fuel=gbus,
+        ...     bus_fuel=fbus,
         ...     energy_price=0.25,
         ...     feedin_tariff=0.08,
         ... )
@@ -63,7 +63,5 @@ class DsoFuel(DSO):
             energy_price=energy_price,
             feedin_tariff=feedin_tariff,
             peak_demand_pricing=peak_demand_pricing,
-            peak_demand_pricing_period=peak_demand_pricing_period,
-            renewable_share=renewable_share,
-            feedin_cap=feedin_cap,
+            maximum_capacity=maximum_capacity,
         )

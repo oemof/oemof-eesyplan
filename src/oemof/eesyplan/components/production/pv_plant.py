@@ -1,3 +1,7 @@
+from numpy.typing import ArrayLike
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.project import Project
 from oemof.solph import Flow
 from oemof.solph.components import Source
 
@@ -5,18 +9,18 @@ from oemof.solph.components import Source
 class PvPlant(Source):
     def __init__(
         self,
-        project_data,
-        bus_out_electricity,
-        input_timeseries,
-        name,
-        age_installed=0,
-        installed_capacity=None,
-        maximum_capacity=None,
-        capex_spec=1000,
-        opex_spec=10,
-        variable_costs=0,
-        lifetime=20,
-        renewable_asset=True,
+        project_data: Project,
+        bus_out_electricity: CarrierBus,
+        input_timeseries: ArrayLike,
+        name: str,
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 1000,
+        opex_spec: float | int | ArrayLike = 10,  # CHECK
+        variable_costs: float | int | ArrayLike = 0,
+        lifetime: float | int = 20,
+        renewable_asset: bool = True,
     ):
         """
         Photovoltaic power plant for solar electricity generation.
@@ -28,17 +32,19 @@ class PvPlant(Source):
             This is a renewable energy source that contributes to the
             renewable share of the system.
 
-        :Structure:
+        Structure
+        ---------
           *output*
             1. to_bus : Electricity
 
-        :Optimization:
+        Optimisation
+        ------------
           The characteristic quantity of the optimization is the *nominal
           power-output* of the PV-plant given in kWp
 
         Parameters
         ----------
-        project_data: Project object
+        project_data : Project object
             |project_data|
         bus_out_electricity : bus object
             |bus_out_electricity|
@@ -115,6 +121,7 @@ class PvPlant(Source):
             self.bus_out_electricity: Flow(
                 fix=input_timeseries,
                 nominal_capacity=nv,
+                variable_costs=variable_costs,
             )
         }
 

@@ -1,20 +1,19 @@
+from oemof.eesyplan import HeatingNetwork
 from oemof.eesyplan.components.buses.carrier import CarrierBus
-from oemof.eesyplan.components.compansation.excess import Excess
-from oemof.eesyplan.components.compansation.shortage import Shortage
+from oemof.eesyplan.components.compensation.excess import Excess
+from oemof.eesyplan.components.compensation.shortage import Shortage
 from oemof.eesyplan.components.converters.auxiliary_heat import AuxiliaryHeat
 from oemof.eesyplan.components.converters.boiler import Boiler
 from oemof.eesyplan.components.converters.chp_fixed_ratio import ChpFixedRatio
 from oemof.eesyplan.components.converters.chp_variable_ratio import (
     ChpVariableRatio,
 )
-from oemof.eesyplan.components.converters.diesel_generator import (
-    DieselGenerator,
-)
 from oemof.eesyplan.components.converters.electrical_transformator import (
     ElectricalTransformator,
 )
 from oemof.eesyplan.components.converters.electrolyzer import Electrolyzer
 from oemof.eesyplan.components.converters.fuel_cell import FuelCell
+from oemof.eesyplan.components.converters.fuel_generator import FuelGenerator
 from oemof.eesyplan.components.converters.heat_pump import HeatPump
 from oemof.eesyplan.components.demand.demand import Demand
 from oemof.eesyplan.components.demand.electricity_demand import (
@@ -46,7 +45,6 @@ from oemof.eesyplan.components.storages.fuel_storage import FuelStorage
 from oemof.eesyplan.components.storages.hydrogen_storage import HydrogenStorage
 from oemof.eesyplan.components.storages.storage import EnergyStorage
 from oemof.eesyplan.components.storages.thermal_storage import ThermalStorage
-from oemof.eesyplan.components.transport.heat import HeatingNetwork
 from oemof.eesyplan.components.transport.heat import HeatingPipe
 from oemof.eesyplan.project import Project
 from oemof.solph.components import Source
@@ -63,7 +61,10 @@ TYPEMAP = {
     "i": HeatingNetwork,
     "j": HeatingPipe,
     "Battery": ElectricalStorage,
-    "CarrierBus": CarrierBus,
+    "Bus": CarrierBus,
+    "CarrierBus": CarrierBus,  # back compatibility
+    "HeatingNetwork": HeatingNetwork,
+    "heating_network": HeatingNetwork,
     "demand": ElectricityDemand,
     "Source": Source,
     "project": Project,
@@ -82,7 +83,8 @@ TYPEMAP = {
     "storage_charge_controller_in": ElectricalTransformator,
     "storage_charge_controller_out": ElectricalTransformator,
     "solar_inverter": ElectricalTransformator,
-    "diesel_generator": DieselGenerator,
+    "fuel_generator": FuelGenerator,
+    "diesel_generator": FuelGenerator,
     "fuel_cell": FuelCell,
     "gas_boiler": Boiler,
     "electrolyzer": Electrolyzer,
@@ -96,4 +98,10 @@ TYPEMAP = {
     "hess": ThermalStorage,
     "chp": ChpVariableRatio,
     "chp_fixed_ratio": ChpFixedRatio,
+    "heating_pipe": HeatingPipe,
+    "sink": Sink,
+    "excess": Excess,
+    "shortage": Shortage,
+    "auxiliary_heat": AuxiliaryHeat,
+    "commodity": Commodity,
 }

@@ -70,11 +70,7 @@ class EnergySystem(SolphES):
         else:
             timeindex = kwargs.get("timeindex")
 
-        super().__init__(
-            timeindex=timeindex,
-            infer_last_interval=False,
-            periods=kwargs.get("periods"),
-        )
+        super().__init__(timeindex=timeindex, infer_last_interval=False)
 
 
 class Results(SolphResults):
@@ -85,9 +81,9 @@ class Results(SolphResults):
 def optimise(energy_system, solver="cbc", debug=False):
     """Optimise the energy system."""
     logging.info("Create model")
+
     optimization_model = Model(energysystem=energy_system)
 
-    # solve problem
     logging.info("Solve model")
 
     if debug:

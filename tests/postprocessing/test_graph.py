@@ -107,7 +107,7 @@ def sample_energy_system():
             c_rate_charge=1.0,
             efficiency_charge=0.99,
             project_data=project,
-            self_discharge=0.000,
+            loss_rate=0.000,
         )
     )
 
@@ -169,7 +169,7 @@ class TestSankey:
 
         assert isinstance(fig, go.Figure)
         assert isinstance(links_df, pd.DataFrame)
-        assert len(links_df) == 11
+        assert len(links_df) == 7
         assert all(
             col in links_df.columns
             for col in ["source", "target", "value", "min", "max", "aggregate"]
@@ -336,7 +336,7 @@ class TestCapacitiesGraph:
 
         # Prüfe installed capacities
         installed_trace = fig.data[1]
-        assert "wind" == sorted(installed_trace.x)[1]
+        assert sorted(installed_trace.x) == ["Batterie", "pv", "wind"]
         assert 0 == installed_trace.y.min()
         assert 1.0107436 == round(installed_trace.y.max(), 7)
         assert 0 in installed_trace.y
@@ -504,7 +504,7 @@ class TestIntegration:
         assert isinstance(fig, go.Figure)
         assert isinstance(links_df, pd.DataFrame)
         assert fig.layout.title.text == "Integration Test"
-        assert len(links_df) == 11
+        assert len(links_df) == 7
         assert all(
             col in links_df.columns
             for col in ["source", "target", "value", "min", "max", "aggregate"]
@@ -522,7 +522,7 @@ class TestIntegration:
 
         # Prüfe, dass alle Komponenten enthalten sind
         components = fig.data[0].x
-        assert len(components) == 2  # component1, component2, component3
+        assert sorted(components) == ["Batterie", "pv", "wind"]
 
 
 # ============================================================================

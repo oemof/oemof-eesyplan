@@ -1,3 +1,6 @@
+from numpy.typing import ArrayLike
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.solph import Flow
 from oemof.solph.components import Source
 
@@ -5,42 +8,43 @@ from oemof.solph.components import Source
 class Commodity(Source):
     def __init__(
         self,
-        name,
-        bus_out,
-        commodity=None,
-        capacity=None,
-        full_load_hours_max=None,
-        variable_cost=0,
+        name: str,
+        bus_out: CarrierBus,
+        commodity: str | None = None,
+        capacity: float | int | None = None,
+        full_load_time_max: float | int | None = None,
+        variable_costs: float | int | ArrayLike = 0,
     ):
         """
+        General Commodity.
 
         Parameters
         ----------
         name : string
             |name|
-        bus_out : Node object
+        bus_out : bus object
             |bus_out|
-        commodity : string
+        commodity : string, optional (default: None)
             |commodity|
-        capacity : float
+        capacity : float, optional (default: None)
             |capacity|
-        full_load_hours_max : float, optional
-            |full_load_hours_max|
-        variable_cost : float, optional
-            |variable_cost|
+        full_load_time_max : float, optional (default: None)
+            |full_load_time_max|
+        variable_costs : float, optional (default: 0)
+            |variable_costs|
 
         Examples
         --------
-        >>> # Limited by the capacity in yearly system with houry time steps.
+        >>> # Limited by the capacity in yearly system with hourly time steps.
         >>> # In every time step the output will be between 0 and 10
-                >>> from oemof.eesyplan import CarrierBus
+        >>> from oemof.eesyplan import CarrierBus
         >>> gas_bus = CarrierBus(name="natural_gas_bus")
         >>> wood = Commodity(
         ...     name="Commodity",
         ...     bus_out=gas_bus,
         ...     commodity="natural_gas",
         ...     capacity=10,
-        ...     full_load_hours_max=8760
+        ...     full_load_time_max=8760
         ... )
         >>> # Limited by the amount of energy. The total energy can be used in
         >>> # one timestep or can be used in 10 units in every time step. And
@@ -53,23 +57,23 @@ class Commodity(Source):
         ...     bus_out=wood_bus,
         ...     commodity="wood",
         ...     capacity=87600,
-        ...     full_load_hours_max=1
+        ...     full_load_time_max=1
         ... )
         """
         self.name = name
         self.bus_out = bus_out
         self.commodity = commodity
         self.capacity = capacity
-        self.full_load_hours_max = full_load_hours_max
-        self.variable_cost = variable_cost
+        self.full_load_time_max = full_load_time_max
+        self.variable_costs = variable_costs
 
         super().__init__(
             label=name,
             outputs={
                 bus_out: Flow(
                     nominal_capacity=capacity,
-                    full_load_time_max=full_load_hours_max,
-                    variable_costs=variable_cost,
+                    full_load_time_max=full_load_time_max,
+                    variable_costs=variable_costs,
                 )
             },
         )

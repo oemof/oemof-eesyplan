@@ -1,17 +1,27 @@
+from numpy.typing import ArrayLike
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.demand.demand import Demand
 
 
 class FuelDemand(Demand):
-    def __init__(self, name, bus_in_fuel, input_timeseries, carrier="fuel"):
+    def __init__(
+        self,
+        name: str,
+        bus_in_fuel: CarrierBus,
+        input_timeseries: (ArrayLike | str),  # CHECK: str (Dateiname) korrekt?
+        carrier: str = "fuel",
+    ):
         """
-        Gas demand/consumption component.
+        Fuel demand/consumption component.
 
-        This class represents a gas demand that consumes gas according
-        to a specified time series pattern.
+        This class represents a fuel demand that consumes fuel
+        according to a specified time series pattern.
 
-        :Structure:
+        Structure
+        ---------
             *input*
-                1. bus_in_fuel : Gas
+                1. from_bus : Fuel
 
         Parameters
         ----------
@@ -21,11 +31,13 @@ class FuelDemand(Demand):
             |bus_in_fuel|
         input_timeseries : array-like
             |input_timeseries|
+        carrier : str, optional (default: "fuel")
+            |carrier|
 
         Examples
         --------
         >>> from oemof.eesyplan import CarrierBus as Bus
-        >>> fuel_bus = Bus(name="fuel_bus")
+        >>> fuel_bus = CarrierBus(name="fuel_bus")
         >>> my_demand = FuelDemand(
         ...     name="office_demand",
         ...     bus_in_fuel=fuel_bus,

@@ -1,17 +1,18 @@
+from numpy.typing import ArrayLike
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.providers.dso import DSO
 
 
 class DsoHeat(DSO):
     def __init__(
         self,
-        name,
-        bus_heat,
-        energy_price=0.3,
-        feedin_tariff=0.1,
-        peak_demand_pricing=0,
-        peak_demand_pricing_period=1,
-        renewable_share=0.44,
-        feedin_cap=None,
+        name: str,
+        bus_heat: CarrierBus,
+        energy_price: float | int | ArrayLike | None = None,
+        feedin_tariff: float | int | ArrayLike | None = None,
+        peak_demand_pricing: float | int = 0,
+        maximum_capacity: float | int = float("inf"),
     ):
         """
         Energy provider for heat distribution.
@@ -24,26 +25,25 @@ class DsoHeat(DSO):
             The renewable share affects the overall system renewable
             factor calculation.
 
-        :Structure:
-          *input* & *output*
+        Structure
+        ---------
+        *input* & *output*
             bus : Heat
 
         Parameters
         ----------
-        name : str
+        name
             |name|
-        energy_price : float, default=0.3
-            |energy_prices|
-        feedin_tariff : float, default=0.1
+        bus_heat
+            |bus|
+        maximum_capacity
+            |maximum_capacity|
+        energy_price
+            |energy_price|
+        feedin_tariff
             |feedin_tariff|
-        peak_demand_pricing : float, default=0
+        peak_demand_pricing
             |peak_demand_pricing|
-        peak_demand_pricing_period : int, default=1
-            |peak_demand_period|
-        renewable_share : float, default=0.44
-            |renewable_share|
-        feedin_cap : float or None, default=None
-            |feedin_cap|
 
         Examples
         --------
@@ -63,7 +63,5 @@ class DsoHeat(DSO):
             energy_price=energy_price,
             feedin_tariff=feedin_tariff,
             peak_demand_pricing=peak_demand_pricing,
-            peak_demand_pricing_period=peak_demand_pricing_period,
-            renewable_share=renewable_share,
-            feedin_cap=feedin_cap,
+            maximum_capacity=maximum_capacity,
         )

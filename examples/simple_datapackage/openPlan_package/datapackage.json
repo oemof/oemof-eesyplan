@@ -88,7 +88,12 @@
                         "format": "default"
                     },
                     {
-                        "name": "crate",
+                        "name": "c_rate_charge",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "c_rate_discharge",
                         "type": "number",
                         "format": "default"
                     },
@@ -162,12 +167,7 @@
                         "format": "default"
                     },
                     {
-                        "name": "excess",
-                        "type": "boolean",
-                        "format": "default"
-                    },
-                    {
-                        "name": "excess_costs",
+                        "name": "excess_cost",
                         "type": "number",
                         "format": "default"
                     }
@@ -556,17 +556,7 @@
                         "format": "default"
                     },
                     {
-                        "name": "lifetime",
-                        "type": "integer",
-                        "format": "default"
-                    },
-                    {
-                        "name": "shortage_cost",
-                        "type": "integer",
-                        "format": "default"
-                    },
-                    {
-                        "name": "excess_cost",
+                        "name": "economic_period",
                         "type": "integer",
                         "format": "default"
                     }

@@ -38,7 +38,7 @@ to connect components. An overview of all components can be found at
 
     from oemof.eesyplan import DsoElectricity, PvPlant, Demand
 
-    bus_elec = CarrierBus(name="electricity")
+    bus_elec = Bus(name="electricity")
     energy_system.add(bus_elec)
 
     # Electricity Provider

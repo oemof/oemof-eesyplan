@@ -1,17 +1,29 @@
+from numpy.typing import ArrayLike
+
+from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.demand.demand import Demand
 
 
 class HeatDemand(Demand):
-    def __init__(self, name, bus_in_heat, input_timeseries, carrier="heat"):
+    def __init__(
+        self,
+        name: str,
+        bus_in_heat: CarrierBus,
+        input_timeseries: ArrayLike | str,  # CHECK: str (Dateiname) korrekt?
+        carrier: str = "heat",
+    ):
         """
         Heat demand/consumption component.
 
         This class represents a heat demand that consumes
         heat energy according to a specified time series pattern.
 
-        :Structure:
-            *input*
-                1. from_bus : Heat
+        Structure
+        ---------
+        *input*
+            1. from_bus : Heat
+        carrier : str, optional (default: "heat")
+            |carrier|
 
         Parameters
         ----------
@@ -25,7 +37,7 @@ class HeatDemand(Demand):
         Examples
         --------
         >>> from oemof.eesyplan import CarrierBus as Bus
-        >>> heat_bus = Bus(name="heat_bus")
+        >>> heat_bus = CarrierBus(name="heat_bus")
         >>> my_demand = HeatDemand(
         ...     name="office_demand",
         ...     bus_in_heat=heat_bus,

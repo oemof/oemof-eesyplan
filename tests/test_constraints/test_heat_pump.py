@@ -99,7 +99,7 @@ def test_heat_pump_investment():
     assert (
         round(
             (
-                results["objective"]
+                results.solver.objective
                 + results["invest"].squeeze() * heat_pump.capex_spec
                 - results["invest"].squeeze() * heat_pump.opex_spec
             ),
@@ -109,7 +109,7 @@ def test_heat_pump_investment():
     )
 
     # Check total objective
-    assert round(results["objective"], 3) == -1401.877
+    assert round(results.solver.objective, 3) == -1401.877
 
     flows = results["flow"]
 
