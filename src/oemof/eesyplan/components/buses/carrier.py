@@ -50,7 +50,7 @@ class CarrierBus(SolphBus):
                 local_name="excess",
                 inputs={
                     self: Flow(
-                        variable_costs=excess_cost,
+                        variable_costs=self.excess_cost,
                     )
                 },
             )
@@ -61,7 +61,7 @@ class CarrierBus(SolphBus):
                 local_name="shortage",
                 outputs={
                     self: Flow(
-                        variable_costs=shortage_cost,
+                        variable_costs=self.shortage_cost,
                     )
                 },
             )
