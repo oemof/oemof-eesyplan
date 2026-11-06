@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Sink
 
@@ -15,7 +15,7 @@ class Excess(Sink):
     available in the system than can be consumed or stored, by
     allowing the model to dispose of excess energy at a cost.
 
-    .. important ::
+    .. important::
         The cost parameter should usually be set high enough to
         discourage the optimisation from relying on this sink,
         unless it is deliberately used to represent a cost-free
@@ -37,7 +37,7 @@ class Excess(Sink):
     def __init__(
         self,
         name: str,
-        bus_in: CarrierBus,
+        bus_in: Bus,
         cost: float | int | ArrayLike = 0,
     ):
         super().__init__(

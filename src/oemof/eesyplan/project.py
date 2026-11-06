@@ -62,28 +62,27 @@ class Project:
         lifetime,
         maximum_capacity,
     ):
-        if maximum_capacity and installed_capacity:
+        if maximum_capacity is None:
+            return installed_capacity
+        elif installed_capacity is None:
+            specific_annual_cost = (
+                self.calculate_annuity(capex_spec, lifetime) + opex_spec
+            )
+            if maximum_capacity is None:
+                maximum = float("inf")
+            else:
+                maximum = maximum_capacity
+            return Investment(
+                ep_costs=specific_annual_cost,
+                existing=0,  # existing capacity with investment is not allowed
+                maximum=maximum,
+            )
+        else:
             raise ValueError(
                 "Maximum capacity and installed capacity can't be set at the "
                 "same time. Create an existing component with an installed "
                 "capacity or create an non existing component that shall be "
-                "optimised"
+                "optimised\n"
+                f"Maxiumum capacity: {maximum_capacity}\n"
+                f"Installed capacity: {installed_capacity}\n"
             )
-
-        if maximum_capacity is None:
-            maximum_capacity = float("+Inf")
-        if installed_capacity is None:
-            specific_annual_cost = (
-                self.calculate_annuity(
-                    capex_spec,
-                    lifetime,
-                )
-                + opex_spec
-            )
-            return Investment(
-                ep_costs=specific_annual_cost,
-                existing=0,  # existing capacity with investment is not allowed
-                maximum=maximum_capacity,
-            )
-        else:
-            return installed_capacity

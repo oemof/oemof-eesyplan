@@ -1,16 +1,69 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Source
 
 
 class WindTurbine(Source):
+    """
+    Wind turbine for electricity generation.
+
+    This class represents a wind turbine that converts kinetic
+    energy of wind into electrical energy.
+
+    .. important::
+        This is a renewable energy source that contributes to the
+        renewable share of the system.
+
+    Optimisation:
+        The characteristic quantity of the optimisation is the *nominal
+        power-output* of the wind turbine given in kW.
+
+    Args:
+        name: |name|
+        project_data: |project_data|
+        bus_out_electricity: |bus_out_electricity|
+        input_timeseries: |input_timeseries|
+        age_installed: (optional) -- |age_installed|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        capex_spec: (optional) -- |capex_spec|
+        opex_spec: (optional) -- |opex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        lifetime: (optional) -- |lifetime|
+        renewable_asset: (optional) -- |renewable_asset|
+
+    Examples:
+        >>> from oemof.eesyplan import Project
+        >>> from oemof.eesyplan import CarrierBus
+        >>> my_project = Project(
+        ...         name="my_project",
+        ...         economic_period=20,
+        ...         tax=0,
+        ...         discount_factor=0.01
+        ...     )
+        >>> el_bus = CarrierBus(name="my_electricity_bus")
+        >>> my_wind = WindTurbine(
+        ...     project_data=my_project,
+        ...     bus_out_electricity=el_bus,
+        ...     input_timeseries=[1,2,3],
+        ...     name="my_wind_plant",
+        ...     age_installed=0, # a
+        ...     capex_spec=1000, # €/kW
+        ...     opex_spec=10, # €/kW/a
+        ...     variable_costs=0, # €/kWh
+        ...     lifetime=25, # a
+        ...     maximum_capacity=1000, # kW
+        ...     renewable_asset=True,
+        ... )
+    """
+
     def __init__(
         self,
         project_data: Project,
-        bus_out_electricity: CarrierBus,
+        bus_out_electricity: Bus,
         input_timeseries: ArrayLike,
         name: str,
         age_installed: float | int = 0,
@@ -22,81 +75,6 @@ class WindTurbine(Source):
         lifetime: float | int = 20,
         renewable_asset: bool = True,
     ):
-        """
-        Wind turbine for electricity generation.
-
-        This class represents a wind turbine that converts kinetic
-        energy of wind into electrical energy.
-
-        .. important ::
-            This is a renewable energy source that contributes to the
-            renewable share of the system.
-
-        Structure
-        ---------
-          *output*
-            1. to_bus : Electricity
-
-        Optimisation
-        ------------
-          The characteristic quantity of the optimization is the *nominal
-          power-output* of the wind turbine given in kW
-
-        Parameters
-        ----------
-        project_data : Project object
-            |project_data|
-        bus_out_electricity : bus object
-            |bus_out_electricity|
-        input_timeseries : array-like
-            |input_timeseries|
-        name : str
-            |name|
-        age_installed : int, default=0
-            |age_installed|
-        installed_capacity : float or None (default: None)
-            |installed_capacity|
-        maximum_capacity : float or None (default: None)
-            |maximum_capacity|
-        capex_spec : float, default=1000
-            |capex_spec|
-        opex_spec : float, default=10
-            |opex_spec|
-        variable_costs : float, default=0
-            |variable_costs|
-        lifetime : int, default=20
-            |lifetime|
-        renewable_asset : bool, default=True
-            |renewable_asset|
-
-
-        Examples
-        --------
-        >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import CarrierBus
-        >>> my_project = Project(
-        ...         name="my_project",
-        ...         economic_period=20,
-        ...         tax=0,
-        ...         discount_factor=0.01
-        ...     )
-        >>> el_bus = CarrierBus(name="my_electricity_bus")
-        >>> my_wind = WindTurbine(
-        ...     bus_out_electricity=el_bus,
-        ...     name="my_wind_plant",
-        ...     age_installed=0, # a
-        ...     capex_spec=1000, # €/kW
-        ...     opex_spec=10, # €/kW/a
-        ...     variable_costs=0, # €/kWh
-        ...     lifetime=25, # a
-        ...     maximum_capacity=1000, # kW
-        ...     renewable_asset=True,
-        ...     input_timeseries=[1,2,3],
-        ...     project_data=my_project,
-        ...  )
-
-        """
-
         nv = project_data.create_invest_if_wanted(
             capex_spec=capex_spec,
             opex_spec=opex_spec,

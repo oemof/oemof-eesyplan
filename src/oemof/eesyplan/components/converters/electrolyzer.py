@@ -1,85 +1,45 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 
 
 class Electrolyzer(Converter):
-    def __init__(
-        self,
-        name: str,
-        bus_in_electricity: CarrierBus,
-        bus_out_hydrogen: CarrierBus,
-        project_data: Project,
-        bus_out_heat: CarrierBus | None = None,
-        efficiency: float | int | ArrayLike = 0.3,  # CHECK
-        # CHECK: sequence ok? Naming still open - originally flagged in
-        # docstring as "TODO find a good attribute name"; description
-        # text added in Pass 3, parameter name itself not decided yet.
-        efficiency_heat: float | int | ArrayLike = 0.6,
-        age_installed: float | int = 0,
-        installed_capacity: float | int | None = None,
-        maximum_capacity: float | int | None = None,
-        capex_spec: float | int = 1000,
-        opex_spec: float | int | ArrayLike = 10,  # CHECK
-        variable_costs: float | int | ArrayLike = 0,
-        lifetime: float | int = 20,
-    ):
-        """
-        Electrolyzer for hydrogen production.
+    """
+    Electrolyzer for hydrogen production.
 
-        This class represents an electrolyzer that converts electrical
-        energy into hydrogen gas through electrolysis, producing both
-        hydrogen and waste heat.
+    This class represents an electrolyzer that converts electrical
+    energy into hydrogen gas through electrolysis, producing both
+    hydrogen and waste heat.
 
-        .. important ::
-            The efficiency parameter determines the conversion rate
-            from electricity to hydrogen.
+    .. important::
+        The efficiency parameter determines the conversion rate
+        from electricity to hydrogen.
 
-        Structure
-        ---------
-          *input*
-            1. el_bus : Electricity
-          *output*
-            1. heat_bus : Heat
-            2. h2_bus : H2
+    Optimisation:
+        The characteristic quantity of the optimisation is the
+        *maximum electricity power-input* of the electrolyzer given
+        in kW.
 
-        Parameters
-        ----------
-        name : str
-            |name|
-        bus_in_electricity : CarrierBus
-            |bus_in_electricity|
-        bus_out_hydrogen : CarrierBus
-            |bus_out_hydrogen|
-        project_data : Project object
-            |project_data|
-        bus_out_heat : Bus or None, optional (default: None)
-            |bus_out_heat|
-        efficiency : float, optional (default: 0.3)
-            |efficiency|
-        efficiency_heat : float, optional (default: 0.6)
-            |efficiency_heat|
-        age_installed : float or int, optional (default: 0)
-            |age_installed|
-        installed_capacity : float or None (default: None)
-            |installed_capacity|
-        maximum_capacity : float or None (default: None)
-            |maximum_capacity|
-        capex_spec : float, optional (default: 1000)
-            |capex_spec|
-        opex_spec : float, optional (default: 10)
-            |opex_spec|
-        variable_costs : float, optional (default: 0)
-            |variable_costs|
-        lifetime : int, optional (default: 20)
-            |lifetime|
+    Args:
+        name: |name|
+        bus_in_electricity: |bus_in_electricity|
+        bus_out_hydrogen: |bus_out_hydrogen|
+        project_data: |project_data|
+        bus_out_heat: (optional) -- |bus_out_heat|
+        efficiency: (optional) -- |efficiency|
+        efficiency_heat: (optional) -- |efficiency_heat|
+        age_installed: (optional) -- |age_installed|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        capex_spec: (optional) -- |capex_spec|
+        opex_spec: (optional) -- |opex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        lifetime: (optional) -- |lifetime|
 
-        Examples
-        --------
-
+    Examples:
         >>> from oemof.eesyplan import Project
         >>> from oemof.eesyplan import CarrierBus
         >>> el_bus_in = CarrierBus(name="el_bus_in")
@@ -117,8 +77,28 @@ class Electrolyzer(Converter):
         ...         name="Project_X", economic_period=20, tax=0,
         ...         discount_factor=0.01),
         ...     )
+    """
 
-        """
+    def __init__(
+        self,
+        name: str,
+        bus_in_electricity: Bus,
+        bus_out_hydrogen: Bus,
+        project_data: Project,
+        bus_out_heat: Bus | None = None,
+        efficiency: float | int | ArrayLike = 0.3,  # CHECK
+        # CHECK: sequence ok? Naming still open - originally flagged in
+        # docstring as "TODO find a good attribute name"; description
+        # text added in Pass 3, parameter name itself not decided yet.
+        efficiency_heat: float | int | ArrayLike = 0.6,
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 1000,
+        opex_spec: float | int | ArrayLike = 10,  # CHECK
+        variable_costs: float | int | ArrayLike = 0,
+        lifetime: float | int = 20,
+    ):
         nv = project_data.create_invest_if_wanted(
             capex_spec=capex_spec,
             opex_spec=opex_spec,

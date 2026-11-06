@@ -1,9 +1,9 @@
 import numpy as np
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
-from oemof.eesyplan.type_checks import to_array_or_number
+from oemof.eesyplan.type_checks import normalise
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import VariableSplitConverter
 
@@ -16,7 +16,7 @@ class ChpVariableRatio(VariableSplitConverter):
     simultaneously generates electricity and useful heat from a
     single fuel source.
 
-    .. important ::
+    .. important::
         CHP systems achieve higher overall efficiency by utilising
         waste heat for useful purposes.
 
@@ -72,9 +72,9 @@ class ChpVariableRatio(VariableSplitConverter):
     def __init__(
         self,
         name: str,
-        bus_in_fuel: CarrierBus,
-        bus_out_electricity: CarrierBus,
-        bus_out_heat: CarrierBus,
+        bus_in_fuel: Bus,
+        bus_out_electricity: Bus,
+        bus_out_heat: Bus,
         efficiency_electricity_state_a: float | int | ArrayLike,
         efficiency_electricity_state_b: float | int | ArrayLike,
         efficiency_heat_state_a: float | int | ArrayLike,
@@ -88,18 +88,14 @@ class ChpVariableRatio(VariableSplitConverter):
         variable_costs: float | int | ArrayLike = 0,
         lifetime: float | int = 20,
     ):
-        self.efficiency_electricity_state_a = to_array_or_number(
+        self.efficiency_electricity_state_a = normalise(
             efficiency_electricity_state_a
         )
-        self.efficiency_heat_state_a = to_array_or_number(
-            efficiency_heat_state_a
-        )
-        self.efficiency_electricity_state_b = to_array_or_number(
+        self.efficiency_heat_state_a = normalise(efficiency_heat_state_a)
+        self.efficiency_electricity_state_b = normalise(
             efficiency_electricity_state_b
         )
-        self.efficiency_heat_state_b = to_array_or_number(
-            efficiency_heat_state_b
-        )
+        self.efficiency_heat_state_b = normalise(efficiency_heat_state_b)
         if (
             np.asarray(self.efficiency_electricity_state_a)
             + np.asarray(self.efficiency_heat_state_a)

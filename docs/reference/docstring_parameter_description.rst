@@ -7,14 +7,21 @@
     lifetime, the replacement costs of the asset will be taken into
     account [a] (Natural number).
 
-.. |annual_fix_cost| replace:: No text...for postprocessing calculations only!
+.. |annual_fix_cost| replace:: Fixed annual cost of the asset that is
+    independent of its capacity, used in postprocessing only.
+    (non-negative real number).
 
-.. |auxiliary_heat_fraction| replace:: No text.
+.. |auxiliary_heat_fraction| replace:: Share of the heat output that has
+    to be provided by the auxiliary heat input in order to raise the heat
+    flow to the supply temperature. [-] (real number between 0 and 1).
 
 .. |balanced| replace:: Choose whether the sum of all inflows into the
     bus must equal the sum of all outflows at every timestep (energy
     balance constraint) [-] (acceptable values are either True or
     False).
+
+.. |basic_amount| replace:: Fixed cost charged independently of the energy
+   exchanged with the grid.
 
 .. |bus| replace:: Connected Bus component through which energy is
     exchanged with the utility grid (DSO). [object].
@@ -87,24 +94,22 @@
 .. |custom_properties_flow| replace:: Additional custom properties attached
     to the flow definition of the component. [-] (dict or None).
 
-.. |efficiency| replace:: Ratio of energy output to energy input. The battery
-    efficiency is the ratio of the energy taken out of the battery to the
-    energy put into the battery [-] (positive real number).
+.. |efficiency| replace:: Ratio of the energy delivered at the output of
+    the component to the energy drawn at its input. The remaining share is
+    accounted for as conversion losses. [-] (real number between 0 and 1).
 
 .. |efficiency_charge| replace:: Conversion factor applied to the flow
     when charging the storage (inflow conversion factor), i.e. the
     share of the incoming energy that actually increases the storage
-    content; the remainder is lost as a charging loss [-] (real number
-    between 0 and 1).
+    content. [-] (real number between 0 and 1).
 
 .. |efficiency_discharge| replace:: Conversion factor applied to the
     flow when discharging the storage (outflow conversion factor),
     i.e. the share of the storage content converted into usable
-    outflow; the remainder is lost as a discharging loss [-] (real
-    number between 0 and 1).
+    outflow. [-] (real number between 0 and 1).
 
 .. |efficiency_electricity_chp| replace:: Electrical efficiency with maximal
-    heat extraction [-] (positive real number).
+    heat extraction [-] (real number between 0 and 1).
 
 .. |efficiency_electricity_state_a| replace:: Electrical efficiency of
     the CHP at operating state a (full condensation operation), i.e.
@@ -120,16 +125,16 @@
     electricity consumed by the electrolyzer [-] (real number between
     0 and 1).
 
+.. |efficiency_heat_chp| replace:: Thermal efficiency with maximal heat
+    extraction [-] (real number between 0 and 1).
+
 .. |efficiency_heat_state_a| replace:: Thermal efficiency of the CHP at
-    operating state a (full condensation operation); typically 0, as no
-    heat is extracted in this state [-] (real number between 0 and 1).
+    operating state a (full condensation operation) [-] (real number
+    between 0 and 1).
 
 .. |efficiency_heat_state_b| replace:: Thermal efficiency of the CHP at
     operating state b (maximal heat extraction operation) [-] (real
     number between 0 and 1).
-
-.. |efficiency_heat_chp| replace:: Thermal efficiency with maximal heat
-    extraction [-] (positive real number).
 
 .. |end_storage_level| replace:: Choose whether the storage content of the
     first and the last timestep of the optimisation horizon should be
@@ -190,7 +195,9 @@
     the asset should be restricted to integer values. [-] (acceptable
     values are either True or False).
 
-.. |investment_fix_cost| replace:: No text...for postprocessing calculations only!
+.. |investment_fix_cost| replace:: Fixed investment cost of the asset
+    that is independent of its capacity, used in postprocessing only.
+    (non-negative real number).
 
 .. |lifetime| replace:: Number of operational years of the asset before it
     has to be replaced [a] (natural number).
@@ -211,6 +218,10 @@
     to add 40 kW of PV at most, in :unit: (acceptable values are either a
     positive real number or None).
 
+.. |maximum_feedin_capacity| replace:: Maximum capacity of the connection
+    that may be used for feeding electricity into the grid. [kW]
+    (acceptable values are either a non-negative real number or None).
+
 .. |minimum| replace:: Minimum operation level of the flow as a factor of
     the nominal capacity [-] (acceptable values are either a real number
     between 0 and 1, or None).
@@ -226,18 +237,12 @@
 .. |opex_spec| replace:: Specific operational and maintenance costs of the
     asset related to the installed capacity (opex_spec), in €/(:unit: • a).
 
-.. |variable_costs| replace:: Costs associated with a flow through or out of
-    the asset, e.g. fuel costs for sources such as biogas or oil, or
-    operation-dependent costs of a thermal power plant [€/kWh] (acceptable
-    values are either a non-negative real number or a series of
-    non-negative real numbers).
+.. |peak_demand_pricing| replace:: Grid fee to be paid based on the peak
+    demand of a given period, in €/kW.
 
 .. |peak_demand_pricing_period| replace:: Number of reference periods in one year
     for peak demand pricing, in times per year (only the following values
     are acceptable: 1 (yearly), 2, 3, 4, 6, 12 (monthly)).
-
-.. |peak_demand_pricing| replace:: Grid fee to be paid based on the peak
-    demand of a given period, in €/kW.
 
 .. |positive_gradient_limit| replace:: Maximum allowed increase of the flow
     between two consecutive timesteps as a factor of the nominal capacity
@@ -283,12 +288,20 @@
 .. |temp_in_heat| replace:: Temperature of the incoming heat flow
     [°C] (real number above 0).
 
-.. |temp_out_heat| replace:: Temperature of the outgoing heat flow. Note
-    that the temperature of the auxiliary heat is assumed to be above this
-    temperature. [°C] (real number above 0).
-
 .. |temp_low_source_component| replace:: The return flow temperature of the
     upstream component. If the upstream component is, for example, a storage
     tank, this refers to the cold temperature of the tank. In the case of a
     heat pump, it would be the temperature of the incoming water (not the
     temperature of the heat source). [°C] (real number above 0).
+
+.. |temp_out_heat| replace:: Temperature of the outgoing heat flow. Note
+    that the temperature of the auxiliary heat is assumed to be above this
+    temperature. [°C] (real number above 0).
+
+.. |value| replace:: No TEXT
+
+.. |variable_costs| replace:: Costs associated with a flow through or out of
+    the asset, e.g. fuel costs for sources such as biogas or oil, or
+    operation-dependent costs of a thermal power plant [€/kWh] (acceptable
+    values are either a non-negative real number or a series of
+    non-negative real numbers).

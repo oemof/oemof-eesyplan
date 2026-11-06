@@ -1,54 +1,42 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Sink
 
 
 class Demand(Sink):
-    def __init__(
-        self,
-        name: str,
-        bus_in: CarrierBus,
-        input_timeseries: ArrayLike
-        | str,  # CHECK: str (Dateiname) korrekt - TODO Docstring anpassen?
-        carrier: str | None = None,
-    ):
-        """
-        Demand/consumption component.
+    """
+    Demand/consumption component.
 
-        This class represents a demand that consumes energy according to a
-        specified time series pattern.
+    This class represents a demand that consumes energy according to a
+    specified time series pattern.
 
-        Structure
-        ---------
-        *input*
-            1. from_bus : Carrier
+    Args:
+        name: |name|
+        bus_in: |bus_in|
+        input_timeseries: |input_timeseries|
+        carrier: (optional) -- |carrier|
 
-        Parameters
-        ----------
-        name : str
-            |name|
-        bus_in : oemof.eesyplan.CarrierBus
-            |bus_in|
-        input_timeseries : array-like
-            |input_timeseries|
-        carrier : str
-            |carrier|
-
-        Examples
-        --------
-        >>> from oemof.eesyplan import CarrierBus as Bus
-        >>> ebus = CarrierBus(name="electricity_bus")
+    Examples:
+        >>> from oemof.solph import Bus
+        >>> ebus = Bus(label="electricity_bus")
         >>> my_demand = Demand(
         ...     name="office_demand",
         ...     carrier="electricity",
         ...     bus_in=ebus,
         ...     input_timeseries="electricity_demand.csv",
         ... )
+    """
 
-        """
-
+    def __init__(
+        self,
+        name: str,
+        bus_in: Bus,
+        input_timeseries: ArrayLike
+        | str,  # CHECK: str (Dateiname) korrekt - TODO Docstring anpassen?
+        carrier: str | None = None,
+    ):
         self.profile = input_timeseries
         self.name = name
         self.carrier = carrier

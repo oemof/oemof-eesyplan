@@ -1,98 +1,51 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.storages.storage import EnergyStorage
 from oemof.eesyplan.project import Project
+from oemof.solph import Bus
 
 
 class FuelStorage(EnergyStorage):
-    def __init__(
-        self,
-        name: str,
-        project_data: Project,
-        bus_in_fuel: CarrierBus,
-        bus_out_fuel: CarrierBus | None = None,
-        age_installed: float | int = 0,
-        installed_capacity: float | int | None = None,
-        maximum_capacity: float | int | None = None,
-        capex_spec: float | int = 0,
-        opex_spec: float | int | ArrayLike = 0,  # CHECK
-        variable_costs: float | int | ArrayLike = 0,
-        lifetime: float | int = 20,
-        soc_max: float | int | ArrayLike = 1,  # CHECK
-        soc_min: float | int | ArrayLike = 0,  # CHECK
-        c_rate_charge: float | int = 1.0,
-        c_rate_discharge: float | int | None = None,
-        efficiency_charge: float | int | ArrayLike = 1.0,  # CHECK
-        efficiency_discharge: float | int | ArrayLike = 1.0,  # CHECK
-        loss_rate: float | int | ArrayLike = 0.0,  # CHECK
-    ):
-        """
-        Fuel Energy Storage System (FESS).
+    """
+    Fuel energy storage system.
 
-        This class represents a fuel energy storage system for storing
-        and dispatching fuel energy carriers.
+    This component models a fuel storage for storing and dispatching fuel
+    energy carriers via a charge flow and a discharge flow. If bus_out_fuel
+    is not given, the storage is connected to bus_in_fuel only, so charge
+    and discharge share the same bus.
 
-        .. important ::
-            This system can store various types of fuel including natural
-            gas and biogas.
+    .. important::
+        This storage is not restricted to a specific fuel. It can hold
+        various fuel types, such as natural gas or biogas.
 
-        Structure
-        ---------
-        *input*
-            bus_in_fuel : Fuel
-        *output*
-            bus_out_fuel : Fuel
+    Args:
+        name: |name|
+        project_data: |project_data|
+        bus_in_fuel: |bus_in_fuel|
+        bus_out_fuel: (optional) -- |bus_out_fuel|
+        age_installed: (optional) -- |age_installed|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        capex_spec: (optional) -- |capex_spec|
+        opex_spec: (optional) -- |opex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        lifetime: (optional) -- |lifetime|
+        soc_max: (optional) -- |soc_max|
+        soc_min: (optional) -- |soc_min|
+        c_rate_charge: (optional) -- |c_rate_charge|
+        c_rate_discharge: (optional) -- |c_rate_discharge|
+        efficiency_charge: (optional) -- |efficiency_charge|
+        efficiency_discharge: (optional) -- |efficiency_discharge|
+        loss_rate: (optional) -- |loss_rate|
 
-        Parameters
-        ----------
-        name : string
-            |name|
-        project_data : Project object
-            |project_data|
-        installed_capacity : float or None (default: None)
-            |installed_capacity|
-        maximum_capacity : float or None (default: None)
-            |maximum_capacity|
-        bus_in_fuel : CarrierBus
-            |bus_in_fuel|
-        bus_out_fuel : Bus | None, optional (default: None)
-            |bus_out_fuel|
-        age_installed : float or int, optional (default: 0)
-            |age_installed|
-        capex_spec : float, optional (default: 0)
-            |capex_spec|
-        opex_spec : float, optional (default: 0)
-            |opex_spec|
-        variable_costs : float, optional (default: 0)
-            |variable_costs|
-        lifetime : int, optional (default: 20)
-            |lifetime|
-        soc_max : float, optional (default: 1)
-            |soc_max|
-        soc_min : float, optional (default: 0)
-            |soc_min|
-        c_rate_charge : float, optional (default: 1.0)
-            |c_rate_charge|
-        c_rate_discharge : float, optional (default: None)
-            |c_rate_discharge|
-        efficiency_charge : float, optional (default: 1.0)
-            |efficiency_charge|
-        efficiency_discharge : float, optional (default: 1.0)
-            |efficiency_discharge|
-        loss_rate : float, optional (default: 0.0)
-            |loss_rate|
-
-
-        Examples
-        --------
+    Examples:
         >>> from oemof.eesyplan import Project
         >>> from oemof.eesyplan import CarrierBus
         >>> my_project = Project(
-        ...         name="my_project",
-        ...         economic_period=20,
-        ...         tax=0,
-        ...         discount_factor=0.01
+        ...     name="my_project",
+        ...     economic_period=20,
+        ...     tax=0,
+        ...     discount_factor=0.01,
         ...     )
         >>> fuel_bus = CarrierBus(name="fuel_bus")
         >>> my_bess = FuelStorage(
@@ -103,7 +56,7 @@ class FuelStorage(EnergyStorage):
         ...     c_rate_charge=0.7,
         ...     c_rate_discharge=0.8,
         ...     loss_rate=0.0001,
-        ... )
+        ...     )
         >>> my_invest_bess = FuelStorage(
         ...     name="fuel storage tank extension",
         ...     bus_in_fuel=fuel_bus,
@@ -121,8 +74,30 @@ class FuelStorage(EnergyStorage):
         ...     efficiency_charge=0.99,
         ...     project_data=my_project,
         ...     loss_rate=0.0001,
-        ... )
-        """
+        ...     )
+    """
+
+    def __init__(
+        self,
+        name: str,
+        project_data: Project,
+        bus_in_fuel: Bus,
+        bus_out_fuel: Bus | None = None,
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 0,
+        opex_spec: float | int | ArrayLike = 0,  # CHECK
+        variable_costs: float | int | ArrayLike = 0,
+        lifetime: float | int = 20,
+        soc_max: float | int | ArrayLike = 1,  # CHECK
+        soc_min: float | int | ArrayLike = 0,  # CHECK
+        c_rate_charge: float | int = 1.0,
+        c_rate_discharge: float | int | None = None,
+        efficiency_charge: float | int | ArrayLike = 1.0,  # CHECK
+        efficiency_discharge: float | int | ArrayLike = 1.0,  # CHECK
+        loss_rate: float | int | ArrayLike = 0.0,  # CHECK
+    ):
         super().__init__(
             name,
             project_data=project_data,

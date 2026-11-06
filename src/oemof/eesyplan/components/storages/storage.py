@@ -1,19 +1,94 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
+from oemof.eesyplan.type_checks import normalise
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph import Investment
 from oemof.solph.components import GenericStorage
 
 
 class EnergyStorage(GenericStorage):
+    """
+    Energy storage system.
+
+    This component models a generic energy storage for storing and
+    dispatching energy via a charge flow and a discharge flow. If bus_out
+    is not given, the storage is connected to bus_in only, so charge and
+    discharge share the same bus.
+
+    .. important::
+        This is a simplified representation of a complete energy storage
+        system and does not cover every component such a system may
+        comprise.
+
+    Args:
+        name: |name|
+        project_data: |project_data|
+        bus_in: |bus_in|
+        bus_out: (optional) -- |bus_out|
+        age_installed: (optional) -- |age_installed|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        capex_spec: (optional) -- |capex_spec|
+        opex_spec: (optional) -- |opex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        lifetime: (optional) -- |lifetime|
+        soc_max: (optional) -- |soc_max|
+        soc_min: (optional) -- |soc_min|
+        loss_rate: (optional) -- |loss_rate|
+        fixed_losses_relative: (optional) -- |fixed_losses_relative|
+        fixed_losses_absolute: (optional) -- |fixed_losses_absolute|
+        efficiency_charge: (optional) -- |efficiency_charge|
+        efficiency_discharge: (optional) -- |efficiency_discharge|
+        c_rate_charge: (optional) -- |c_rate_charge|
+        c_rate_discharge: (optional) -- |c_rate_discharge|
+        initial_storage_level: (optional) -- |initial_storage_level|
+        end_storage_level: (optional) -- |end_storage_level|
+
+    Examples:
+        >>> from oemof.eesyplan import Project
+        >>> from oemof.eesyplan import CarrierBus
+        >>> my_project = Project(
+        ...     name="my_project",
+        ...     economic_period=20,
+        ...     tax=0,
+        ...     discount_factor=0.01,
+        ...     )
+        >>> heat_bus = CarrierBus(name="my_bus")
+        >>> my_minimal_storage = EnergyStorage(
+        ...     name="energy_storage",
+        ...     project_data=my_project,
+        ...     installed_capacity=10,
+        ...     bus_in=heat_bus,
+        ...     )
+        >>> my_invest_storage = EnergyStorage(
+        ...     name="energy_storage_extension",
+        ...     bus_in=heat_bus,
+        ...     bus_out=heat_bus,
+        ...     age_installed=0,
+        ...     maximum_capacity=1000,
+        ...     capex_spec=3,
+        ...     opex_spec=5,
+        ...     variable_costs=0,
+        ...     lifetime=10,
+        ...     soc_max=1,
+        ...     soc_min=0,
+        ...     c_rate_charge=1,
+        ...     c_rate_discharge=1,
+        ...     efficiency_charge=0.99,
+        ...     project_data=my_project,
+        ...     loss_rate=0.6,
+        ...     fixed_losses_relative=0.1,
+        ...     )
+    """
+
     def __init__(
         self,
         name: str,
         project_data: Project,
-        bus_in: CarrierBus,
-        bus_out: CarrierBus | None = None,
+        bus_in: Bus,
+        bus_out: Bus | None = None,
         age_installed: float | int = 0,
         installed_capacity: float | int | None = None,
         maximum_capacity: float | int | None = None,
@@ -33,166 +108,73 @@ class EnergyStorage(GenericStorage):
         initial_storage_level: float | int | None = None,
         end_storage_level: bool = True,
     ):
-        """
-        Energy Storage System (ESS).
-
-        This class represents a complete energy storage system for energy
-        storage and dispatch.
-
-        .. important ::
-           This is a simplified representation of a complete ESS
-           including all necessary components.
-
-        Structure
-        ---------
-        *input*
-            charge : Energy
-        *output*
-            discharge : Energy
-
-        Parameters
-        ----------
-        name : string
-            |name|
-        project_data : Project object
-            |project_data|
-
-        bus_in : CarrierBus
-            |bus_in|
-        bus_out : Bus | None, optional (default: None)
-            |bus_out|
-        age_installed : float or int, optional (default: 0)
-            |age_installed|
-        installed_capacity : float or None (default: None)
-            |installed_capacity|
-        maximum_capacity : float or None (default: None)
-            |maximum_capacity|
-        capex_spec : float, optional (default: 0)
-            |capex_spec|
-        opex_spec : float, optional (default: 0)
-            |opex_spec|
-        variable_costs : float, optional (default: 0)
-            |variable_costs|
-        lifetime : int, optional (default: 20)
-            |lifetime|
-        soc_max : float, optional (default: 1)
-            |soc_max|
-        soc_min : float, optional (default: 0)
-            |soc_min|
-        loss_rate : float, optional (default: 0.0)
-            |loss_rate|
-        fixed_losses_relative : float, optional (default: 0.0)
-            |fixed_losses_relative|
-        fixed_losses_absolute : float, optional (default: 0.0)
-            |fixed_losses_absolute|
-        efficiency_charge : float, optional (default: 1.0)
-            |efficiency_charge|
-        efficiency_discharge : float, optional (default: 1.0)
-            |efficiency_discharge|
-        c_rate_charge : float, optional (default: 1.0)
-            |c_rate_charge|
-        c_rate_discharge : float, optional (default: None)
-            |c_rate_discharge|
-        initial_storage_level : float or None, optional (default: None)
-            |initial_storage_level|
-        end_storage_level : bool, optional (default: True)
-            |end_storage_level|
-
-
-        Examples
-        --------
-        >>> from oemof.eesyplan import Project
-        >>> from oemof.eesyplan import CarrierBus
-        >>> my_project = Project(
-        ...         name="my_project",
-        ...         economic_period=20,
-        ...         tax=0,
-        ...         discount_factor=0.01
-        ...     )
-        >>> heat_bus = CarrierBus(name="my_bus")
-        >>> my_minimal_storage = EnergyStorage(
-        ...     name="energy_storage",
-        ...     project_data=my_project,
-        ...     installed_capacity=10,
-        ...     bus_in=heat_bus,
-        ... )
-        >>> my_invest_storage = EnergyStorage(
-        ...     name="energy_storage_extension",
-        ...     bus_in=heat_bus,
-        ...     bus_out=heat_bus,
-        ...     age_installed=0,
-        ...     maximum_capacity=1000,
-        ...     capex_spec=3,
-        ...     opex_spec=5,
-        ...     variable_costs=0,
-        ...     lifetime=10,
-        ...     soc_max=1,
-        ...     soc_min=0,
-        ...     c_rate_charge=1,
-        ...     c_rate_discharge=1,
-        ...     efficiency_charge=0.99,
-        ...     project_data=my_project,
-        ...     loss_rate=0.6,
-        ...     fixed_losses_relative=0.1,
-        ... )
-        """
-
-        nv = project_data.create_invest_if_wanted(
-            capex_spec=capex_spec,
-            opex_spec=opex_spec,
-            lifetime=lifetime,
-            installed_capacity=installed_capacity,
-            maximum_capacity=maximum_capacity,
+        self.name = name
+        self.nv = project_data.create_invest_if_wanted(
+            capex_spec=normalise(capex_spec),
+            opex_spec=normalise(opex_spec),
+            lifetime=normalise(lifetime),
+            installed_capacity=normalise(installed_capacity),
+            maximum_capacity=normalise(maximum_capacity),
         )
-        if c_rate_discharge is None:
+        if normalise(c_rate_discharge) is None:
             c_rate_discharge = c_rate_charge
 
-        self.efficiency_charge = efficiency_charge
-        self.efficiency_discharge = efficiency_discharge
-        self.age_installed = age_installed
-        self.installed_capacity = installed_capacity
-        self.capex_spec = capex_spec
-        self.opex_spec = opex_spec
-        self.initial_storage_level = initial_storage_level
+        self.c_rate_discharge = normalise(c_rate_discharge)
+        self.c_rate_charge = normalise(c_rate_charge)
+
+        self.efficiency_charge = normalise(efficiency_charge)
+        self.efficiency_discharge = normalise(efficiency_discharge)
+        self.age_installed = normalise(age_installed)
+        self.installed_capacity = normalise(installed_capacity)
+        self.capex_spec = normalise(capex_spec)
+        self.opex_spec = normalise(opex_spec)
+        self.initial_storage_level = normalise(initial_storage_level)
         self.end_storage_level = end_storage_level
 
         if installed_capacity:
-            self.capacity_charge = nv * c_rate_charge
-            self.capacity_discharge = nv * c_rate_discharge
-            self.crate_charge = None
-            self.crate_discharge = None
+            self.capacity_charge = self.nv * self.c_rate_charge
+            self.capacity_discharge = self.nv * self.c_rate_discharge
+            self.c_rate_charge = None
+            self.c_rate_discharge = None
         else:
             self.capacity_charge = Investment()
             self.capacity_discharge = Investment()
-            self.crate_charge = c_rate_charge
-            self.crate_discharge = c_rate_discharge
 
         if bus_out is None:
             bus_out = bus_in
 
-        outputs = {bus_out: Flow(nominal_capacity=self.capacity_discharge)}
         self.bus_out = bus_out
         self.bus_in = bus_in
+        outputs = {
+            self.bus_out: Flow(nominal_capacity=self.capacity_discharge)
+        }
+        self.variable_costs = normalise(variable_costs)
+        self.soc_min = normalise(soc_min)
+        self.soc_max = normalise(soc_max)
+        self.loss_rate = normalise(loss_rate)
+        self.fixed_losses_relative = normalise(fixed_losses_relative)
+        self.fixed_losses_absolute = normalise(fixed_losses_absolute)
+        self.initial_storage_level = normalise(initial_storage_level)
 
         super().__init__(
-            label=name,
-            nominal_capacity=nv,
+            label=self.name,
+            nominal_capacity=self.nv,
             inputs={
                 bus_in: Flow(
                     nominal_capacity=self.capacity_charge,
-                    variable_costs=variable_costs,
+                    variable_costs=self.variable_costs,
                 )
             },
             outputs=outputs,
-            min_storage_level=soc_min,
-            max_storage_level=soc_max,
+            min_storage_level=self.soc_min,
+            max_storage_level=self.soc_max,
             balanced=self.end_storage_level,
             initial_storage_level=self.initial_storage_level,
             inflow_conversion_factor=self.efficiency_charge,
             outflow_conversion_factor=self.efficiency_discharge,
-            invest_relation_input_capacity=self.crate_charge,
-            invest_relation_output_capacity=self.crate_discharge,
-            loss_rate=loss_rate,
-            fixed_losses_relative=fixed_losses_relative,
-            fixed_losses_absolute=fixed_losses_absolute,
+            invest_relation_input_capacity=self.c_rate_charge,
+            invest_relation_output_capacity=self.c_rate_discharge,
+            loss_rate=self.loss_rate,
+            fixed_losses_relative=self.fixed_losses_relative,
+            fixed_losses_absolute=self.fixed_losses_absolute,
         )

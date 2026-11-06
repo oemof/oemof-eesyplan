@@ -1,79 +1,44 @@
 import numpy as np
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 
 
 class HeatPump(Converter):
-    def __init__(
-        self,
-        name: str,
-        project_data: Project,
-        cop: float | int | ArrayLike,
-        bus_in_electricity: CarrierBus,
-        bus_out_heat: CarrierBus,
-        bus_in_heat: CarrierBus | None = None,
-        installed_capacity: float | int | None = None,
-        maximum_capacity: float | int | None = None,
-        age_installed: float | int = 0,
-        capex_spec: float | int = 0.0,
-        variable_costs: float | int | ArrayLike = 0.0,
-        opex_spec: float | int | ArrayLike = 0.0,  # CHECK
-        lifetime: float | int = 20,
-    ):
-        """
-        Heat pump for efficient heat generation.
+    """
+    Heat pump for efficient heat generation.
 
-        This class represents a heat pump that extracts heat from a
-        low-temperature source and delivers it at a higher temperature
-        using electrical energy.
+    This class represents a heat pump that extracts heat from a
+    low-temperature source and delivers it at a higher temperature
+    using electrical energy.
 
-        .. important ::
-            Heat pumps typically achieve efficiencies (COP) greater
-            than 1.0, making them very efficient heating systems.
+    .. important::
+        Heat pumps typically achieve efficiencies (COP) greater
+        than 1.0, making them very efficient heating systems.
 
-        Structure
-        ---------
-          *input*
-            1. electricity_bus : Electricity
-            2. heat_bus : Heat
-          *output*
-            1. to_bus : Heat
+    Optimisation:
+        The characteristic quantity of the optimisation is the
+        *maximum heat power-output* of the heat pump given in kW.
 
-        Parameters
-        ----------
-        name : str
-            |name|
-        project_data : Project object
-            |project_data|
-        cop : float or list-like
-            |cop|
-        bus_in_electricity : CarrierBus
-            |bus_in_electricity|
-        bus_out_heat : CarrierBus
-            |bus_out_heat|
-        bus_in_heat : Bus or None, optional (default: None)
-            |bus_in_heat|
-        age_installed : int, default=0
-            |age_installed|
-        installed_capacity : float or None (default: None)
-            |installed_capacity|
-        maximum_capacity : float or None (default: None)
-            |maximum_capacity|
-        capex_spec : float, default=0
-            |capex_spec|
-        variable_costs : float, default=0
-            |variable_costs|
-        opex_spec : float, default=0
-            |opex_spec|
-        lifetime : int, default=20
-            |lifetime|
+    Args:
+        name: |name|
+        project_data: |project_data|
+        cop: |cop|
+        bus_in_electricity: |bus_in_electricity|
+        bus_out_heat: |bus_out_heat|
+        bus_in_heat: (optional) -- |bus_in_heat|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        age_installed: (optional) -- |age_installed|
+        capex_spec: (optional) -- |capex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        opex_spec: (optional) -- |opex_spec|
+        lifetime: (optional) -- |lifetime|
 
-        Examples
-        --------
+    Examples:
         >>> from oemof.eesyplan import Project
         >>> from oemof.eesyplan import CarrierBus
         >>> el_bus = CarrierBus(name="electricity_bus")
@@ -102,9 +67,24 @@ class HeatPump(Converter):
         ...         discount_factor=0.01,
         ...     )
         ... )
+    """
 
-        """
-
+    def __init__(
+        self,
+        name: str,
+        project_data: Project,
+        cop: float | int | ArrayLike,
+        bus_in_electricity: Bus,
+        bus_out_heat: Bus,
+        bus_in_heat: Bus | None = None,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        age_installed: float | int = 0,
+        capex_spec: float | int = 0.0,
+        variable_costs: float | int | ArrayLike = 0.0,
+        opex_spec: float | int | ArrayLike = 0.0,  # CHECK
+        lifetime: float | int = 20,
+    ):
         if isinstance(cop, list):
             cop = np.array(cop)
 
