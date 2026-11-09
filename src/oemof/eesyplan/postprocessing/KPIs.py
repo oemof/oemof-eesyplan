@@ -450,7 +450,13 @@ def _component_cost_data(results, es):
             owner = _edge_owner(column, owners)
             if owner is None:
                 continue
-            variable[owner] = variable.get(owner, 0.0) + costs[column].sum()
+            try:
+                variable[owner] = (
+                    variable.get(owner, 0.0) + costs[column].sum()
+                )
+            except TypeError:
+                # TODO remove when https://github.com/oemof/oemof-solph/pull/1348 is merged in dev
+                variable[owner] = variable.get(owner, 0.0)
 
     fix_investment_ann, fix_annual = _fix_cost_data(es, capacity)
 
