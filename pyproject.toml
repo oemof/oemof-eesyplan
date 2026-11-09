@@ -49,7 +49,7 @@ dashboard = ["plotly", "dash"]
 docs = ["sphinx", "sphinx_rtd_theme"]
 dummy = ["oemof"]
 examples = []
-importer = ["pyproj", "oemof-demand", "tespy"]
+importer = ["pyproj", "oemof-demand", "tespy", "pvlib"]
 test = [
   "pytest",
   "tespy",
