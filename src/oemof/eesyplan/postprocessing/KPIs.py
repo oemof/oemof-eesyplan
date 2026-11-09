@@ -285,7 +285,11 @@ def LCOE(results, es):
     ]
     total_demand = sum(flows[column].sum() for column in considered_flows)
 
-    _store_result(results, "lcoe", kpis["total_cost"] / total_demand)
+    if total_demand != 0:
+        lcoe = kpis["total_cost"] / total_demand
+    else:
+        lcoe = 0
+    _store_result(results, "lcoe", lcoe)
     _store_result(
         results,
         "lcoe_considered_flows",
