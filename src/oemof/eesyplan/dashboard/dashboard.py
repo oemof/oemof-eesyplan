@@ -33,6 +33,8 @@ from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
 )
 from oemof.eesyplan.model import optimise
+from oemof.eesyplan.postprocessing.KPIs import _eesyplan_kpis
+from oemof.eesyplan.postprocessing.KPIs import calculate_all_kpis
 from oemof.tools.logger import define_logging
 
 
@@ -200,6 +202,9 @@ class DashboardResults(ImportResults):
     def get(self, key, default=None):
         return self._data.get(key, default)
 
+    def pop(self, key, default=None):
+        return self._data.pop(key, default)
+
     def autoassign_keys(self):
         for key in self.keys():
             if key not in self._core_keys:
@@ -222,6 +227,39 @@ class DashboardResults(ImportResults):
         for fig_label, fig_func in FIGURES.items():
             self[fig_label] = fig_func(self)
             self.figure_keys.append(fig_label)
+
+    def add_all_tables(self):
+        calculate_all_kpis(self, self.energy_system)
+        year0_column = "investment cost in year 0 (not including reinvestment)"
+        rows = {
+            "total_cost_year0": None,
+            "total_cost": None,
+            "lcoe": None,
+            "renewable_share": None,
+        }
+
+        kpis = _eesyplan_kpis(self)
+        project_costs = kpis["project_cost_table"]
+        year0 = project_costs.loc[
+            project_costs["component"] == "total", year0_column
+        ].iloc[0]
+        rows["total_cost_year0"] = float(year0)
+        rows["total_cost"] = float(kpis["total_cost"])
+        rows["lcoe"] = float(kpis["lcoe"])
+        rows["renewable_share"] = float(kpis["renewable_share"])
+
+        table = rows  # pd.DataFrame.from_dict(rows, orient="index")
+        # table.index.name = "KPI"
+        table_label = "summary"
+        self[table_label] = table
+        self.table_keys.append(table_label)
+
+        tables_dict = self.pop("eesyplan")
+        for table_label, table in tables_dict.items():
+            if isinstance(table, pd.DataFrame):
+                self[table_label] = table
+                self.table_keys.append(table_label)
+
     def figures(self, fig_keys=None):
         if fig_keys is None:
             fig_keys = self.figure_keys
@@ -234,7 +272,7 @@ class DashboardResults(ImportResults):
 
         return figs
 
-    def tables(self, table_keys=None):
+    def tables(self, table_keys=None, convert_to_json=False):
         if table_keys is None:
             table_keys = self.table_keys
         else:
@@ -242,7 +280,19 @@ class DashboardResults(ImportResults):
 
         tables = {}
         for k in table_keys:
-            tables[k] = self[k]
+            if convert_to_json:
+                table = self[k]
+                if isinstance(table, pd.DataFrame):
+                    tables[k] = table.to_json()
+                elif isinstance(table, dict):
+                    print("there is a dict with ", k)
+                    tables[k] = json.dumps(table)
+                else:
+                    raise TypeError(
+                        f"The tables should either be dict or panda Dataframe and not {type(table)} (for key '{k}')"
+                    )
+            else:
+                tables[k] = self[k]
 
         return tables
 
@@ -289,7 +339,8 @@ class DashboardResults(ImportResults):
             value = self.get(key)
 
             # here one should consider dict (figures), None (with warning) and DataFrame (tables)
-
+            if key == "eesyplan":
+                continue
             if isinstance(value, dict):
                 fname = f"{key}.json"
                 fpath = results_root / "elements" / fname
@@ -441,7 +492,7 @@ def prepare_dash_app(imported_results):
     imported_results["sankey"] = sankey_to_json(imported_results)
     imported_results.figure_keys.append("sankey")
 
-    figures_to_plot = None #[capacity_fig_key]
+    figures_to_plot = None  # [capacity_fig_key]
 
     # Here define which tables should be displayed
     # imported_results["yearly_project_costs"] = yearly_project_costs(
@@ -591,6 +642,7 @@ def cli():
 
     dashboard_path = args.output
     imported_results.add_all_figures()
+    imported_results.add_all_tables()
 
     if dashboard_path is not None:
         imported_results.export_results_to_datapackage(dashboard_path)
