@@ -1,34 +1,39 @@
 import argparse
 import json
-import tempfile
 import logging
+import tempfile
 from pathlib import Path
 from typing import Any
 from zipfile import ZIP_DEFLATED
 from zipfile import ZipFile
 
-import dash
 import pandas as pd
 import plotly.graph_objs as go
-from dash import dash_table
-from dash import dcc
-from dash import html
-from dash.dependencies import Input
-from dash.dependencies import Output
+
+try:
+    import dash
+    from dash import dash_table
+    from dash import dcc
+    from dash import html
+    from dash.dependencies import Input
+    from dash.dependencies import Output
+
+    PLOTLY_DASH = True
+except ModuleNotFoundError:
+    PLOTLY_DASH = False
 
 import oemof.eesyplan.postprocessing.graphs as graphs
 from oemof.datapackage.resultpackage.read import ImportResults
 from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import export_results
 from oemof.eesyplan import import_results
+from oemof.eesyplan.dashboard.graphs_to_json import FIGURES
 from oemof.eesyplan.dashboard.graphs_to_json import sankey_to_json
 from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
 )
-from oemof.eesyplan.dashboard.graphs_to_json import FIGURES
 from oemof.eesyplan.model import optimise
 from oemof.tools.logger import define_logging
-
 
 
 def _normalize_df_for_csv(df: pd.DataFrame, key: str) -> pd.DataFrame:
@@ -589,9 +594,15 @@ def cli():
 
     if dashboard_path is not None:
         imported_results.export_results_to_datapackage(dashboard_path)
-
-    app = prepare_dash_app(imported_results)
-    app.run(debug=True, port=8060)
+    else:
+        if PLOTLY_DASH:
+            app = prepare_dash_app(imported_results)
+            app.run(debug=True, port=8060)
+        else:
+            logging.getLogger().error(
+                "Plotly dash is not installed, select the option 'dashboard' when installing eesyplan"
+                " to be able to see the local app 'pip install oemof.eesyplan[dashboard]' "
+            )
 
 
 if __name__ == "__main__":
