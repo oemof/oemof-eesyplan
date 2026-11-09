@@ -1,6 +1,7 @@
 import argparse
 import json
 import tempfile
+import logging
 from pathlib import Path
 from typing import Any
 from zipfile import ZIP_DEFLATED
@@ -24,8 +25,10 @@ from oemof.eesyplan.dashboard.graphs_to_json import sankey_to_json
 from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
 )
+from oemof.eesyplan.dashboard.graphs_to_json import FIGURES
 from oemof.eesyplan.model import optimise
 from oemof.tools.logger import define_logging
+
 
 
 def _normalize_df_for_csv(df: pd.DataFrame, key: str) -> pd.DataFrame:
@@ -210,6 +213,10 @@ class DashboardResults(ImportResults):
         self.figure_keys.append(key)
         return key
 
+    def add_all_figures(self):
+        for fig_label, fig_func in FIGURES.items():
+            self[fig_label] = fig_func(self)
+            self.figure_keys.append(fig_label)
     def figures(self, fig_keys=None):
         if fig_keys is None:
             fig_keys = self.figure_keys
@@ -424,12 +431,12 @@ def prepare_dash_app(imported_results):
         bus_figures.append(fig)
 
     # Here define which figures should be displayed
-    capacity_fig_key = imported_results.add_capacities_graph()
+    imported_results.add_capacities_graph()
 
     imported_results["sankey"] = sankey_to_json(imported_results)
     imported_results.figure_keys.append("sankey")
 
-    figures_to_plot = [capacity_fig_key]
+    figures_to_plot = None #[capacity_fig_key]
 
     # Here define which tables should be displayed
     # imported_results["yearly_project_costs"] = yearly_project_costs(
@@ -578,6 +585,7 @@ def cli():
     imported_results = import_dashboard_results(scenario_path, results_path)
 
     dashboard_path = args.output
+    imported_results.add_all_figures()
 
     if dashboard_path is not None:
         imported_results.export_results_to_datapackage(dashboard_path)
