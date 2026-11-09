@@ -1,3 +1,4 @@
+import logging
 import re
 
 import numpy as np
@@ -1438,36 +1439,37 @@ def plot_energy_mix(results, es, threshold=0.1, unit="MWh"):
         values.append(total / divisor)
 
     if not values:
-        raise ValueError("No energy supply found in the results.")
-
-    index = flows.index
-    if isinstance(index, pd.DatetimeIndex) and len(index):
-        period = f" from {index[0]:%Y-%m-%d} to {index[-1]:%Y-%m-%d}"
+        logging.error("No energy supply found in the results.")
+        fig = go.Figure()
     else:
-        period = ""
+        index = flows.index
+        if isinstance(index, pd.DatetimeIndex) and len(index):
+            period = f" from {index[0]:%Y-%m-%d} to {index[-1]:%Y-%m-%d}"
+        else:
+            period = ""
 
-    fig = go.Figure(
-        data=[
-            go.Pie(
-                labels=labels,
-                values=values,
-                hole=0.3,
-                textinfo="label+percent",
-                textposition="outside",
-                hoverinfo="label+value+percent",
-                hovertemplate=(
-                    f"%{{label}}: %{{customdata}} {unit} (%{{percent}})"
-                    "<extra></extra>"
-                ),
-                customdata=[_format_number(v, 1) for v in values],
-            )
-        ]
-    )
+        fig = go.Figure(
+            data=[
+                go.Pie(
+                    labels=labels,
+                    values=values,
+                    hole=0.3,
+                    textinfo="label+percent",
+                    textposition="outside",
+                    hoverinfo="label+value+percent",
+                    hovertemplate=(
+                        f"%{{label}}: %{{customdata}} {unit} (%{{percent}})"
+                        "<extra></extra>"
+                    ),
+                    customdata=[_format_number(v, 1) for v in values],
+                )
+            ]
+        )
 
-    fig.update_layout(
-        title=f"Accumulated energy supply of the system{period}",
-        legend_title="Energy source",
-    )
+        fig.update_layout(
+            title=f"Accumulated energy supply of the system{period}",
+            legend_title="Energy source",
+        )
 
     return fig
 
@@ -1545,90 +1547,91 @@ def plot_renewable_vs_nonrenewable(results, es, threshold=0.1, unit="MWh"):
     ]
 
     if not renewable and not nonrenewable:
-        raise ValueError("No energy supply found in the results.")
-
-    index = flows.index
-    if isinstance(index, pd.DatetimeIndex) and len(index):
-        period = f" from {index[0]:%Y-%m-%d} to {index[-1]:%Y-%m-%d}"
+        logging.error("No energy supply found in the results.")
+        fig = go.Figure()
     else:
-        period = ""
-
-    total_renewable = sum(value for _, value in renewable)
-    total_nonrenewable = sum(value for _, value in nonrenewable)
-    max_total = max(total_renewable, total_nonrenewable)
-
-    source_colors = {}
-    for data in (renewable, nonrenewable):
-        for label, _ in data:
-            if label not in source_colors:
-                source_colors[label] = qualitative.Plotly[
-                    len(source_colors) % len(qualitative.Plotly)
-                ]
-
-    fig = go.Figure()
-    shown_labels = set()
-    charts = (
-        ("Renewable", renewable),
-        ("Non-renewable", nonrenewable),
-    )
-    for category, data in charts:
-        for label, value in data:
-            showlegend = label not in shown_labels
-            shown_labels.add(label)
-            fig.add_trace(
-                go.Bar(
-                    x=[category],
-                    y=[value],
-                    name=label,
-                    legendgroup=label,
-                    showlegend=showlegend,
-                    marker_color=source_colors[label],
-                    customdata=[_format_number(value, 1)],
-                    hovertemplate=(
-                        f"%{{x}}<br>%{{fullData.name}}: "
-                        f"%{{customdata}} {unit}<extra></extra>"
-                    ),
-                )
-            )
-
-    for category, total in (
-        ("Renewable", total_renewable),
-        ("Non-renewable", total_nonrenewable),
-    ):
-        if total:
-            fig.add_annotation(
-                x=category,
-                y=total,
-                text=f"Total<br>{_format_number(total, 1)} {unit}",
-                showarrow=False,
-                yshift=10,
-                yanchor="bottom",
-            )
+        index = flows.index
+        if isinstance(index, pd.DatetimeIndex) and len(index):
+            period = f" from {index[0]:%Y-%m-%d} to {index[-1]:%Y-%m-%d}"
         else:
-            fig.add_annotation(
-                x=category,
-                y=0,
-                text="No energy supply",
-                showarrow=False,
-                yshift=10,
-                yanchor="bottom",
-            )
+            period = ""
 
-    fig.update_layout(
-        width=900,
-        height=600,
-        title=f"Renewable vs non-renewable energy supply{period}",
-        xaxis_title="",
-        yaxis_title=f"Energy [{unit}]",
-        yaxis_range=[0, max_total * 1.12 if max_total else 1],
-        xaxis={
-            "type": "category",
-            "categoryorder": "array",
-            "categoryarray": ["Renewable", "Non-renewable"],
-        },
-        barmode="stack",
-        bargap=0.45,
-        legend_title="Energy source",
-    )
+        total_renewable = sum(value for _, value in renewable)
+        total_nonrenewable = sum(value for _, value in nonrenewable)
+        max_total = max(total_renewable, total_nonrenewable)
+
+        source_colors = {}
+        for data in (renewable, nonrenewable):
+            for label, _ in data:
+                if label not in source_colors:
+                    source_colors[label] = qualitative.Plotly[
+                        len(source_colors) % len(qualitative.Plotly)
+                    ]
+
+        fig = go.Figure()
+        shown_labels = set()
+        charts = (
+            ("Renewable", renewable),
+            ("Non-renewable", nonrenewable),
+        )
+        for category, data in charts:
+            for label, value in data:
+                showlegend = label not in shown_labels
+                shown_labels.add(label)
+                fig.add_trace(
+                    go.Bar(
+                        x=[category],
+                        y=[value],
+                        name=label,
+                        legendgroup=label,
+                        showlegend=showlegend,
+                        marker_color=source_colors[label],
+                        customdata=[_format_number(value, 1)],
+                        hovertemplate=(
+                            f"%{{x}}<br>%{{fullData.name}}: "
+                            f"%{{customdata}} {unit}<extra></extra>"
+                        ),
+                    )
+                )
+
+        for category, total in (
+            ("Renewable", total_renewable),
+            ("Non-renewable", total_nonrenewable),
+        ):
+            if total:
+                fig.add_annotation(
+                    x=category,
+                    y=total,
+                    text=f"Total<br>{_format_number(total, 1)} {unit}",
+                    showarrow=False,
+                    yshift=10,
+                    yanchor="bottom",
+                )
+            else:
+                fig.add_annotation(
+                    x=category,
+                    y=0,
+                    text="No energy supply",
+                    showarrow=False,
+                    yshift=10,
+                    yanchor="bottom",
+                )
+
+        fig.update_layout(
+            width=900,
+            height=600,
+            title=f"Renewable vs non-renewable energy supply{period}",
+            xaxis_title="",
+            yaxis_title=f"Energy [{unit}]",
+            yaxis_range=[0, max_total * 1.12 if max_total else 1],
+            xaxis={
+                "type": "category",
+                "categoryorder": "array",
+                "categoryarray": ["Renewable", "Non-renewable"],
+            },
+            barmode="stack",
+            bargap=0.45,
+            legend_title="Energy source",
+        )
 
     return fig
