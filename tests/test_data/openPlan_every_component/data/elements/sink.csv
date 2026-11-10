@@ -1,0 +1,2 @@
+type,project_data,name,age_installed,installed_capacity,capex_spec,opex_spec,variable_costs,lifetime,maximum_capacity,minimum,maximum,fix,positive_gradient_limit,negative_gradient_limit,full_load_time_max,full_load_time_min,integer,bus_in
+sink,EesyPlan testing Heat components,sink-0,0.0,0.0,1000.0,10.0,0.01,20,,constant value = 0.0,constant value = 1.0,,,,,,False,bus-7

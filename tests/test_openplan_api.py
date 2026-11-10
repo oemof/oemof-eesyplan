@@ -4,9 +4,9 @@ import warnings
 from pathlib import Path
 
 import pytest
+from oemof.tools.debugging import ExperimentalFeatureWarning
 
 from oemof.eesyplan.datapackage import energy_system as es
-from oemof.tools.debugging import ExperimentalFeatureWarning
 
 warnings.filterwarnings("ignore", category=ExperimentalFeatureWarning)
 
