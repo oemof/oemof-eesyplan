@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
     for name, (results, _es) in datasets.items():
         table = results["eesyplan"]["yearly_project_costs"]
-        total = table.loc[table["component"] == "total", "total"].iloc[0]
+        total = table.loc[table["Component"] == "total", "total"].iloc[0]
         print(f"Total annual costs ({name}): {total:.2f} EUR")
 
     fig.show()

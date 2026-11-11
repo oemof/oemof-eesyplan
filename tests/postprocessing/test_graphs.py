@@ -254,10 +254,10 @@ def test_sankey_2_keeps_excess_as_separate_node():
 def test_plot_annual_costs(monkeypatch):
     table = pd.DataFrame(
         {
-            "component": ["component_a", "component_b", "total"],
-            "annualized investment cost": [10.0, -5.0, 5.0],
-            "fix operational costs": [2.0, 1.0, 3.0],
-            "dispatch costs": [3.0, -2.0, 1.0],
+            "Component": ["component_a", "component_b", "total"],
+            "Annualized investment cost": [10.0, -5.0, 5.0],
+            "Fix operational costs": [2.0, 1.0, 3.0],
+            "Dispatch costs": [3.0, -2.0, 1.0],
             "total": [15.0, -6.0, 9.0],
         }
     )
@@ -274,9 +274,9 @@ def test_plot_annual_costs(monkeypatch):
 
     assert fig.layout.barmode == "relative"
     assert [trace.name for trace in fig.data] == [
-        "annualized investment cost",
-        "fix operational costs",
-        "dispatch costs",
+        "Annualized investment cost",
+        "Fix operational costs",
+        "Dispatch costs",
     ]
     for trace in fig.data:
         assert list(trace.x) == ["component_a", "component_b"]
@@ -300,18 +300,18 @@ def test_compare_annual_costs(monkeypatch):
 
     table1 = pd.DataFrame(
         {
-            "component": ["wind1", "wind2", "pv1", "total"],
-            "annualized investment cost": [10.0, 20.0, 5.0, 35.0],
-            "fix operational costs": [1.0, 2.0, 0.5, 3.5],
-            "dispatch costs": [0.1, 0.2, 0.05, 0.35],
+            "Component": ["wind1", "wind2", "pv1", "total"],
+            "Annualized investment cost": [10.0, 20.0, 5.0, 35.0],
+            "Fix operational costs": [1.0, 2.0, 0.5, 3.5],
+            "Dispatch costs": [0.1, 0.2, 0.05, 0.35],
         }
     )
     table2 = pd.DataFrame(
         {
-            "component": ["windplant", "total"],
-            "annualized investment cost": [7.0, 7.0],
-            "fix operational costs": [0.7, 0.7],
-            "dispatch costs": [0.07, 0.07],
+            "Component": ["windplant", "total"],
+            "Annualized investment cost": [7.0, 7.0],
+            "Fix operational costs": [0.7, 0.7],
+            "Dispatch costs": [0.07, 0.07],
         }
     )
     es1 = SimpleNamespace(nodes=[wind1, wind2, pv1])

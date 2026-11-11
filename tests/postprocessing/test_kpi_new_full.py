@@ -466,14 +466,14 @@ def test_fix_cost_data_warns_only_once(caplog):
 
 
 def test_cost_table():
-    rows = [{"component": "a", "cost1": 10.0, "cost2": 5.0}]
+    rows = [{"Component": "a", "cost1": 10.0, "cost2": 5.0}]
     table = _cost_table(rows, ["cost1", "cost2"])
     assert "total" in table.columns
-    assert "total" in table["component"].values
+    assert "total" in table["Component"].values
 
 
 def test_cost_table_filters_zeros():
-    rows = [{"component": "a", "cost1": 0.0}]
+    rows = [{"Component": "a", "cost1": 0.0}]
     table = _cost_table(rows, ["cost1"])
     # all zeros filtered, but total row added? Let us check
     assert len(table) >= 0
@@ -544,11 +544,11 @@ def test_yearly_project_costs_with_fix_costs():
     )
     yearly_project_costs(results, es)
     table = results["eesyplan"]["yearly_project_costs"]
-    row = table[table["component"] == "owner_node"].iloc[0]
+    row = table[table["Component"] == "owner_node"].iloc[0]
     # model annuity 10 (20 - 10 opex) + fix annuity 100/10
-    assert row["annualized investment cost"] == pytest.approx(20.0)
+    assert row["Annualized investment cost"] == pytest.approx(20.0)
     # opex 10 + annual fix 5
-    assert row["fix operational costs"] == pytest.approx(15.0)
+    assert row["Fix operational costs"] == pytest.approx(15.0)
 
 
 def test_project_cost_table_with_fix_costs():
@@ -572,17 +572,17 @@ def test_project_cost_table_with_fix_costs():
     )
     project_cost_table(results, es, project_duration=20)
     table = results["eesyplan"]["project_cost_table"]
-    row = table[table["component"] == "owner_node"].iloc[0]
+    row = table[table["Component"] == "owner_node"].iloc[0]
     # capex_spec * capacity 5 * 10 + fix investment 100 in year 0
-    assert row["investment cost in year 0 (not including reinvestment)"] == (
+    assert row["Investment cost in year 0 (not including reinvestment)"] == (
         pytest.approx(150.0)
     )
     # annualized investment 20 * 20 years - year 0 investment 150
-    assert row["reinvestment cost over the full project"] == (
+    assert row["Reinvestment cost over the full project"] == (
         pytest.approx(250.0)
     )
     # (opex 10 + annual fix 5) * 20 years
-    assert row["fix operational costs over project duration"] == (
+    assert row["Fix operational costs over project duration"] == (
         pytest.approx(300.0)
     )
 
@@ -606,20 +606,20 @@ def test_project_cost_table_installed_without_fix_year0():
     results = DummyResults(data={})
     project_cost_table(results, es, project_duration=20)
     table = results["eesyplan"]["project_cost_table"]
-    row = table[table["component"] == "owner_node"].iloc[0]
+    row = table[table["Component"] == "owner_node"].iloc[0]
     # existing components paid their fix investment before the project
-    assert row["investment cost in year 0 (not including reinvestment)"] == 0.0
+    assert row["Investment cost in year 0 (not including reinvestment)"] == 0.0
 
 
 def test_print_cost_table(capsys):
-    table = pd.DataFrame([{"component": "a", "cost1": 10.0, "total": 10.0}])
+    table = pd.DataFrame([{"Component": "a", "cost1": 10.0, "total": 10.0}])
     _print_cost_table(table)
     out = capsys.readouterr().out
     assert "a" in out
 
 
 def test_print_cost_table_with_title(capsys):
-    table = pd.DataFrame([{"component": "a", "cost1": 10.0, "total": 10.0}])
+    table = pd.DataFrame([{"Component": "a", "cost1": 10.0, "total": 10.0}])
     _print_cost_table(table, title="Test:")
     out = capsys.readouterr().out
     assert "Test:" in out

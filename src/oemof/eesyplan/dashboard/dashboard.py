@@ -230,7 +230,7 @@ class DashboardResults(ImportResults):
 
     def add_all_tables(self):
         calculate_all_kpis(self, self.energy_system)
-        year0_column = "investment cost in year 0 (not including reinvestment)"
+        year0_column = "Investment cost in year 0 (not including reinvestment)"
         rows = {
             "total_cost_year0": None,
             "total_cost": None,
@@ -241,7 +241,7 @@ class DashboardResults(ImportResults):
         kpis = _eesyplan_kpis(self)
         project_costs = kpis["project_cost_table"]
         year0 = project_costs.loc[
-            project_costs["component"] == "total", year0_column
+            project_costs["Component"] == "total", year0_column
         ].iloc[0]
         rows["total_cost_year0"] = float(year0)
         rows["total_cost"] = float(kpis["total_cost"])

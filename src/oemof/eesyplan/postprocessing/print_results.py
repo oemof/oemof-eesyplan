@@ -168,21 +168,21 @@ def _print_cost_table(table, value_columns=None, title=""):
         value_columns = [
             column
             for column in table.columns
-            if column not in ("component", "total")
+            if column not in ("Component", "total")
         ]
     component_width = max(
-        26, max(len(str(value)) for value in table["component"]) + 2
+        26, max(len(str(value)) for value in table["Component"]) + 2
     )
     width = max(20, max(len(column) for column in value_columns) + 2)
     if title:
         print(title)
-    header = f"  {'component':<{component_width}}" + "".join(
+    header = f"  {'Component':<{component_width}}" + "".join(
         f"{column:>{width}}" for column in value_columns
     )
     print(header + f"{'total':>{width}}")
     print("  " + "-" * (component_width + width * (len(value_columns) + 1)))
     for _, row in table.iterrows():
-        line = f"  {row['component']:<{component_width}}" + "".join(
+        line = f"  {row['Component']:<{component_width}}" + "".join(
             f"{row[column]:>{width},.2f}".replace(",", " ")
             for column in value_columns
         )

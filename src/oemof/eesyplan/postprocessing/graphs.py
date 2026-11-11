@@ -43,9 +43,9 @@ _COMPONENT_TYPE_COLORS = [
 ]
 
 _COST_COLUMNS = [
-    "annualized investment cost",
-    "fix operational costs",
-    "dispatch costs",
+    "Annualized investment cost",
+    "Fix operational costs",
+    "Dispatch costs",
 ]
 
 _COST_PATTERNS = ["", "x", "/"]
@@ -1007,12 +1007,12 @@ def plot_annual_costs(
     """
     yearly_project_costs(results, es)
     table = _eesyplan_kpis(results)["yearly_project_costs"]
-    table = table[table["component"] != "total"].copy()
+    table = table[table["Component"] != "total"].copy()
 
     fig = go.Figure()
     for column, pattern in zip(_COST_COLUMNS, _COST_PATTERNS, strict=True):
         fig.add_bar(
-            x=table["component"].astype(str),
+            x=table["Component"].astype(str),
             y=table[column],
             name=column,
             # marker=_cost_type_marker("#d64e12", pattern),
@@ -1100,10 +1100,10 @@ def compare_annual_costs(
     for scenario, (results, es) in datasets.items():
         yearly_project_costs(results, es)
         table = _eesyplan_kpis(results)["yearly_project_costs"]
-        table = table[table["component"] != "total"]
+        table = table[table["Component"] != "total"]
         owners = _owner_map(es)
         for _, row in table.iterrows():
-            node = owners.get(row["component"])
+            node = owners.get(row["Component"])
             type_name = type(node).__name__ if node is not None else "other"
             bars.append((scenario, node, type_name, row))
 
@@ -1128,12 +1128,12 @@ def compare_annual_costs(
                 "position": position,
                 "scenario": scenario,
                 "type": type_name,
-                "component": str(row["component"]),
+                "component": str(row["Component"]),
                 "row": row,
             }
         )
         tickvals.append(position)
-        ticktext.append(str(row["component"]))
+        ticktext.append(str(row["Component"]))
         previous_type = type_name
         position += 1
 
