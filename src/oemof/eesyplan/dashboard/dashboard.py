@@ -283,10 +283,10 @@ class DashboardResults(ImportResults):
             if convert_to_json:
                 table = self[k]
                 if isinstance(table, pd.DataFrame):
-                    tables[k] = table.to_json()
+                    tables[k] = json.loads(table.to_json())
                 elif isinstance(table, dict):
                     print("there is a dict with ", k)
-                    tables[k] = json.dumps(table)
+                    tables[k] = json.loads(json.dumps(table))
                 else:
                     raise TypeError(
                         f"The tables should either be dict or panda Dataframe and not {type(table)} (for key '{k}')"
