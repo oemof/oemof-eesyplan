@@ -577,10 +577,10 @@ def test_project_cost_table_with_fix_costs():
     assert row["investment cost in year 0 (not including reinvestment)"] == (
         pytest.approx(150.0)
     )
-    # annualized investment 20 * 20 years
-    assert row[
-        "investment cost over the full project (including reinvestments)"
-    ] == pytest.approx(400.0)
+    # annualized investment 20 * 20 years - year 0 investment 150
+    assert row["reinvestment cost over the full project"] == (
+        pytest.approx(250.0)
+    )
     # (opex 10 + annual fix 5) * 20 years
     assert row["fix operational costs over project duration"] == (
         pytest.approx(300.0)

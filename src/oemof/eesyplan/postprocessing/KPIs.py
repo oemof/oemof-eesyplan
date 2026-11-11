@@ -729,9 +729,9 @@ def yearly_project_costs(results, es):
         rows.append(
             {
                 "component": _norm_label(node.label),
-                "annualized investment cost": component_capex,
-                "fix operational costs": component_opex,
-                "dispatch costs": variable.get(node, 0.0),
+                "Annualized investment cost": component_capex,
+                "Fix operational costs": component_opex,
+                "Dispatch costs": variable.get(node, 0.0),
             }
         )
 
@@ -741,9 +741,9 @@ def yearly_project_costs(results, es):
         _cost_table(
             rows,
             [
-                "annualized investment cost",
-                "fix operational costs",
-                "dispatch costs",
+                "Annualized investment cost",
+                "Fix operational costs",
+                "Dispatch costs",
             ],
         ),
     )
@@ -789,8 +789,9 @@ def project_cost_table(results, es, project_duration=None):
     component          readable label of every top-level component
     investment cost in year 0 (not including reinvestment)
                        one-time investment ``capex_spec * capacity``
-    investment cost over the full project (including reinvestments)
-                       ``annualized investment cost * project_duration``
+    reinvestment cost over the full project
+                       full project investment (``annualized investment
+                       cost * project_duration``) minus the year 0 investment
     fix operational costs over project duration
                        ``opex_spec * capacity * project_duration``
     dispatch costs over project duration
@@ -804,7 +805,7 @@ def project_cost_table(results, es, project_duration=None):
 
     The flat fix costs are included as well: the ``investment_fix_cost``
     of new components is part of the year 0 investment, its annualised
-    value is part of the investment over the full project and the
+    value is part of the reinvestment cost over the full project and the
     ``annual_fix_cost`` is part of the fixed operational costs.
 
     The project duration is read from the ``economic_period`` of the
@@ -846,15 +847,15 @@ def project_cost_table(results, es, project_duration=None):
         operational = component_opex_ann * project_duration
         rows.append(
             {
-                "component": _norm_label(node.label),
-                "investment cost in year 0 (not including reinvestment)": (
+                "Component": _norm_label(node.label),
+                "Investment cost in year 0 (not including reinvestment)": (
                     investment_year0
                 ),
-                "investment cost over the full project (including reinvestments)": (
-                    investment_full
+                "Reinvestment cost over the full project": (
+                    investment_full - investment_year0
                 ),
-                "fix operational costs over project duration": operational,
-                "dispatch costs over project duration": (
+                "Fix operational costs over project duration": operational,
+                "Dispatch costs over project duration": (
                     variable.get(node, 0.0) * project_duration
                 ),
             }
@@ -866,10 +867,10 @@ def project_cost_table(results, es, project_duration=None):
         _cost_table(
             rows,
             [
-                "investment cost in year 0 (not including reinvestment)",
-                "investment cost over the full project (including reinvestments)",
-                "fix operational costs over project duration",
-                "dispatch costs over project duration",
+                "Investment cost in year 0 (not including reinvestment)",
+                "Reinvestment cost over the full project",
+                "Fix operational costs over project duration",
+                "Dispatch costs over project duration",
             ],
         ),
     )
