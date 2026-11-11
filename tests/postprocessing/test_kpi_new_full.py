@@ -244,7 +244,7 @@ def test_print_investments(capsys):
     results = DummyResults(data={"invest": invest, "investment_costs": costs})
     print_results(results)
     out = capsys.readouterr().out
-    assert "Optimised capacities" in out or "Annual investment costs" in out
+    assert "Annual equivalent periodical costs" in out
 
 
 def test_print_investments_no_invest(capsys):

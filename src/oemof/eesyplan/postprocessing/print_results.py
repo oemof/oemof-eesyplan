@@ -140,7 +140,10 @@ def _print_investments(results):
     print()
 
     if "investment_costs" in results:
-        print("Annual investment costs:")
+        # oemof's result key is called "investment_costs" but the value is
+        # the annual model cost (annualised capex + fixed opex), not an
+        # investment cost.
+        print("Annual equivalent periodical costs (oemof 'investment_costs'):")
         costs = results["investment_costs"].iloc[0]
         for column, value in costs.items():
             if value:
