@@ -36,6 +36,7 @@ from oemof.eesyplan.postprocessing.KPIs import renewable_share
 from oemof.eesyplan.postprocessing.KPIs import result_keys
 from oemof.eesyplan.postprocessing.KPIs import total_cost
 from oemof.eesyplan.postprocessing.KPIs import yearly_project_costs
+from oemof.eesyplan.postprocessing.print_results import _format_cost
 from oemof.eesyplan.postprocessing.print_results import _print_cost_table
 from oemof.eesyplan.postprocessing.print_results import print_results
 from oemof.solph.components import Source
@@ -625,6 +626,20 @@ def test_print_cost_table_with_title(capsys):
     assert "Test:" in out
 
 
+def test_format_cost_non_numeric():
+    assert _format_cost([1, 2], 5).strip() == "-"
+    assert _format_cost(float("nan"), 5).strip() == "-"
+    assert _format_cost(12.5, 8).strip() == "12.50"
+
+
+def test_print_cost_table_non_numeric_cell(capsys):
+    table = pd.DataFrame([{"Component": "a", "cost1": [1, 2], "total": 3.0}])
+    _print_cost_table(table)
+    out = capsys.readouterr().out
+    assert "a" in out
+    assert "-" in out
+
+
 def test_numeric_variable_costs():
     costs = pd.DataFrame([["[1.5, 2.5]"]])
     result = _numeric_variable_costs(costs)
@@ -748,6 +763,20 @@ def test_print_results_solver_dict(capsys):
     out = capsys.readouterr().out
     assert "42.00" in out
     assert "highs (optimal)" in out
+
+
+def test_print_result_structure_skips_unavailable_keys(capsys):
+    class SparseResults(DummyResults):
+        def keys(self):
+            # oemof advertises variables without data, e.g. "invest_status"
+            return set(self._data.keys()) | {"invest_status"}
+
+    results = SparseResults(data={"flow": pd.DataFrame()})
+    results.timeindex = pd.DatetimeIndex([])
+    print_results(results)
+    out = capsys.readouterr().out
+    assert "flow" in out
+    assert "invest_status" not in out
 
 
 def test_normalize_imported_results_empty_variable_costs():
