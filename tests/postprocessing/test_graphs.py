@@ -251,6 +251,29 @@ def test_sankey_2_keeps_excess_as_separate_node():
     assert not (links["source"] == links["target"]).any()
 
 
+def test_sankey_2_keeps_absolute_losses_as_separate_node():
+    class Node:
+        def __init__(self, label):
+            self.label = label
+
+    network = Node("Heating Network")
+    losses = Node(("absolute_losses", "Heating Network"))
+    source = Node("source")
+
+    flows = pd.DataFrame(
+        [[1.0, 2.0]],
+        columns=pd.MultiIndex.from_tuples(
+            [(source, network), (network, losses)]
+        ),
+    )
+
+    _, links = sankey_2(flows)
+
+    edges = set(zip(links["source"], links["target"], strict=True))
+    assert ("Heating Network", "Heating Network (absolute_losses)") in edges
+    assert not (links["source"] == links["target"]).any()
+
+
 def test_plot_annual_costs(monkeypatch):
     table = pd.DataFrame(
         {

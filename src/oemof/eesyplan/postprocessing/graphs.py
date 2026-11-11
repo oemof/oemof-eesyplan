@@ -95,7 +95,11 @@ def _rgba(color, alpha):
     return f"rgba({red}, {green}, {blue}, {alpha})"
 
 
-_COMPENSATION_COMPONENTS = {"excess", "shortage"}
+# Internal subnodes (identified by their local name) that stay visible in
+# the diagram instead of being folded into their facade.  Compensation
+# components (excess/shortage) are separate nodes, and the absolute losses
+# of a heating network are a meaningful sink of their own.
+_VISIBLE_INTERNAL_COMPONENTS = {"excess", "shortage", "absolute_losses"}
 
 
 def _facade_label(part):
@@ -103,9 +107,10 @@ def _facade_label(part):
 
     Internal components carry tuple labels such as
     ``("consumption_converter", "Gasversorger")``.  Only the facade part
-    is relevant for the legend.  Compensation components such as
-    ``("excess", "Strom_bus")`` keep their local name, because they are
-    separate nodes and must not be folded into the bus.
+    is relevant for the legend.  Visible internal components (see
+    :data:`_VISIBLE_INTERNAL_COMPONENTS`) such as ``("excess",
+    "Strom_bus")`` keep their local name, because they are separate nodes
+    and must not be folded into the bus.
     """
     label = _raw_label(part)
     if isinstance(label, tuple):
@@ -113,7 +118,7 @@ def _facade_label(part):
 
     text = clean_label(part)
     local_name = text.split(" | ", 1)[0]
-    if local_name in _COMPENSATION_COMPONENTS:
+    if local_name in _VISIBLE_INTERNAL_COMPONENTS:
         return f"{text.rsplit(' | ', 1)[-1]} ({local_name})"
     return text.rsplit(" | ", 1)[-1]
 
@@ -128,15 +133,16 @@ def _facade_of(part):
 
     A node of a facade carries a tuple label such as
     ``("internal_bus", "Gasversorger")``.  For the diagram only the
-    facade itself is of interest.  Compensation components such as
-    ``("excess", "Strom_bus")`` are kept as separate nodes and therefore
-    retain their local name.
+    facade itself is of interest.  Visible internal components (see
+    :data:`_VISIBLE_INTERNAL_COMPONENTS`) such as ``("excess",
+    "Strom_bus")`` are kept as separate nodes and therefore retain their
+    local name.
     """
     label = _raw_label(part)
     if isinstance(label, tuple):
         local_name = str(label[0])
         facade = str(label[-1])
-        if local_name in _COMPENSATION_COMPONENTS:
+        if local_name in _VISIBLE_INTERNAL_COMPONENTS:
             return f"{facade} ({local_name})"
         return facade
     return str(label)
