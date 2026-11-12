@@ -777,144 +777,22 @@ def capacities(imported_results, es, threshold=1e-6) -> go.Figure:
     return fig
 
 
-def compare_capacities(
-    datasets,
-    threshold=1e-6,
-    title="Installed and optimized capacities by scenario",
-) -> go.Figure:
-    """Compare the installed and optimized capacities of several scenarios.
-
-    ``datasets`` maps the name of a scenario to its ``(results, es)``
-    pair.  The capacities of a scenario are selected like in
-    :func:`capacities`: a component is shown if it is already installed
-    (``installed_capacity`` greater than zero), or if it has a
-    ``capex_spec`` or an ``opex_spec`` greater than zero and an optimized
-    capacity above ``threshold``.  Every shown component contributes one
-    bar: the installed capacity if the component is already installed,
-    otherwise the optimized capacity.
-
-    Components usually have different names in the different scenarios,
-    so the bars are grouped by their component type (the class of the
-    component, e.g. ``WindTurbine``).  Bars of the same type sit next to
-    each other, separated by a gap from the next type.  Every scenario
-    has its own colour and one legend entry.  Installed capacities are
-    hatched like in :func:`capacities`, optimized capacities are solid.
-
-    Parameters
-    ----------
-    datasets : dict
-        Maps the scenario name to a ``(results, es)`` tuple of that
-        scenario.
-    threshold : float, optional
-        Optimized capacities less than or equal to this value count as not
-        optimized, which removes solver noise.  Defaults to 1e-6.
-    title : str, optional
-        Figure title.  Defaults to
-        "Installed and optimized capacities by scenario".
-
-    Returns
-    -------
-    plotly.graph_objects.Figure
-        Bar chart with one bar per component and scenario.
-
-    Raises
-    ------
-    ValueError
-        If ``datasets`` is empty or an entry is no ``(results, es)``
-        pair.
-    """
-    if not datasets:
-        raise ValueError(
-            "datasets must map at least one scenario to (results, es)."
-        )
-    for name, dataset in datasets.items():
-        if not isinstance(dataset, list | tuple) or len(dataset) != 2:
-            raise ValueError(
-                f"The entry of '{name}' must be a (results, es) pair."
-            )
-
+def multi_scenario_capacities_graph(scenario_names, plot_bars, title=""):
     kinds = (("Installed", "x"), ("Optimized", ""))
-
-    # one entry per bar: (scenario, node, component type, label/capacity/kind)
-    bars = []
-    for scenario, (results, es) in datasets.items():
-        owners = _owner_map(es)
-        optimized_capacity = {}
-        if "invest" in results and not results["invest"].empty:
-            for column, value in results["invest"].iloc[0].items():
-                owner = _owner_of_parts(_column_parts(column), owners)
-                if owner is None or owner in optimized_capacity or not value:
-                    continue
-                optimized_capacity[owner] = float(value)
-        for node in es.nodes:
-            if getattr(node, "parent", None) is not None:
-                continue
-            installed_capacity = (
-                getattr(node, "installed_capacity", None) or 0.0
-            )
-            capex_spec = getattr(node, "capex_spec", None) or 0.0
-            opex_spec = getattr(node, "opex_spec", None) or 0.0
-            optimized_value = optimized_capacity.get(node, 0.0)
-            is_installed = installed_capacity > 0
-            is_optimized = optimized_value > threshold
-            has_costs = capex_spec > 0 or opex_spec > 0
-            if not (is_installed or (has_costs and is_optimized)):
-                continue
-            if is_installed:
-                kind = "Installed"
-                capacity = installed_capacity
-            else:
-                kind = "Optimized"
-                capacity = optimized_value
-            bars.append(
-                (
-                    scenario,
-                    node,
-                    type(node).__name__,
-                    str(node.label),
-                    capacity,
-                    kind,
-                )
-            )
-
-    def _type_group_key(bar):
-        index = _component_type_index(bar[1])
-        return (index is None, index or 0, bar[2])
-
-    bars.sort(key=_type_group_key)
-
-    # numeric x positions: bars of one type sit next to each other, one
-    # empty position separates the type groups
-    tickvals = []
-    ticktext = []
-    position = 0
-    previous_type = None
-    plot_bars = []
-    for scenario, _node, type_name, component, capacity, kind in bars:
-        if previous_type is not None and type_name != previous_type:
-            position += 1
-        plot_bars.append(
-            {
-                "position": position,
-                "scenario": scenario,
-                "type": type_name,
-                "component": component,
-                "capacity": capacity,
-                "kind": kind,
-            }
-        )
-        tickvals.append(position)
-        ticktext.append(component)
-        previous_type = type_name
-        position += 1
 
     scenario_colors = {
         scenario: qualitative.Plotly[index % len(qualitative.Plotly)]
-        for index, scenario in enumerate(datasets)
+        for index, scenario in enumerate(scenario_names)
     }
 
+    tickvals = []
+    ticktext = []
+    for bar in plot_bars:
+        tickvals.append(bar["position"])
+        ticktext.append(bar["component"])
+
     fig = go.Figure()
-    for scenario in datasets:
+    for scenario in scenario_names:
         color = scenario_colors[scenario]
         own = [bar for bar in plot_bars if bar["scenario"] == scenario]
         legend_shown = False
@@ -976,6 +854,137 @@ def compare_capacities(
     )
     if tickvals:
         fig.update_xaxes(tickvals=tickvals, ticktext=ticktext)
+    return fig
+
+
+def compare_capacities(
+    datasets,
+    threshold=1e-6,
+    title="Installed and optimized capacities by scenario",
+) -> go.Figure:
+    """Compare the installed and optimized capacities of several scenarios.
+
+    ``datasets`` maps the name of a scenario to its ``(results, es)``
+    pair.  The capacities of a scenario are selected like in
+    :func:`capacities`: a component is shown if it is already installed
+    (``installed_capacity`` greater than zero), or if it has a
+    ``capex_spec`` or an ``opex_spec`` greater than zero and an optimized
+    capacity above ``threshold``.  Every shown component contributes one
+    bar: the installed capacity if the component is already installed,
+    otherwise the optimized capacity.
+
+    Components usually have different names in the different scenarios,
+    so the bars are grouped by their component type (the class of the
+    component, e.g. ``WindTurbine``).  Bars of the same type sit next to
+    each other, separated by a gap from the next type.  Every scenario
+    has its own colour and one legend entry.  Installed capacities are
+    hatched like in :func:`capacities`, optimized capacities are solid.
+
+    Parameters
+    ----------
+    datasets : dict
+        Maps the scenario name to a ``(results, es)`` tuple of that
+        scenario.
+    threshold : float, optional
+        Optimized capacities less than or equal to this value count as not
+        optimized, which removes solver noise.  Defaults to 1e-6.
+    title : str, optional
+        Figure title.  Defaults to
+        "Installed and optimized capacities by scenario".
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Bar chart with one bar per component and scenario.
+
+    Raises
+    ------
+    ValueError
+        If ``datasets`` is empty or an entry is no ``(results, es)``
+        pair.
+    """
+    if not datasets:
+        raise ValueError(
+            "datasets must map at least one scenario to (results, es)."
+        )
+    for name, dataset in datasets.items():
+        if not isinstance(dataset, list | tuple) or len(dataset) != 2:
+            raise ValueError(
+                f"The entry of '{name}' must be a (results, es) pair."
+            )
+
+    # one entry per bar: (scenario, node, component type, label/capacity/kind)
+    bars = []
+    for scenario, (results, es) in datasets.items():
+        owners = _owner_map(es)
+        optimized_capacity = {}
+        if "invest" in results and not results["invest"].empty:
+            for column, value in results["invest"].iloc[0].items():
+                owner = _owner_of_parts(_column_parts(column), owners)
+                if owner is None or owner in optimized_capacity or not value:
+                    continue
+                optimized_capacity[owner] = float(value)
+        for node in es.nodes:
+            if getattr(node, "parent", None) is not None:
+                continue
+            installed_capacity = (
+                getattr(node, "installed_capacity", None) or 0.0
+            )
+            capex_spec = getattr(node, "capex_spec", None) or 0.0
+            opex_spec = getattr(node, "opex_spec", None) or 0.0
+            optimized_value = optimized_capacity.get(node, 0.0)
+            is_installed = installed_capacity > 0
+            is_optimized = optimized_value > threshold
+            has_costs = capex_spec > 0 or opex_spec > 0
+            if not (is_installed or (has_costs and is_optimized)):
+                continue
+            if is_installed:
+                kind = "Installed"
+                capacity = installed_capacity
+            else:
+                kind = "Optimized"
+                capacity = optimized_value
+            bars.append(
+                (
+                    scenario,
+                    node,
+                    type(node).__name__,
+                    str(node.label),
+                    capacity,
+                    kind,
+                )
+            )
+
+    def _type_group_key(bar):
+        index = _component_type_index(bar[1])
+        return (index is None, index or 0, bar[2])
+
+    bars.sort(key=_type_group_key)
+    print(bars)
+
+    # numeric x positions: bars of one type sit next to each other, one
+    # empty position separates the type groups
+    position = 0
+    previous_type = None
+    plot_bars = []
+    for scenario, _node, type_name, component, capacity, kind in bars:
+        if previous_type is not None and type_name != previous_type:
+            position += 1
+        plot_bars.append(
+            {
+                "position": position,
+                "scenario": scenario,
+                "type": type_name,
+                "component": component,
+                "capacity": capacity,
+                "kind": kind,
+            }
+        )
+        previous_type = type_name
+        position += 1
+
+    fig = multi_scenario_capacities_graph(datasets, plot_bars)
+
     return fig
 
 
@@ -1297,6 +1306,8 @@ def plot_timeseries(results, es, threshold=0.01, unit="kWh"):
             color = colors[(start, end)]
             fig.add_trace(
                 go.Scatter(
+                    # x0=series.index[0].isoformat(),
+                    # dx=3_600_000,
                     x=series.index,
                     y=series.clip(lower=0),
                     customdata=[
@@ -1320,6 +1331,8 @@ def plot_timeseries(results, es, threshold=0.01, unit="kWh"):
             color = colors[(start, end)]
             fig.add_trace(
                 go.Scatter(
+                    # x0=series.index[0].isoformat(),
+                    # dx=3_600_000,
                     x=series.index,
                     y=series.clip(lower=0),
                     customdata=[
