@@ -1,0 +1,2 @@
+type,project_data,name,age_installed,installed_capacity,capex_spec,opex_spec,variable_costs,lifetime,maximum_capacity,efficiency,bus_in_fuel,bus_out_electricity
+diesel_generator,EesyPlan testing Heat components,diesel_generator-0,0.0,0.0,1000.0,10.0,0.01,20,,0.8,bus-2,bus-4

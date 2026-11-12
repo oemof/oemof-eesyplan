@@ -1,0 +1,2 @@
+type,project_data,name,age_installed,installed_capacity,capex_spec,opex_spec,variable_costs,lifetime,maximum_capacity,renewable_asset,input_timeseries,bus_out_heat
+geothermal_conversion,EesyPlan testing Heat components,geothermal_conversion-0,0.0,0.0,1000.0,10.0,0.01,20,,True,constant value = 321.0,bus-1

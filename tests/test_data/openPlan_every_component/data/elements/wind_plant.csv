@@ -1,0 +1,2 @@
+type,project_data,name,age_installed,installed_capacity,capex_spec,opex_spec,variable_costs,lifetime,maximum_capacity,renewable_asset,input_timeseries,bus_out_electricity
+wind_plant,EesyPlan testing Heat components,wind_plant-0,0.0,0.0,1000.0,10.0,0.01,20,,True,constant value = 12.0,bus-0
