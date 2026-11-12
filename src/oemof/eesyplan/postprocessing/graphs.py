@@ -960,7 +960,6 @@ def compare_capacities(
         return (index is None, index or 0, bar[2])
 
     bars.sort(key=_type_group_key)
-    print(bars)
 
     # numeric x positions: bars of one type sit next to each other, one
     # empty position separates the type groups

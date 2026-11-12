@@ -14,8 +14,6 @@ def timeseries_to_json(imported_results):
     fig = graphs.plot_timeseries(
         imported_results, imported_results.energy_system
     )
-    print(json.loads(fig.to_json()))
-
     return json.loads(fig.to_json())
 
 
@@ -42,7 +40,6 @@ def annual_costs_to_json(imported_results):
     fig = graphs.plot_annual_costs(
         imported_results, imported_results.energy_system
     )
-    print(json.loads(fig.to_json()))
     return json.loads(fig.to_json())
 
 
