@@ -1056,6 +1056,83 @@ def plot_annual_costs(
     return fig
 
 
+def multi_scenario_annual_costs(
+    scenario_names, plot_bars, title="", unit="EUR"
+):
+    scenario_colors = {
+        scenario: qualitative.Plotly[index % len(qualitative.Plotly)]
+        for index, scenario in enumerate(scenario_names)
+    }
+    tickvals = []
+    ticktext = []
+    for bar in plot_bars:
+        tickvals.append(bar["position"])
+        ticktext.append(bar["component"])
+
+    fig = go.Figure()
+    for scenario in scenario_names:
+        color = scenario_colors[scenario]
+        own = [bar for bar in plot_bars if bar["scenario"] == scenario]
+        x = [bar["position"] for bar in own]
+        for index, (column, pattern) in enumerate(
+            zip(_COST_COLUMNS, _COST_PATTERNS, strict=True)
+        ):
+            fig.add_bar(
+                x=x,
+                y=[float(bar["row"][column]) for bar in own],
+                name=scenario,
+                legendgroup=scenario,
+                showlegend=index == 0,
+                # marker=_cost_type_marker(color, pattern),
+                marker={
+                    **_cost_type_marker(color, pattern),
+                    "line": {
+                        "color": color,  # Same color as the bar
+                        "width": 1.5,
+                    },
+                },
+                customdata=[
+                    [
+                        bar["component"],
+                        bar["type"],
+                        _format_number(bar["row"][column], 0),
+                    ]
+                    for bar in own
+                ],
+                hovertemplate=(
+                    f"<b>%{{customdata[0]}}</b><br>"
+                    f"Scenario: {scenario}<br>"
+                    "Component type: %{customdata[1]}<br>"
+                    f"{column}: %{{customdata[2]}} {unit}"
+                    "<extra></extra>"
+                ),
+            )
+
+    # Additional legend entries for the cost type patterns
+    for column, pattern in zip(_COST_COLUMNS, _COST_PATTERNS, strict=True):
+        fig.add_bar(
+            x=[None],
+            y=[None],
+            name=column,
+            legendgroup=f"cost_type_{column}",
+            showlegend=True,
+            marker=_cost_type_marker("#808080", pattern),
+            hoverinfo="skip",
+        )
+
+    fig.update_layout(
+        barmode="relative",
+        title=title,
+        xaxis_title="Component",
+        yaxis_title=f"Annual costs [{unit}]",
+        legend_title="Scenario",
+        margin={"b": 150},
+    )
+    if tickvals:
+        fig.update_xaxes(tickvals=tickvals, ticktext=ticktext)
+    return fig
+
+
 def compare_annual_costs(
     datasets,
     unit="EUR",
@@ -1129,8 +1206,6 @@ def compare_annual_costs(
 
     # numeric x positions: bars of one type sit next to each other, one
     # empty position separates the type groups
-    tickvals = []
-    ticktext = []
     position = 0
     previous_type = None
     plot_bars = []
@@ -1146,77 +1221,12 @@ def compare_annual_costs(
                 "row": row,
             }
         )
-        tickvals.append(position)
-        ticktext.append(str(row["Component"]))
         previous_type = type_name
         position += 1
 
-    scenario_colors = {
-        scenario: qualitative.Plotly[index % len(qualitative.Plotly)]
-        for index, scenario in enumerate(datasets)
-    }
-
-    fig = go.Figure()
-    for scenario in datasets:
-        color = scenario_colors[scenario]
-        own = [bar for bar in plot_bars if bar["scenario"] == scenario]
-        x = [bar["position"] for bar in own]
-        for index, (column, pattern) in enumerate(
-            zip(_COST_COLUMNS, _COST_PATTERNS, strict=True)
-        ):
-            fig.add_bar(
-                x=x,
-                y=[float(bar["row"][column]) for bar in own],
-                name=scenario,
-                legendgroup=scenario,
-                showlegend=index == 0,
-                # marker=_cost_type_marker(color, pattern),
-                marker={
-                    **_cost_type_marker(color, pattern),
-                    "line": {
-                        "color": color,  # Same color as the bar
-                        "width": 1.5,
-                    },
-                },
-                customdata=[
-                    [
-                        bar["component"],
-                        bar["type"],
-                        _format_number(bar["row"][column], 0),
-                    ]
-                    for bar in own
-                ],
-                hovertemplate=(
-                    f"<b>%{{customdata[0]}}</b><br>"
-                    f"Scenario: {scenario}<br>"
-                    "Component type: %{customdata[1]}<br>"
-                    f"{column}: %{{customdata[2]}} {unit}"
-                    "<extra></extra>"
-                ),
-            )
-
-    # Additional legend entries for the cost type patterns
-    for column, pattern in zip(_COST_COLUMNS, _COST_PATTERNS, strict=True):
-        fig.add_bar(
-            x=[None],
-            y=[None],
-            name=column,
-            legendgroup=f"cost_type_{column}",
-            showlegend=True,
-            marker=_cost_type_marker("#808080", pattern),
-            hoverinfo="skip",
-        )
-
-    fig.update_layout(
-        barmode="relative",
-        title=title,
-        xaxis_title="Component",
-        yaxis_title=f"Annual costs [{unit}]",
-        legend_title="Scenario",
-        margin={"b": 150},
+    fig = multi_scenario_annual_costs(
+        datasets, plot_bars, title=title, unit=unit
     )
-    if tickvals:
-        fig.update_xaxes(tickvals=tickvals, ticktext=ticktext)
     return fig
 
 
