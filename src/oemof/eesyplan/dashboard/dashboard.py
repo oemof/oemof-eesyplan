@@ -234,6 +234,7 @@ class DashboardResults(ImportResults):
         rows = {
             "total_cost_year0": None,
             "total_cost": None,
+            "total_dispatch_costs": None,
             "lcoe": None,
             "renewable_share": None,
         }
@@ -248,6 +249,12 @@ class DashboardResults(ImportResults):
         rows["lcoe"] = float(kpis["lcoe"])
         rows["renewable_share"] = float(kpis["renewable_share"])
 
+        df_variable_costs = self.get("variable_costs", None)
+        if df_variable_costs is not None:
+            dispatch_costs = float(df_variable_costs.sum().sum())
+        else:
+            dispatch_costs = 0.0
+        rows["total_dispatch_costs"] = dispatch_costs
         table = rows  # pd.DataFrame.from_dict(rows, orient="index")
         # table.index.name = "KPI"
         table_label = "summary"
@@ -285,7 +292,6 @@ class DashboardResults(ImportResults):
                 if isinstance(table, pd.DataFrame):
                     tables[k] = json.loads(table.to_json())
                 elif isinstance(table, dict):
-                    print("there is a dict with ", k)
                     tables[k] = json.loads(json.dumps(table))
                 else:
                     raise TypeError(
