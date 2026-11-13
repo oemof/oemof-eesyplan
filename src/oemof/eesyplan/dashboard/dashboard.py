@@ -1,30 +1,43 @@
 import argparse
 import json
+import logging
 import tempfile
 from pathlib import Path
 from typing import Any
 from zipfile import ZIP_DEFLATED
 from zipfile import ZipFile
 
-import dash
 import pandas as pd
 import plotly.graph_objs as go
-from dash import dash_table
-from dash import dcc
-from dash import html
-from dash.dependencies import Input
-from dash.dependencies import Output
+
+try:
+    import dash
+    from dash import dash_table
+    from dash import dcc
+    from dash import html
+    from dash.dependencies import Input
+    from dash.dependencies import Output
+
+    PLOTLY_DASH = True
+except ModuleNotFoundError:
+    PLOTLY_DASH = False
 
 import oemof.eesyplan.postprocessing.graphs as graphs
 from oemof.datapackage.resultpackage.read import ImportResults
 from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import export_results
 from oemof.eesyplan import import_results
+from oemof.eesyplan.dashboard.graphs_to_json import FIGURES
 from oemof.eesyplan.dashboard.graphs_to_json import sankey_to_json
 from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
 )
+from oemof.eesyplan.datapackage.energy_system import (
+    get_component_type_mapping_from_dp,
+)
 from oemof.eesyplan.model import optimise
+from oemof.eesyplan.postprocessing.KPIs import _eesyplan_kpis
+from oemof.eesyplan.postprocessing.KPIs import calculate_all_kpis
 from oemof.tools.logger import define_logging
 
 
@@ -192,6 +205,9 @@ class DashboardResults(ImportResults):
     def get(self, key, default=None):
         return self._data.get(key, default)
 
+    def pop(self, key, default=None):
+        return self._data.pop(key, default)
+
     def autoassign_keys(self):
         for key in self.keys():
             if key not in self._core_keys:
@@ -210,6 +226,50 @@ class DashboardResults(ImportResults):
         self.figure_keys.append(key)
         return key
 
+    def add_all_figures(self):
+        for fig_label, fig_func in FIGURES.items():
+            self[fig_label] = fig_func(self)
+            self.figure_keys.append(fig_label)
+
+    def add_all_tables(self):
+        calculate_all_kpis(self, self.energy_system)
+        year0_column = "Investment cost in year 0 (not including reinvestment)"
+        rows = {
+            "total_cost_year0": None,
+            "total_cost": None,
+            "total_dispatch_costs": None,
+            "lcoe": None,
+            "renewable_share": None,
+        }
+
+        kpis = _eesyplan_kpis(self)
+        project_costs = kpis["project_cost_table"]
+        year0 = project_costs.loc[
+            project_costs["Component"] == "total", year0_column
+        ].iloc[0]
+        rows["total_cost_year0"] = float(year0)
+        rows["total_cost"] = float(kpis["total_cost"])
+        rows["lcoe"] = float(kpis["lcoe"])
+        rows["renewable_share"] = float(kpis["renewable_share"])
+
+        df_variable_costs = self.get("variable_costs", None)
+        if df_variable_costs is not None:
+            dispatch_costs = float(df_variable_costs.sum().sum())
+        else:
+            dispatch_costs = 0.0
+        rows["total_dispatch_costs"] = dispatch_costs
+        table = rows  # pd.DataFrame.from_dict(rows, orient="index")
+        # table.index.name = "KPI"
+        table_label = "summary"
+        self[table_label] = table
+        self.table_keys.append(table_label)
+
+        tables_dict = self.pop("eesyplan")
+        for table_label, table in tables_dict.items():
+            if isinstance(table, pd.DataFrame):
+                self[table_label] = table
+                self.table_keys.append(table_label)
+
     def figures(self, fig_keys=None):
         if fig_keys is None:
             fig_keys = self.figure_keys
@@ -222,7 +282,7 @@ class DashboardResults(ImportResults):
 
         return figs
 
-    def tables(self, table_keys=None):
+    def tables(self, table_keys=None, convert_to_json=False):
         if table_keys is None:
             table_keys = self.table_keys
         else:
@@ -230,7 +290,18 @@ class DashboardResults(ImportResults):
 
         tables = {}
         for k in table_keys:
-            tables[k] = self[k]
+            if convert_to_json:
+                table = self[k]
+                if isinstance(table, pd.DataFrame):
+                    tables[k] = json.loads(table.to_json())
+                elif isinstance(table, dict):
+                    tables[k] = json.loads(json.dumps(table))
+                else:
+                    raise TypeError(
+                        f"The tables should either be dict or panda Dataframe and not {type(table)} (for key '{k}')"
+                    )
+            else:
+                tables[k] = self[k]
 
         return tables
 
@@ -277,7 +348,8 @@ class DashboardResults(ImportResults):
             value = self.get(key)
 
             # here one should consider dict (figures), None (with warning) and DataFrame (tables)
-
+            if key == "eesyplan":
+                continue
             if isinstance(value, dict):
                 fname = f"{key}.json"
                 fpath = results_root / "elements" / fname
@@ -390,7 +462,13 @@ def import_dashboard_results(scenario_path, results_path):
 
     if not results_path.exists():
         results = optimise(es)
-        export_results(results=results, path=results_path)
+        export_results(
+            results=results,
+            path=results_path,
+            component_type_mapping=get_component_type_mapping_from_dp(
+                scenario_path
+            ),
+        )
 
     imported_results = import_results(results_path, es)
     imported_results = DashboardResults(imported_results, es)
@@ -424,12 +502,12 @@ def prepare_dash_app(imported_results):
         bus_figures.append(fig)
 
     # Here define which figures should be displayed
-    capacity_fig_key = imported_results.add_capacities_graph()
+    imported_results.add_capacities_graph()
 
     imported_results["sankey"] = sankey_to_json(imported_results)
     imported_results.figure_keys.append("sankey")
 
-    figures_to_plot = [capacity_fig_key]
+    figures_to_plot = None  # [capacity_fig_key]
 
     # Here define which tables should be displayed
     # imported_results["yearly_project_costs"] = yearly_project_costs(
@@ -578,12 +656,20 @@ def cli():
     imported_results = import_dashboard_results(scenario_path, results_path)
 
     dashboard_path = args.output
+    imported_results.add_all_figures()
+    imported_results.add_all_tables()
 
     if dashboard_path is not None:
         imported_results.export_results_to_datapackage(dashboard_path)
-
-    app = prepare_dash_app(imported_results)
-    app.run(debug=True, port=8060)
+    else:
+        if PLOTLY_DASH:
+            app = prepare_dash_app(imported_results)
+            app.run(debug=True, port=8060)
+        else:
+            logging.getLogger().error(
+                "Plotly dash is not installed, select the option 'dashboard' when installing eesyplan"
+                " to be able to see the local app 'pip install oemof.eesyplan[dashboard]' "
+            )
 
 
 if __name__ == "__main__":

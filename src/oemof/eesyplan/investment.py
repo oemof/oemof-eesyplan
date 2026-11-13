@@ -62,7 +62,7 @@ def calculate_annuity(
 
     """
     npv = capex_spec * (1 + tax) * (1 - discount_factor) ** year_of_investment
-    if year_of_investment > economic_period:
+    if year_of_investment >= economic_period:
         npv = 0  # dont consider reinvestment after project duration
 
     annuity = npv * crf(asset_lifetime, discount_factor)

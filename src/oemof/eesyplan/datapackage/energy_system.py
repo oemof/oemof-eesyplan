@@ -3,6 +3,8 @@ import logging
 import warnings
 from pathlib import Path
 
+from datapackage import Package
+
 from oemof.datapackage import datapackage  # noqa
 from oemof.eesyplan import TYPEMAP
 from oemof.eesyplan import export_results
@@ -67,6 +69,43 @@ def create_energy_system_from_dp(path, attributemap=None):
     return es
 
 
+def get_component_type_mapping_from_dp(path):
+    path = Path(path)
+
+    if path.suffix == ".zip":
+        ext_path = unzip_package(path)
+        json_files = list(Path(ext_path.name).rglob("*.json"))
+        # Check there are no more than one "datapackage.json" file
+        if len(json_files) > 1:
+            filenames = [
+                file.name for file in Path(ext_path.name).rglob("*.json")
+            ]
+            filenames_str = ",".join(filenames)
+            raise ValueError(
+                f"To many json files ({filenames_str}) found in zip-Package:\n"
+                f" {path}"
+            )
+        else:
+            path = json_files[0]
+
+    else:
+        ext_path = None
+        if path.suffix != ".json":
+            path = path / "datapackage.json"
+
+    package = Package(str(path))
+    component_type_mapping = {}
+    for res in package.resources:
+        if "/elements/" in res.descriptor["path"]:
+            data = res.read(keyed=True)
+            for row in data:
+                component_type_mapping[row["name"]] = row["type"]
+
+    if ext_path is not None:
+        ext_path.cleanup()
+    return component_type_mapping
+
+
 def es_to_graphml(es, path):
     """
 
@@ -114,7 +153,9 @@ def plot_es(es, path):
     es_graph.render()
 
 
-def solve_energy_system_from_dp(path, plot=None, results_path=None):
+def solve_energy_system_from_dp(
+    path, plot=None, results_path=None, attributemap=None
+):
     """
     Optimise any datapackage.
 
@@ -132,7 +173,9 @@ def solve_energy_system_from_dp(path, plot=None, results_path=None):
     -------
 
     """
-    es = create_energy_system_from_dp(path)
+    if attributemap is None:
+        attributemap = {}
+    es = create_energy_system_from_dp(path, attributemap=attributemap)
     if plot == "graph":
         es_to_graphml(es, path)
     elif plot == "visio":
@@ -143,7 +186,11 @@ def solve_energy_system_from_dp(path, plot=None, results_path=None):
         return results
     else:
         results_path.mkdir(parents=True, exist_ok=True)
-        export_results(results, path=results_path)
+        export_results(
+            results,
+            path=results_path,
+            component_type_mapping=get_component_type_mapping_from_dp(path),
+        )
         return results_path
 
 

@@ -27,10 +27,10 @@ classifiers = [
   "Topic :: Utilities",
 ]
 dependencies = [
-  "oemof-datapackage @ git+https://github.com/oemof/oemof-datapackage.git@dev",
+  "oemof-datapackage @ git+https://github.com/oemof/oemof-datapackage.git@op2.0.0rc1",
   "oemof-demand",
   "oemof-network",
-  "oemof.solph[solver] @ git+https://github.com/oemof/oemof-solph.git@a4611edb8a225ee6faa360f86afc49d2986c1105",
+  "oemof.solph[solver] @ git+https://github.com/oemof/oemof-solph.git@7b4f4a0403331e2b768d26910a729f3168979142",
 ]
 dynamic = ["version"]
 
@@ -49,7 +49,7 @@ dashboard = ["plotly", "dash"]
 docs = ["sphinx", "sphinx_rtd_theme"]
 dummy = ["oemof"]
 examples = []
-importer = ["pyproj", "oemof-demand", "tespy"]
+importer = ["pyproj", "oemof-demand", "tespy", "pvlib"]
 test = [
   "pytest",
   "tespy",

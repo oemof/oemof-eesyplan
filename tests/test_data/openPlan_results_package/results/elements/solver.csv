@@ -1,0 +1,11 @@
+index,0
+optimal,True
+status,ok
+termination_condition,optimal
+message,<undefined>
+wallclock_time,0.053397417068481445
+objective,-3.140047347500011
+solver,cbc
+gap,0.0
+best_feasible_objective,-3.140047348
+best_objective_bound,-3.140047348

@@ -1,3 +1,4 @@
+import logging
 import re
 
 import numpy as np
@@ -17,7 +18,47 @@ from oemof.eesyplan.postprocessing.KPIs import clean_label
 from oemof.eesyplan.postprocessing.KPIs import yearly_project_costs
 from oemof.solph.components import Source
 
-_COMPONENT_TYPE_ORDER = [
+_COMPONENT_TYPE_CATEGORY_MAP = {
+    "bus": "buses",
+    "heating_network": "buses",
+    "excess": "compensation",
+    "shortage": "compensation",
+    "auxiliary_heat": "converters",
+    "boiler": "converters",
+    "chp_fixed_ratio": "converters",
+    "chp_variable_ratio": "converters",
+    "electrical_transformator": "converters",
+    "electrolyzer": "converters",
+    "fuel_cell": "converters",
+    "fuel_generator": "converters",
+    "heat_pump": "converters",
+    "demand": "demand",
+    "electricity_demand": "demand",
+    "fuel_demand": "demand",
+    "heat_demand": "demand",
+    "hydrogen_demand": "demand",
+    "sink": "demand",
+    "biogas_plant": "production",
+    "commodity": "production",
+    "geothermal_plant": "production",
+    "pv_plant": "production",
+    "solar_thermal_plant": "production",
+    "wind_turbine": "production",
+    "dso": "providers",
+    "dso_electricity": "providers",
+    "dso_fuel": "providers",
+    "dso_heat": "providers",
+    "dso_hydrogen": "providers",
+    "electrical_storage": "storages",
+    "fuel_storage": "storages",
+    "hydrogen_storage": "storages",
+    "storage": "storages",
+    "thermal_storage": "storages",
+    "heat": "transport",
+}
+
+
+_COMPONENT_CATEGORY_ORDER = [
     "buses",
     "compansation",
     "compensation",
@@ -42,9 +83,9 @@ _COMPONENT_TYPE_COLORS = [
 ]
 
 _COST_COLUMNS = [
-    "annualized investment cost",
-    "fix operational costs",
-    "dispatch costs",
+    "Annualized investment cost",
+    "Fix operational costs",
+    "Dispatch costs",
 ]
 
 _COST_PATTERNS = ["", "x", "/"]
@@ -94,7 +135,11 @@ def _rgba(color, alpha):
     return f"rgba({red}, {green}, {blue}, {alpha})"
 
 
-_COMPENSATION_COMPONENTS = {"excess", "shortage"}
+# Internal subnodes (identified by their local name) that stay visible in
+# the diagram instead of being folded into their facade.  Compensation
+# components (excess/shortage) are separate nodes, and the absolute losses
+# of a heating network are a meaningful sink of their own.
+_VISIBLE_INTERNAL_COMPONENTS = {"excess", "shortage", "absolute_losses"}
 
 
 def _facade_label(part):
@@ -102,9 +147,10 @@ def _facade_label(part):
 
     Internal components carry tuple labels such as
     ``("consumption_converter", "Gasversorger")``.  Only the facade part
-    is relevant for the legend.  Compensation components such as
-    ``("excess", "Strom_bus")`` keep their local name, because they are
-    separate nodes and must not be folded into the bus.
+    is relevant for the legend.  Visible internal components (see
+    :data:`_VISIBLE_INTERNAL_COMPONENTS`) such as ``("excess",
+    "Strom_bus")`` keep their local name, because they are separate nodes
+    and must not be folded into the bus.
     """
     label = _raw_label(part)
     if isinstance(label, tuple):
@@ -112,7 +158,7 @@ def _facade_label(part):
 
     text = clean_label(part)
     local_name = text.split(" | ", 1)[0]
-    if local_name in _COMPENSATION_COMPONENTS:
+    if local_name in _VISIBLE_INTERNAL_COMPONENTS:
         return f"{text.rsplit(' | ', 1)[-1]} ({local_name})"
     return text.rsplit(" | ", 1)[-1]
 
@@ -127,41 +173,41 @@ def _facade_of(part):
 
     A node of a facade carries a tuple label such as
     ``("internal_bus", "Gasversorger")``.  For the diagram only the
-    facade itself is of interest.  Compensation components such as
-    ``("excess", "Strom_bus")`` are kept as separate nodes and therefore
-    retain their local name.
+    facade itself is of interest.  Visible internal components (see
+    :data:`_VISIBLE_INTERNAL_COMPONENTS`) such as ``("excess",
+    "Strom_bus")`` are kept as separate nodes and therefore retain their
+    local name.
     """
     label = _raw_label(part)
     if isinstance(label, tuple):
         local_name = str(label[0])
         facade = str(label[-1])
-        if local_name in _COMPENSATION_COMPONENTS:
+        if local_name in _VISIBLE_INTERNAL_COMPONENTS:
             return f"{facade} ({local_name})"
         return facade
     return str(label)
 
 
-def _component_type_index(node):
-    """Return index of component type based on components folder order."""
-    if node is None:
-        return None
-    module = getattr(type(node), "__module__", "") or ""
-    if ".components." not in module:
-        return None
-    try:
-        subpath = module.split(".components.", 1)[1]
-        type_name = subpath.split(".", 1)[0]
-    except Exception:
-        return None
-    if type_name in _COMPONENT_TYPE_ORDER:
-        return _COMPONENT_TYPE_ORDER.index(type_name)
-    return None
+def _component_type_index(type_name):
+    type_category = _COMPONENT_TYPE_CATEGORY_MAP.get(type_name)
+    if type_category in _COMPONENT_CATEGORY_ORDER:
+        return _COMPONENT_CATEGORY_ORDER.index(type_category)
 
 
-def _node_type_color(node):
-    idx = _component_type_index(node)
+def _type_group_key(bar):
+    """bar should be a tuple/list
+    its second element should be the type of the component
+    and the 3rd element should be the class name of the component
+    """
+    index = _component_type_index(bar[1])
+    return (index is None, index or 0, bar[2])
+
+
+def _node_type_color(node, component_type_map):
+    node_type = component_type_map.get(node.label)
+    idx = _component_type_index(node_type)
     if idx is None:
-        return None
+        return "#17becf"
     return _COMPONENT_TYPE_COLORS[idx % len(_COMPONENT_TYPE_COLORS)]
 
 
@@ -385,7 +431,13 @@ def sankey_2(
         Parsed links table with columns: source, target, value, max,
         aggregate.
     """
-    flows = results if isinstance(results, pd.DataFrame) else results["flow"]
+
+    if isinstance(results, pd.DataFrame):
+        flows = results
+        component_type_map = {}
+    else:
+        flows = results["flow"]
+        component_type_map = results.get("component_type_mapping", {})
 
     if not isinstance(flows.columns, pd.MultiIndex):
         raise TypeError("flows.columns must be a pandas MultiIndex.")
@@ -528,9 +580,9 @@ def sankey_2(
             else:
                 es_node = None
             if es_node is None:
-                node_colors.append(None)
+                node_colors.append("#17becf")
             else:
-                type_color = _node_type_color(es_node)
+                type_color = _node_type_color(es_node, component_type_map)
                 if type_color is not None:
                     node_colors.append(type_color)
                 elif isinstance(es_node, CarrierBus):
@@ -770,120 +822,15 @@ def capacities(imported_results, es, threshold=1e-6) -> go.Figure:
     return fig
 
 
-def compare_capacities(
-    datasets,
-    threshold=1e-6,
-    title="Installed and optimized capacities by scenario",
-) -> go.Figure:
-    """Compare the installed and optimized capacities of several scenarios.
-
-    ``datasets`` maps the name of a scenario to its ``(results, es)``
-    pair.  The capacities of a scenario are selected like in
-    :func:`capacities`: a component is shown if it is already installed
-    (``installed_capacity`` greater than zero), or if it has a
-    ``capex_spec`` or an ``opex_spec`` greater than zero and an optimized
-    capacity above ``threshold``.  Every shown component contributes one
-    bar: the installed capacity if the component is already installed,
-    otherwise the optimized capacity.
-
-    Components usually have different names in the different scenarios,
-    so the bars are grouped by their component type (the class of the
-    component, e.g. ``WindTurbine``).  Bars of the same type sit next to
-    each other, separated by a gap from the next type.  Every scenario
-    has its own colour and one legend entry.  Installed capacities are
-    hatched like in :func:`capacities`, optimized capacities are solid.
-
-    Parameters
-    ----------
-    datasets : dict
-        Maps the scenario name to a ``(results, es)`` tuple of that
-        scenario.
-    threshold : float, optional
-        Optimized capacities less than or equal to this value count as not
-        optimized, which removes solver noise.  Defaults to 1e-6.
-    title : str, optional
-        Figure title.  Defaults to
-        "Installed and optimized capacities by scenario".
-
-    Returns
-    -------
-    plotly.graph_objects.Figure
-        Bar chart with one bar per component and scenario.
-
-    Raises
-    ------
-    ValueError
-        If ``datasets`` is empty or an entry is no ``(results, es)``
-        pair.
-    """
-    if not datasets:
-        raise ValueError(
-            "datasets must map at least one scenario to (results, es)."
-        )
-    for name, dataset in datasets.items():
-        if not isinstance(dataset, list | tuple) or len(dataset) != 2:
-            raise ValueError(
-                f"The entry of '{name}' must be a (results, es) pair."
-            )
-
-    kinds = (("Installed", "x"), ("Optimized", ""))
-
-    # one entry per bar: (scenario, node, component type, label/capacity/kind)
-    bars = []
-    for scenario, (results, es) in datasets.items():
-        owners = _owner_map(es)
-        optimized_capacity = {}
-        if "invest" in results and not results["invest"].empty:
-            for column, value in results["invest"].iloc[0].items():
-                owner = _owner_of_parts(_column_parts(column), owners)
-                if owner is None or owner in optimized_capacity or not value:
-                    continue
-                optimized_capacity[owner] = float(value)
-        for node in es.nodes:
-            if getattr(node, "parent", None) is not None:
-                continue
-            installed_capacity = (
-                getattr(node, "installed_capacity", None) or 0.0
-            )
-            capex_spec = getattr(node, "capex_spec", None) or 0.0
-            opex_spec = getattr(node, "opex_spec", None) or 0.0
-            optimized_value = optimized_capacity.get(node, 0.0)
-            is_installed = installed_capacity > 0
-            is_optimized = optimized_value > threshold
-            has_costs = capex_spec > 0 or opex_spec > 0
-            if not (is_installed or (has_costs and is_optimized)):
-                continue
-            if is_installed:
-                kind = "Installed"
-                capacity = installed_capacity
-            else:
-                kind = "Optimized"
-                capacity = optimized_value
-            bars.append(
-                (
-                    scenario,
-                    node,
-                    type(node).__name__,
-                    str(node.label),
-                    capacity,
-                    kind,
-                )
-            )
-
-    def _type_group_key(bar):
-        index = _component_type_index(bar[1])
-        return (index is None, index or 0, bar[2])
-
+def multi_scenario_capacities_graph(scenario_names, bars, title=""):
     bars.sort(key=_type_group_key)
 
     # numeric x positions: bars of one type sit next to each other, one
     # empty position separates the type groups
-    tickvals = []
-    ticktext = []
     position = 0
     previous_type = None
     plot_bars = []
-    for scenario, _node, type_name, component, capacity, kind in bars:
+    for scenario, _node_type, type_name, component, capacity, kind in bars:
         if previous_type is not None and type_name != previous_type:
             position += 1
         plot_bars.append(
@@ -896,18 +843,24 @@ def compare_capacities(
                 "kind": kind,
             }
         )
-        tickvals.append(position)
-        ticktext.append(component)
         previous_type = type_name
         position += 1
 
+    kinds = (("Installed", "x"), ("Optimized", ""))
+
     scenario_colors = {
         scenario: qualitative.Plotly[index % len(qualitative.Plotly)]
-        for index, scenario in enumerate(datasets)
+        for index, scenario in enumerate(scenario_names)
     }
 
+    tickvals = []
+    ticktext = []
+    for bar in plot_bars:
+        tickvals.append(bar["position"])
+        ticktext.append(bar["component"])
+
     fig = go.Figure()
-    for scenario in datasets:
+    for scenario in scenario_names:
         color = scenario_colors[scenario]
         own = [bar for bar in plot_bars if bar["scenario"] == scenario]
         legend_shown = False
@@ -972,6 +925,111 @@ def compare_capacities(
     return fig
 
 
+def compare_capacities(
+    datasets,
+    threshold=1e-6,
+    title="Installed and optimized capacities by scenario",
+) -> go.Figure:
+    """Compare the installed and optimized capacities of several scenarios.
+
+    ``datasets`` maps the name of a scenario to its ``(results, es)``
+    pair.  The capacities of a scenario are selected like in
+    :func:`capacities`: a component is shown if it is already installed
+    (``installed_capacity`` greater than zero), or if it has a
+    ``capex_spec`` or an ``opex_spec`` greater than zero and an optimized
+    capacity above ``threshold``.  Every shown component contributes one
+    bar: the installed capacity if the component is already installed,
+    otherwise the optimized capacity.
+
+    Components usually have different names in the different scenarios,
+    so the bars are grouped by their component type (the class of the
+    component, e.g. ``WindTurbine``).  Bars of the same type sit next to
+    each other, separated by a gap from the next type.  Every scenario
+    has its own colour and one legend entry.  Installed capacities are
+    hatched like in :func:`capacities`, optimized capacities are solid.
+
+    Parameters
+    ----------
+    datasets : dict
+        Maps the scenario name to a ``(results, es)`` tuple of that
+        scenario.
+    threshold : float, optional
+        Optimized capacities less than or equal to this value count as not
+        optimized, which removes solver noise.  Defaults to 1e-6.
+    title : str, optional
+        Figure title.  Defaults to
+        "Installed and optimized capacities by scenario".
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Bar chart with one bar per component and scenario.
+
+    Raises
+    ------
+    ValueError
+        If ``datasets`` is empty or an entry is no ``(results, es)``
+        pair.
+    """
+    if not datasets:
+        raise ValueError(
+            "datasets must map at least one scenario to (results, es)."
+        )
+    for name, dataset in datasets.items():
+        if not isinstance(dataset, list | tuple) or len(dataset) != 2:
+            raise ValueError(
+                f"The entry of '{name}' must be a (results, es) pair."
+            )
+
+    # one entry per bar: (scenario, node, component type, label/capacity/kind)
+    bars = []
+    for scenario, (results, es) in datasets.items():
+        owners = _owner_map(es)
+        optimized_capacity = {}
+        if "invest" in results and not results["invest"].empty:
+            for column, value in results["invest"].iloc[0].items():
+                owner = _owner_of_parts(_column_parts(column), owners)
+                if owner is None or owner in optimized_capacity or not value:
+                    continue
+                optimized_capacity[owner] = float(value)
+        component_type_map = results.get("component_type_mapping", {})
+        for node in es.nodes:
+            if getattr(node, "parent", None) is not None:
+                continue
+            installed_capacity = (
+                getattr(node, "installed_capacity", None) or 0.0
+            )
+            capex_spec = getattr(node, "capex_spec", None) or 0.0
+            opex_spec = getattr(node, "opex_spec", None) or 0.0
+            optimized_value = optimized_capacity.get(node, 0.0)
+            is_installed = installed_capacity > 0
+            is_optimized = optimized_value > threshold
+            has_costs = capex_spec > 0 or opex_spec > 0
+            if not (is_installed or (has_costs and is_optimized)):
+                continue
+            if is_installed:
+                kind = "Installed"
+                capacity = installed_capacity
+            else:
+                kind = "Optimized"
+                capacity = optimized_value
+            node_type = component_type_map.get(str(node.label), "other")
+            bars.append(
+                (
+                    scenario,
+                    node_type,
+                    type(node).__name__,
+                    str(node.label),
+                    capacity,
+                    kind,
+                )
+            )
+
+    fig = multi_scenario_capacities_graph(datasets, bars)
+
+    return fig
+
+
 def plot_annual_costs(
     results,
     es,
@@ -1006,12 +1064,12 @@ def plot_annual_costs(
     """
     yearly_project_costs(results, es)
     table = _eesyplan_kpis(results)["yearly_project_costs"]
-    table = table[table["component"] != "total"].copy()
+    table = table[table["Component"] != "total"].copy()
 
     fig = go.Figure()
     for column, pattern in zip(_COST_COLUMNS, _COST_PATTERNS, strict=True):
         fig.add_bar(
-            x=table["component"].astype(str),
+            x=table["Component"].astype(str),
             y=table[column],
             name=column,
             # marker=_cost_type_marker("#d64e12", pattern),
@@ -1041,81 +1099,11 @@ def plot_annual_costs(
     return fig
 
 
-def compare_annual_costs(
-    datasets,
-    unit="EUR",
-    title="Annual project costs by scenario",
-) -> go.Figure:
-    """Compare the yearly project costs of several scenarios.
-
-    ``datasets`` maps the name of a scenario to its ``(results, es)``
-    pair.  The costs of every scenario are calculated with
-    :func:`oemof.eesyplan.postprocessing.KPIs.yearly_project_costs` and
-    plotted like in :func:`plot_annual_costs`: one bar per component,
-    stacked by the three cost types.
-
-    Components usually have different names in the different scenarios,
-    so the bars are grouped by their component type (the class of the
-    component, e.g. ``WindTurbine``).  Bars of the same type sit next to
-    each other, separated by a gap from the next type.  Every scenario
-    has its own colour and one legend entry; the cost types are told
-    apart by their fill pattern as in :func:`plot_annual_costs` and are
-    spelled out in the hover text.
-
-    Parameters
-    ----------
-    datasets : dict
-        Maps the scenario name to a ``(results, es)`` tuple of that
-        scenario.
-    unit : str, optional
-        Unit shown in the axis title and hover labels.  Defaults to
-        "EUR".
-    title : str, optional
-        Figure title.  Defaults to "Annual project costs by scenario".
-
-    Returns
-    -------
-    plotly.graph_objects.Figure
-        Stacked bar chart with one bar per component and scenario.
-
-    Raises
-    ------
-    ValueError
-        If ``datasets`` is empty or an entry is no ``(results, es)``
-        pair.
-    """
-    if not datasets:
-        raise ValueError(
-            "datasets must map at least one scenario to (results, es)."
-        )
-    for name, dataset in datasets.items():
-        if not isinstance(dataset, list | tuple) or len(dataset) != 2:
-            raise ValueError(
-                f"The entry of '{name}' must be a (results, es) pair."
-            )
-
-    # one entry per bar: (scenario, node, component type, table row)
-    bars = []
-    for scenario, (results, es) in datasets.items():
-        yearly_project_costs(results, es)
-        table = _eesyplan_kpis(results)["yearly_project_costs"]
-        table = table[table["component"] != "total"]
-        owners = _owner_map(es)
-        for _, row in table.iterrows():
-            node = owners.get(row["component"])
-            type_name = type(node).__name__ if node is not None else "other"
-            bars.append((scenario, node, type_name, row))
-
-    def _type_group_key(bar):
-        index = _component_type_index(bar[1])
-        return (index is None, index or 0, bar[2])
-
+def multi_scenario_annual_costs(scenario_names, bars, title="", unit="EUR"):
     bars.sort(key=_type_group_key)
 
     # numeric x positions: bars of one type sit next to each other, one
     # empty position separates the type groups
-    tickvals = []
-    ticktext = []
     position = 0
     previous_type = None
     plot_bars = []
@@ -1127,22 +1115,25 @@ def compare_annual_costs(
                 "position": position,
                 "scenario": scenario,
                 "type": type_name,
-                "component": str(row["component"]),
+                "component": str(row["Component"]),
                 "row": row,
             }
         )
-        tickvals.append(position)
-        ticktext.append(str(row["component"]))
         previous_type = type_name
         position += 1
 
     scenario_colors = {
         scenario: qualitative.Plotly[index % len(qualitative.Plotly)]
-        for index, scenario in enumerate(datasets)
+        for index, scenario in enumerate(scenario_names)
     }
+    tickvals = []
+    ticktext = []
+    for bar in plot_bars:
+        tickvals.append(bar["position"])
+        ticktext.append(bar["component"])
 
     fig = go.Figure()
-    for scenario in datasets:
+    for scenario in scenario_names:
         color = scenario_colors[scenario]
         own = [bar for bar in plot_bars if bar["scenario"] == scenario]
         x = [bar["position"] for bar in own]
@@ -1202,6 +1193,80 @@ def compare_annual_costs(
     )
     if tickvals:
         fig.update_xaxes(tickvals=tickvals, ticktext=ticktext)
+    return fig
+
+
+def compare_annual_costs(
+    datasets,
+    unit="EUR",
+    title="Annual project costs by scenario",
+) -> go.Figure:
+    """Compare the yearly project costs of several scenarios.
+
+    ``datasets`` maps the name of a scenario to its ``(results, es)``
+    pair.  The costs of every scenario are calculated with
+    :func:`oemof.eesyplan.postprocessing.KPIs.yearly_project_costs` and
+    plotted like in :func:`plot_annual_costs`: one bar per component,
+    stacked by the three cost types.
+
+    Components usually have different names in the different scenarios,
+    so the bars are grouped by their component type (the class of the
+    component, e.g. ``WindTurbine``).  Bars of the same type sit next to
+    each other, separated by a gap from the next type.  Every scenario
+    has its own colour and one legend entry; the cost types are told
+    apart by their fill pattern as in :func:`plot_annual_costs` and are
+    spelled out in the hover text.
+
+    Parameters
+    ----------
+    datasets : dict
+        Maps the scenario name to a ``(results, es)`` tuple of that
+        scenario.
+    unit : str, optional
+        Unit shown in the axis title and hover labels.  Defaults to
+        "EUR".
+    title : str, optional
+        Figure title.  Defaults to "Annual project costs by scenario".
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Stacked bar chart with one bar per component and scenario.
+
+    Raises
+    ------
+    ValueError
+        If ``datasets`` is empty or an entry is no ``(results, es)``
+        pair.
+    """
+    if not datasets:
+        raise ValueError(
+            "datasets must map at least one scenario to (results, es)."
+        )
+    for name, dataset in datasets.items():
+        if not isinstance(dataset, list | tuple) or len(dataset) != 2:
+            raise ValueError(
+                f"The entry of '{name}' must be a (results, es) pair."
+            )
+
+    # one entry per bar: (scenario, node, component type, table row)
+    bars = []
+    for scenario, (results, es) in datasets.items():
+        # mapping of components name to type would be great in the results package
+        yearly_project_costs(results, es)
+        table = _eesyplan_kpis(results)["yearly_project_costs"]
+        table = table[table["Component"] != "total"]
+
+        owners = _owner_map(es)
+
+        component_type_map = results.get("component_type_mapping", {})
+        for _, row in table.iterrows():
+            node = owners.get(row["Component"])
+            node_type = component_type_map.get(str(node.label), "other")
+            type_name = type(node).__name__ if node is not None else "other"
+            bars.append((scenario, node_type, type_name, row))
+
+    fig = multi_scenario_annual_costs(datasets, bars, title=title, unit=unit)
     return fig
 
 
@@ -1290,6 +1355,8 @@ def plot_timeseries(results, es, threshold=0.01, unit="kWh"):
             color = colors[(start, end)]
             fig.add_trace(
                 go.Scatter(
+                    # x0=series.index[0].isoformat(),
+                    # dx=3_600_000,
                     x=series.index,
                     y=series.clip(lower=0),
                     customdata=[
@@ -1313,6 +1380,8 @@ def plot_timeseries(results, es, threshold=0.01, unit="kWh"):
             color = colors[(start, end)]
             fig.add_trace(
                 go.Scatter(
+                    # x0=series.index[0].isoformat(),
+                    # dx=3_600_000,
                     x=series.index,
                     y=series.clip(lower=0),
                     customdata=[
@@ -1438,36 +1507,37 @@ def plot_energy_mix(results, es, threshold=0.1, unit="MWh"):
         values.append(total / divisor)
 
     if not values:
-        raise ValueError("No energy supply found in the results.")
-
-    index = flows.index
-    if isinstance(index, pd.DatetimeIndex) and len(index):
-        period = f" from {index[0]:%Y-%m-%d} to {index[-1]:%Y-%m-%d}"
+        logging.error("No energy supply found in the results.")
+        fig = go.Figure()
     else:
-        period = ""
+        index = flows.index
+        if isinstance(index, pd.DatetimeIndex) and len(index):
+            period = f" from {index[0]:%Y-%m-%d} to {index[-1]:%Y-%m-%d}"
+        else:
+            period = ""
 
-    fig = go.Figure(
-        data=[
-            go.Pie(
-                labels=labels,
-                values=values,
-                hole=0.3,
-                textinfo="label+percent",
-                textposition="outside",
-                hoverinfo="label+value+percent",
-                hovertemplate=(
-                    f"%{{label}}: %{{customdata}} {unit} (%{{percent}})"
-                    "<extra></extra>"
-                ),
-                customdata=[_format_number(v, 1) for v in values],
-            )
-        ]
-    )
+        fig = go.Figure(
+            data=[
+                go.Pie(
+                    labels=labels,
+                    values=values,
+                    hole=0.3,
+                    textinfo="label+percent",
+                    textposition="outside",
+                    hoverinfo="label+value+percent",
+                    hovertemplate=(
+                        f"%{{label}}: %{{customdata}} {unit} (%{{percent}})"
+                        "<extra></extra>"
+                    ),
+                    customdata=[_format_number(v, 1) for v in values],
+                )
+            ]
+        )
 
-    fig.update_layout(
-        title=f"Accumulated energy supply of the system{period}",
-        legend_title="Energy source",
-    )
+        fig.update_layout(
+            title=f"Accumulated energy supply of the system{period}",
+            legend_title="Energy source",
+        )
 
     return fig
 
@@ -1545,90 +1615,91 @@ def plot_renewable_vs_nonrenewable(results, es, threshold=0.1, unit="MWh"):
     ]
 
     if not renewable and not nonrenewable:
-        raise ValueError("No energy supply found in the results.")
-
-    index = flows.index
-    if isinstance(index, pd.DatetimeIndex) and len(index):
-        period = f" from {index[0]:%Y-%m-%d} to {index[-1]:%Y-%m-%d}"
+        logging.error("No energy supply found in the results.")
+        fig = go.Figure()
     else:
-        period = ""
-
-    total_renewable = sum(value for _, value in renewable)
-    total_nonrenewable = sum(value for _, value in nonrenewable)
-    max_total = max(total_renewable, total_nonrenewable)
-
-    source_colors = {}
-    for data in (renewable, nonrenewable):
-        for label, _ in data:
-            if label not in source_colors:
-                source_colors[label] = qualitative.Plotly[
-                    len(source_colors) % len(qualitative.Plotly)
-                ]
-
-    fig = go.Figure()
-    shown_labels = set()
-    charts = (
-        ("Renewable", renewable),
-        ("Non-renewable", nonrenewable),
-    )
-    for category, data in charts:
-        for label, value in data:
-            showlegend = label not in shown_labels
-            shown_labels.add(label)
-            fig.add_trace(
-                go.Bar(
-                    x=[category],
-                    y=[value],
-                    name=label,
-                    legendgroup=label,
-                    showlegend=showlegend,
-                    marker_color=source_colors[label],
-                    customdata=[_format_number(value, 1)],
-                    hovertemplate=(
-                        f"%{{x}}<br>%{{fullData.name}}: "
-                        f"%{{customdata}} {unit}<extra></extra>"
-                    ),
-                )
-            )
-
-    for category, total in (
-        ("Renewable", total_renewable),
-        ("Non-renewable", total_nonrenewable),
-    ):
-        if total:
-            fig.add_annotation(
-                x=category,
-                y=total,
-                text=f"Total<br>{_format_number(total, 1)} {unit}",
-                showarrow=False,
-                yshift=10,
-                yanchor="bottom",
-            )
+        index = flows.index
+        if isinstance(index, pd.DatetimeIndex) and len(index):
+            period = f" from {index[0]:%Y-%m-%d} to {index[-1]:%Y-%m-%d}"
         else:
-            fig.add_annotation(
-                x=category,
-                y=0,
-                text="No energy supply",
-                showarrow=False,
-                yshift=10,
-                yanchor="bottom",
-            )
+            period = ""
 
-    fig.update_layout(
-        width=900,
-        height=600,
-        title=f"Renewable vs non-renewable energy supply{period}",
-        xaxis_title="",
-        yaxis_title=f"Energy [{unit}]",
-        yaxis_range=[0, max_total * 1.12 if max_total else 1],
-        xaxis={
-            "type": "category",
-            "categoryorder": "array",
-            "categoryarray": ["Renewable", "Non-renewable"],
-        },
-        barmode="stack",
-        bargap=0.45,
-        legend_title="Energy source",
-    )
+        total_renewable = sum(value for _, value in renewable)
+        total_nonrenewable = sum(value for _, value in nonrenewable)
+        max_total = max(total_renewable, total_nonrenewable)
+
+        source_colors = {}
+        for data in (renewable, nonrenewable):
+            for label, _ in data:
+                if label not in source_colors:
+                    source_colors[label] = qualitative.Plotly[
+                        len(source_colors) % len(qualitative.Plotly)
+                    ]
+
+        fig = go.Figure()
+        shown_labels = set()
+        charts = (
+            ("Renewable", renewable),
+            ("Non-renewable", nonrenewable),
+        )
+        for category, data in charts:
+            for label, value in data:
+                showlegend = label not in shown_labels
+                shown_labels.add(label)
+                fig.add_trace(
+                    go.Bar(
+                        x=[category],
+                        y=[value],
+                        name=label,
+                        legendgroup=label,
+                        showlegend=showlegend,
+                        marker_color=source_colors[label],
+                        customdata=[_format_number(value, 1)],
+                        hovertemplate=(
+                            f"%{{x}}<br>%{{fullData.name}}: "
+                            f"%{{customdata}} {unit}<extra></extra>"
+                        ),
+                    )
+                )
+
+        for category, total in (
+            ("Renewable", total_renewable),
+            ("Non-renewable", total_nonrenewable),
+        ):
+            if total:
+                fig.add_annotation(
+                    x=category,
+                    y=total,
+                    text=f"Total<br>{_format_number(total, 1)} {unit}",
+                    showarrow=False,
+                    yshift=10,
+                    yanchor="bottom",
+                )
+            else:
+                fig.add_annotation(
+                    x=category,
+                    y=0,
+                    text="No energy supply",
+                    showarrow=False,
+                    yshift=10,
+                    yanchor="bottom",
+                )
+
+        fig.update_layout(
+            width=900,
+            height=600,
+            title=f"Renewable vs non-renewable energy supply{period}",
+            xaxis_title="",
+            yaxis_title=f"Energy [{unit}]",
+            yaxis_range=[0, max_total * 1.12 if max_total else 1],
+            xaxis={
+                "type": "category",
+                "categoryorder": "array",
+                "categoryarray": ["Renewable", "Non-renewable"],
+            },
+            barmode="stack",
+            bargap=0.45,
+            legend_title="Energy source",
+        )
 
     return fig

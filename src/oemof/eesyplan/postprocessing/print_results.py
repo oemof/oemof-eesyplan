@@ -1,3 +1,5 @@
+import math
+
 import pandas as pd
 
 from oemof.eesyplan.postprocessing.KPIs import EESYPLAN_KEY
@@ -60,7 +62,12 @@ def _print_result_structure(results):
     print(f"{'key':<20}{'kind':<13}{'shape':<14}{'index':<16}{'levels':<8}")
     print("-" * 78)
     for key in sorted(results.keys()):
-        value = results[key]
+        try:
+            value = results[key]
+        except KeyError:
+            # oemof's Results.keys() also lists variables that carry no
+            # data (e.g. "invest_status"), which raise a KeyError here.
+            continue
         if not isinstance(value, pd.DataFrame):
             print(f"{key:<20}{type(value).__name__:<13}")
             continue
@@ -140,7 +147,10 @@ def _print_investments(results):
     print()
 
     if "investment_costs" in results:
-        print("Annual investment costs:")
+        # oemof's result key is called "investment_costs" but the value is
+        # the annual model cost (annualised capex + fixed opex), not an
+        # investment cost.
+        print("Annual equivalent periodical costs (oemof 'investment_costs'):")
         costs = results["investment_costs"].iloc[0]
         for column, value in costs.items():
             if value:
@@ -156,10 +166,34 @@ def _print_costs(results):
     print("Variable costs over the whole horizon per connection:")
     for column in costs.columns:
         source, target = edge_label(column)
-        total = costs[column].sum()
-        if total != 0:
+        total = _as_float(costs[column].sum())
+        if total:
             print(f"  {source:>30} -> {target:<30} {total:>14.2f}")
     print()
+
+
+def _as_float(value):
+    """Return ``value`` as a finite float, or ``None`` if it is not numeric.
+
+    Some results (e.g. the experimental ``variable_costs``) contain
+    sequence-like objects instead of plain numbers.  Such objects usually
+    support ``float()``; anything that does not is treated as unavailable.
+    """
+    if isinstance(value, bool):
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    return number if math.isfinite(number) else None
+
+
+def _format_cost(value, width):
+    """Format a cost cell, falling back to a dash for non-numeric values."""
+    number = _as_float(value)
+    if number is None:
+        return f"{'-':>{width}}"
+    return f"{number:>{width},.2f}".replace(",", " ")
 
 
 def _print_cost_table(table, value_columns=None, title=""):
@@ -168,26 +202,24 @@ def _print_cost_table(table, value_columns=None, title=""):
         value_columns = [
             column
             for column in table.columns
-            if column not in ("component", "total")
+            if column not in ("Component", "total")
         ]
     component_width = max(
-        26, max(len(str(value)) for value in table["component"]) + 2
+        26, max(len(str(value)) for value in table["Component"]) + 2
     )
     width = max(20, max(len(column) for column in value_columns) + 2)
     if title:
         print(title)
-    header = f"  {'component':<{component_width}}" + "".join(
+    header = f"  {'Component':<{component_width}}" + "".join(
         f"{column:>{width}}" for column in value_columns
     )
     print(header + f"{'total':>{width}}")
     print("  " + "-" * (component_width + width * (len(value_columns) + 1)))
     for _, row in table.iterrows():
-        line = f"  {row['component']:<{component_width}}" + "".join(
-            f"{row[column]:>{width},.2f}".replace(",", " ")
-            for column in value_columns
+        line = f"  {row['Component']:<{component_width}}" + "".join(
+            _format_cost(row[column], width) for column in value_columns
         )
-        total_str = f"{row['total']:>{width},.2f}".replace(",", " ")
-        print(line + total_str)
+        print(line + _format_cost(row["total"], width))
     print()
 
 
