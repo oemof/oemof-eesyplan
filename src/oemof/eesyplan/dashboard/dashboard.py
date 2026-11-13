@@ -32,6 +32,9 @@ from oemof.eesyplan.dashboard.graphs_to_json import sankey_to_json
 from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
 )
+from oemof.eesyplan.datapackage.energy_system import (
+    get_component_type_mapping_from_dp,
+)
 from oemof.eesyplan.model import optimise
 from oemof.eesyplan.postprocessing.KPIs import _eesyplan_kpis
 from oemof.eesyplan.postprocessing.KPIs import calculate_all_kpis
@@ -459,7 +462,13 @@ def import_dashboard_results(scenario_path, results_path):
 
     if not results_path.exists():
         results = optimise(es)
-        export_results(results=results, path=results_path)
+        export_results(
+            results=results,
+            path=results_path,
+            component_type_mapping=get_component_type_mapping_from_dp(
+                scenario_path
+            ),
+        )
 
     imported_results = import_results(results_path, es)
     imported_results = DashboardResults(imported_results, es)

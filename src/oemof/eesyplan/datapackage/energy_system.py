@@ -153,7 +153,9 @@ def plot_es(es, path):
     es_graph.render()
 
 
-def solve_energy_system_from_dp(path, plot=None, results_path=None):
+def solve_energy_system_from_dp(
+    path, plot=None, results_path=None, attributemap=None
+):
     """
     Optimise any datapackage.
 
@@ -171,7 +173,9 @@ def solve_energy_system_from_dp(path, plot=None, results_path=None):
     -------
 
     """
-    es = create_energy_system_from_dp(path)
+    if attributemap is None:
+        attributemap = {}
+    es = create_energy_system_from_dp(path, attributemap=attributemap)
     if plot == "graph":
         es_to_graphml(es, path)
     elif plot == "visio":
