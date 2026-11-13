@@ -168,7 +168,7 @@ def _component_type_index(node):
 def _node_type_color(node):
     idx = _component_type_index(node)
     if idx is None:
-        return None
+        return "#17becf"
     return _COMPONENT_TYPE_COLORS[idx % len(_COMPONENT_TYPE_COLORS)]
 
 
@@ -535,7 +535,7 @@ def sankey_2(
             else:
                 es_node = None
             if es_node is None:
-                node_colors.append(None)
+                node_colors.append("#17becf")
             else:
                 type_color = _node_type_color(es_node)
                 if type_color is not None:
