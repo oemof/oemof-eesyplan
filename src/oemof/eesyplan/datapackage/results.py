@@ -52,6 +52,7 @@ def export_results(results, path, component_type_mapping=None):
                 "path": f"results/{fname}",
                 "format": "json",
                 "kind": "typemap",
+                "description": "Name of the components of the energy system mapped to their type",
             }
         )
 
