@@ -437,7 +437,7 @@ def sankey_2(
         component_type_map = {}
     else:
         flows = results["flow"]
-        component_type_map = results["component_type_mapping"]
+        component_type_map = results.get("component_type_mapping", {})
 
     if not isinstance(flows.columns, pd.MultiIndex):
         raise TypeError("flows.columns must be a pandas MultiIndex.")
@@ -992,7 +992,7 @@ def compare_capacities(
                 if owner is None or owner in optimized_capacity or not value:
                     continue
                 optimized_capacity[owner] = float(value)
-        component_type_map = results["component_type_mapping"]
+        component_type_map = results.get("component_type_mapping", {})
         for node in es.nodes:
             if getattr(node, "parent", None) is not None:
                 continue
@@ -1013,7 +1013,7 @@ def compare_capacities(
             else:
                 kind = "Optimized"
                 capacity = optimized_value
-            node_type = component_type_map[str(node.label)]
+            node_type = component_type_map.get(str(node.label), "other")
             bars.append(
                 (
                     scenario,
@@ -1258,10 +1258,11 @@ def compare_annual_costs(
         table = table[table["Component"] != "total"]
 
         owners = _owner_map(es)
-        component_type_map = results["component_type_mapping"]
+
+        component_type_map = results.get("component_type_mapping", {})
         for _, row in table.iterrows():
             node = owners.get(row["Component"])
-            node_type = component_type_map[str(node.label)]
+            node_type = component_type_map.get(str(node.label), "other")
             type_name = type(node).__name__ if node is not None else "other"
             bars.append((scenario, node_type, type_name, row))
 
