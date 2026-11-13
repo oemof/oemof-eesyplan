@@ -18,7 +18,47 @@ from oemof.eesyplan.postprocessing.KPIs import clean_label
 from oemof.eesyplan.postprocessing.KPIs import yearly_project_costs
 from oemof.solph.components import Source
 
-_COMPONENT_TYPE_ORDER = [
+_COMPONENT_TYPE_CATEGORY_MAP = {
+    "bus": "buses",
+    "heating_network": "buses",
+    "excess": "compensation",
+    "shortage": "compensation",
+    "auxiliary_heat": "converters",
+    "boiler": "converters",
+    "chp_fixed_ratio": "converters",
+    "chp_variable_ratio": "converters",
+    "electrical_transformator": "converters",
+    "electrolyzer": "converters",
+    "fuel_cell": "converters",
+    "fuel_generator": "converters",
+    "heat_pump": "converters",
+    "demand": "demand",
+    "electricity_demand": "demand",
+    "fuel_demand": "demand",
+    "heat_demand": "demand",
+    "hydrogen_demand": "demand",
+    "sink": "demand",
+    "biogas_plant": "production",
+    "commodity": "production",
+    "geothermal_plant": "production",
+    "pv_plant": "production",
+    "solar_thermal_plant": "production",
+    "wind_turbine": "production",
+    "dso": "providers",
+    "dso_electricity": "providers",
+    "dso_fuel": "providers",
+    "dso_heat": "providers",
+    "dso_hydrogen": "providers",
+    "electrical_storage": "storages",
+    "fuel_storage": "storages",
+    "hydrogen_storage": "storages",
+    "storage": "storages",
+    "thermal_storage": "storages",
+    "heat": "transport",
+}
+
+
+_COMPONENT_CATEGORY_ORDER = [
     "buses",
     "compansation",
     "compensation",
@@ -148,25 +188,24 @@ def _facade_of(part):
     return str(label)
 
 
-def _component_type_index(node):
-    """Return index of component type based on components folder order."""
-    if node is None:
-        return None
-    module = getattr(type(node), "__module__", "") or ""
-    if ".components." not in module:
-        return None
-    try:
-        subpath = module.split(".components.", 1)[1]
-        type_name = subpath.split(".", 1)[0]
-    except Exception:
-        return None
-    if type_name in _COMPONENT_TYPE_ORDER:
-        return _COMPONENT_TYPE_ORDER.index(type_name)
-    return None
+def _component_type_index(type_name):
+    type_category = _COMPONENT_TYPE_CATEGORY_MAP.get(type_name)
+    if type_category in _COMPONENT_CATEGORY_ORDER:
+        return _COMPONENT_CATEGORY_ORDER.index(type_category)
 
 
-def _node_type_color(node):
-    idx = _component_type_index(node)
+def _type_group_key(bar):
+    """bar should be a tuple/list
+    its second element should be the type of the component
+    and the 3rd element should be the class name of the component
+    """
+    index = _component_type_index(bar[1])
+    return (index is None, index or 0, bar[2])
+
+
+def _node_type_color(node, component_type_map):
+    node_type = component_type_map.get(node.label)
+    idx = _component_type_index(node_type)
     if idx is None:
         return "#17becf"
     return _COMPONENT_TYPE_COLORS[idx % len(_COMPONENT_TYPE_COLORS)]
@@ -392,7 +431,13 @@ def sankey_2(
         Parsed links table with columns: source, target, value, max,
         aggregate.
     """
-    flows = results if isinstance(results, pd.DataFrame) else results["flow"]
+
+    if isinstance(results, pd.DataFrame):
+        flows = results
+        component_type_map = {}
+    else:
+        flows = results["flow"]
+        component_type_map = results["component_type_mapping"]
 
     if not isinstance(flows.columns, pd.MultiIndex):
         raise TypeError("flows.columns must be a pandas MultiIndex.")
@@ -537,7 +582,7 @@ def sankey_2(
             if es_node is None:
                 node_colors.append("#17becf")
             else:
-                type_color = _node_type_color(es_node)
+                type_color = _node_type_color(es_node, component_type_map)
                 if type_color is not None:
                     node_colors.append(type_color)
                 elif isinstance(es_node, CarrierBus):
@@ -777,7 +822,30 @@ def capacities(imported_results, es, threshold=1e-6) -> go.Figure:
     return fig
 
 
-def multi_scenario_capacities_graph(scenario_names, plot_bars, title=""):
+def multi_scenario_capacities_graph(scenario_names, bars, title=""):
+    bars.sort(key=_type_group_key)
+
+    # numeric x positions: bars of one type sit next to each other, one
+    # empty position separates the type groups
+    position = 0
+    previous_type = None
+    plot_bars = []
+    for scenario, _node_type, type_name, component, capacity, kind in bars:
+        if previous_type is not None and type_name != previous_type:
+            position += 1
+        plot_bars.append(
+            {
+                "position": position,
+                "scenario": scenario,
+                "type": type_name,
+                "component": component,
+                "capacity": capacity,
+                "kind": kind,
+            }
+        )
+        previous_type = type_name
+        position += 1
+
     kinds = (("Installed", "x"), ("Optimized", ""))
 
     scenario_colors = {
@@ -924,6 +992,7 @@ def compare_capacities(
                 if owner is None or owner in optimized_capacity or not value:
                     continue
                 optimized_capacity[owner] = float(value)
+        component_type_map = results["component_type_mapping"]
         for node in es.nodes:
             if getattr(node, "parent", None) is not None:
                 continue
@@ -944,10 +1013,11 @@ def compare_capacities(
             else:
                 kind = "Optimized"
                 capacity = optimized_value
+            node_type = component_type_map[str(node.label)]
             bars.append(
                 (
                     scenario,
-                    node,
+                    node_type,
                     type(node).__name__,
                     str(node.label),
                     capacity,
@@ -955,34 +1025,7 @@ def compare_capacities(
                 )
             )
 
-    def _type_group_key(bar):
-        index = _component_type_index(bar[1])
-        return (index is None, index or 0, bar[2])
-
-    bars.sort(key=_type_group_key)
-
-    # numeric x positions: bars of one type sit next to each other, one
-    # empty position separates the type groups
-    position = 0
-    previous_type = None
-    plot_bars = []
-    for scenario, _node, type_name, component, capacity, kind in bars:
-        if previous_type is not None and type_name != previous_type:
-            position += 1
-        plot_bars.append(
-            {
-                "position": position,
-                "scenario": scenario,
-                "type": type_name,
-                "component": component,
-                "capacity": capacity,
-                "kind": kind,
-            }
-        )
-        previous_type = type_name
-        position += 1
-
-    fig = multi_scenario_capacities_graph(datasets, plot_bars)
+    fig = multi_scenario_capacities_graph(datasets, bars)
 
     return fig
 
@@ -1056,9 +1099,29 @@ def plot_annual_costs(
     return fig
 
 
-def multi_scenario_annual_costs(
-    scenario_names, plot_bars, title="", unit="EUR"
-):
+def multi_scenario_annual_costs(scenario_names, bars, title="", unit="EUR"):
+    bars.sort(key=_type_group_key)
+
+    # numeric x positions: bars of one type sit next to each other, one
+    # empty position separates the type groups
+    position = 0
+    previous_type = None
+    plot_bars = []
+    for scenario, _node, type_name, row in bars:
+        if previous_type is not None and type_name != previous_type:
+            position += 1
+        plot_bars.append(
+            {
+                "position": position,
+                "scenario": scenario,
+                "type": type_name,
+                "component": str(row["Component"]),
+                "row": row,
+            }
+        )
+        previous_type = type_name
+        position += 1
+
     scenario_colors = {
         scenario: qualitative.Plotly[index % len(qualitative.Plotly)]
         for index, scenario in enumerate(scenario_names)
@@ -1189,44 +1252,20 @@ def compare_annual_costs(
     # one entry per bar: (scenario, node, component type, table row)
     bars = []
     for scenario, (results, es) in datasets.items():
+        # mapping of components name to type would be great in the results package
         yearly_project_costs(results, es)
         table = _eesyplan_kpis(results)["yearly_project_costs"]
         table = table[table["Component"] != "total"]
+
         owners = _owner_map(es)
+        component_type_map = results["component_type_mapping"]
         for _, row in table.iterrows():
             node = owners.get(row["Component"])
+            node_type = component_type_map[str(node.label)]
             type_name = type(node).__name__ if node is not None else "other"
-            bars.append((scenario, node, type_name, row))
+            bars.append((scenario, node_type, type_name, row))
 
-    def _type_group_key(bar):
-        index = _component_type_index(bar[1])
-        return (index is None, index or 0, bar[2])
-
-    bars.sort(key=_type_group_key)
-
-    # numeric x positions: bars of one type sit next to each other, one
-    # empty position separates the type groups
-    position = 0
-    previous_type = None
-    plot_bars = []
-    for scenario, _node, type_name, row in bars:
-        if previous_type is not None and type_name != previous_type:
-            position += 1
-        plot_bars.append(
-            {
-                "position": position,
-                "scenario": scenario,
-                "type": type_name,
-                "component": str(row["Component"]),
-                "row": row,
-            }
-        )
-        previous_type = type_name
-        position += 1
-
-    fig = multi_scenario_annual_costs(
-        datasets, plot_bars, title=title, unit=unit
-    )
+    fig = multi_scenario_annual_costs(datasets, bars, title=title, unit=unit)
     return fig
 
 
