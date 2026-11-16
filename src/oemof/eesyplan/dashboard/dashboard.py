@@ -236,7 +236,7 @@ class DashboardResults(ImportResults):
         year0_column = "Investment cost in year 0 (not including reinvestment)"
         rows = {
             "total_cost_year0": None,
-            "total_cost": None,
+            "total_yearly_fixed_costs": None,
             "total_dispatch_costs": None,
             "lcoe": None,
             "renewable_share": None,
@@ -248,7 +248,14 @@ class DashboardResults(ImportResults):
             project_costs["Component"] == "total", year0_column
         ].iloc[0]
         rows["total_cost_year0"] = float(year0)
-        rows["total_cost"] = float(kpis["total_cost"])
+        rows["total_yearly_fixed_costs"] = float(
+            kpis["yearly_project_costs"]
+            .loc[
+                kpis["yearly_project_costs"]["Component"] != "total",
+                "Fix operational costs",
+            ]
+            .sum()
+        )
         rows["lcoe"] = float(kpis["lcoe"])
         rows["renewable_share"] = float(kpis["renewable_share"])
 
