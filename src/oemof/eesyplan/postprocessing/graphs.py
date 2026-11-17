@@ -18,6 +18,7 @@ from oemof.eesyplan.postprocessing.KPIs import clean_label
 from oemof.eesyplan.postprocessing.KPIs import yearly_project_costs
 from oemof.solph.components import Source
 
+# TODO this could be automatically generated
 _COMPONENT_TYPE_CATEGORY_MAP = {
     "bus": "buses",
     "heating_network": "buses",
@@ -25,6 +26,7 @@ _COMPONENT_TYPE_CATEGORY_MAP = {
     "shortage": "compensation",
     "auxiliary_heat": "converters",
     "boiler": "converters",
+    "gas_boiler": "converters",
     "chp_fixed_ratio": "converters",
     "chp_variable_ratio": "converters",
     "electrical_transformator": "converters",
@@ -41,6 +43,7 @@ _COMPONENT_TYPE_CATEGORY_MAP = {
     "biogas_plant": "production",
     "commodity": "production",
     "geothermal_plant": "production",
+    "geothermal_conversion": "production",
     "pv_plant": "production",
     "solar_thermal_plant": "production",
     "wind_turbine": "production",
@@ -49,6 +52,9 @@ _COMPONENT_TYPE_CATEGORY_MAP = {
     "dso_fuel": "providers",
     "dso_heat": "providers",
     "dso_hydrogen": "providers",
+    "gas_dso": "providers",
+    "heat_dso": "providers",
+    "h2_dso": "providers",
     "electrical_storage": "storages",
     "fuel_storage": "storages",
     "hydrogen_storage": "storages",
@@ -70,6 +76,7 @@ _COMPONENT_CATEGORY_ORDER = [
     "transport",
 ]
 
+# TODO this could be a dict
 _COMPONENT_TYPE_COLORS = [
     "#7f7f7f",  # buses
     "#8c564b",  # compansation
@@ -204,10 +211,14 @@ def _type_group_key(bar):
 
 
 def _node_type_color(node, component_type_map):
-    node_type = component_type_map.get(node.label)
+    if node.parent:
+        label = node.label[-1]
+    else:
+        label = node.label
+    node_type = component_type_map.get(label)
     idx = _component_type_index(node_type)
     if idx is None:
-        return "#17becf"
+        return None
     return _COMPONENT_TYPE_COLORS[idx % len(_COMPONENT_TYPE_COLORS)]
 
 
@@ -438,6 +449,7 @@ def sankey_2(
     else:
         flows = results["flow"]
         component_type_map = results.get("component_type_mapping", {})
+        es = results.energy_system
 
     if not isinstance(flows.columns, pd.MultiIndex):
         raise TypeError("flows.columns must be a pandas MultiIndex.")
