@@ -92,8 +92,6 @@ TYPEMAP = {
     "PeakPricing": PeakPricing,
     "Battery": ElectricalStorage,
     "Bus": CarrierBus,
-    "CarrierBus": CarrierBus,  # back compatibility
-    "HeatingNetwork": HeatingNetwork,
     "heating_network": HeatingNetwork,
     "demand": ElectricityDemand,
     "Source": Source,
