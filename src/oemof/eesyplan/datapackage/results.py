@@ -8,7 +8,7 @@ from oemof.datapackage.resultpackage import read
 from oemof.datapackage.resultpackage import write
 
 
-def export_results(results, path):
+def export_results(results, path, zip=False):
     # ToDo The following lines are neccessary until the bug is fixed in solph
     for key in results.keys():
         if key in ["Solver", "Problem", "Solution"]:
@@ -22,7 +22,7 @@ def export_results(results, path):
     if isinstance(path, str):
         path = Path(str)
     write.export_results_to_datapackage(
-        results=results, base_path=path, zip=False
+        results=results, base_path=path, zip=zip
     )
     logging.info(f"Exported results to {path.resolve()}")
 
