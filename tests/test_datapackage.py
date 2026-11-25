@@ -1,5 +1,8 @@
 import argparse
+import importlib
+import runpy
 import shutil
+import sys
 import warnings
 import zipfile
 from pathlib import Path
@@ -13,6 +16,9 @@ from oemof.eesyplan.datapackage import energy_system as es
 from oemof.tools.debugging import ExperimentalFeatureWarning
 
 warnings.filterwarnings("ignore", category=ExperimentalFeatureWarning)
+
+ES_MODULE = "oemof.eesyplan.datapackage.energy_system"
+DP_DIR = Path(Path(__file__).parent, "test_data", "openPlan_package")
 
 
 @patch("oemof.eesyplan.datapackage.energy_system.solve_energy_system_from_dp")
@@ -112,3 +118,98 @@ def test_zip_datapackage():
         es.solve_energy_system_from_dp(filename.with_suffix(".zip"))
     Path(dir_name.parent, "openPlan_package.graphml").unlink()
     filename.with_suffix(".zip").unlink()
+
+
+def test_visio_import_fallback(monkeypatch):
+    # Lines 20-21: oemof.visio cannot be imported
+    try:
+        with monkeypatch.context() as m:
+            m.setitem(sys.modules, "oemof.visio", None)
+            importlib.reload(es)
+            assert es.ESGraphRenderer is None
+    finally:
+        importlib.reload(es)
+
+
+def test_component_type_mapping_from_folder_and_json():
+    from_folder = es.get_component_type_mapping_from_dp(DP_DIR)
+    from_json = es.get_component_type_mapping_from_dp(
+        DP_DIR / "datapackage.json"
+    )
+    assert from_folder
+    assert from_folder == from_json
+    assert all(isinstance(v, str) for v in from_folder.values())
+
+
+def test_component_type_mapping_from_zip(tmp_path):
+    archive = shutil.make_archive(str(tmp_path / "pkg"), "zip", DP_DIR)
+    expected = es.get_component_type_mapping_from_dp(DP_DIR)
+    assert es.get_component_type_mapping_from_dp(Path(archive)) == expected
+
+
+def test_component_type_mapping_zip_with_two_json_files(tmp_path):
+    archive = shutil.make_archive(str(tmp_path / "pkg"), "zip", DP_DIR)
+    with zipfile.ZipFile(archive, "a") as zf:
+        zf.write(
+            Path(Path(__file__).parent, "test_data", "dp2.json"),
+            arcname="dp2.json",
+        )
+    with pytest.raises(ValueError, match="To many json files"):
+        es.get_component_type_mapping_from_dp(Path(archive))
+
+
+def test_plot_es_renders_graph(tmp_path):
+    with patch(f"{ES_MODULE}.ESGraphRenderer") as renderer:
+        es.plot_es("my_es", tmp_path)
+    renderer.assert_called_once_with(
+        "my_es",
+        legend=False,
+        filepath=str(tmp_path / "energy_system_graph.png"),
+        img_format="png",
+    )
+    renderer.return_value.render.assert_called_once_with()
+
+
+@pytest.mark.parametrize(
+    ("attributemap", "expected"),
+    [(None, {}), ({"x": {"a": "b"}}, {"x": {"a": "b"}})],
+)
+@patch(f"{ES_MODULE}.optimise")
+@patch(f"{ES_MODULE}.create_energy_system_from_dp")
+def test_solve_passes_attributemap(
+    mock_create, mock_optimise, attributemap, expected
+):
+    mock_optimise.return_value = "results"
+    out = es.solve_energy_system_from_dp("x", attributemap=attributemap)
+    mock_create.assert_called_once_with("x", attributemap=expected)
+    mock_optimise.assert_called_once_with(mock_create.return_value)
+    assert out == "results"
+
+
+@pytest.mark.parametrize("as_str", [False, True])
+@patch(f"{ES_MODULE}.get_component_type_mapping_from_dp", return_value={})
+@patch(f"{ES_MODULE}.export_results")
+@patch(f"{ES_MODULE}.optimise")
+@patch(f"{ES_MODULE}.create_energy_system_from_dp")
+def test_solve_exports_results(
+    mock_create, mock_optimise, mock_export, mock_mapping, as_str, tmp_path
+):
+    target = tmp_path / "res"
+    out = es.solve_energy_system_from_dp(
+        "x", results_path=str(target) if as_str else target
+    )
+    assert out == target
+    assert target.is_dir()
+    mock_export.assert_called_once_with(
+        mock_optimise.return_value, path=target, component_type_mapping={}
+    )
+
+
+def test_module_main_guard_runs_cli(monkeypatch):
+    # Line 227: "--help" ends the CLI right after argument parsing
+    monkeypatch.setattr(sys, "argv", ["solve datapackage", "--help"])
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=RuntimeWarning)
+        with pytest.raises(SystemExit) as excinfo:
+            runpy.run_module(ES_MODULE, run_name="__main__")
+    assert excinfo.value.code == 0

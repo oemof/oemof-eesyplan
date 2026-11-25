@@ -68,14 +68,10 @@ class Project:
             specific_annual_cost = (
                 self.calculate_annuity(capex_spec, lifetime) + opex_spec
             )
-            if maximum_capacity is None:
-                maximum = float("inf")
-            else:
-                maximum = maximum_capacity
             return Investment(
                 ep_costs=specific_annual_cost,
                 existing=0,  # existing capacity with investment is not allowed
-                maximum=maximum,
+                maximum=maximum_capacity,
             )
         else:
             raise ValueError(

@@ -2,9 +2,10 @@ import numpy as np
 import pandas as pd  # type: ignore[import-untyped]
 import pytest
 
+from oemof.eesyplan import type_checks
 from oemof.eesyplan.type_checks import (
-    normalise,  # type: ignore[import-untyped]
-)
+    normalise,
+)  # type: ignore[import-untyped]
 
 
 class TestToArrayOrNumber:
@@ -63,3 +64,14 @@ class TestToArrayOrNumber:
 
         assert not isinstance(result, np.ndarray)
         assert result == 1.5
+
+
+class TestCapacityNotSet:
+    def test_none_raises(self):
+        with pytest.raises(ValueError, match="installed capacity"):
+            type_checks.test_capacity_not_set(None)
+
+    @pytest.mark.parametrize("capacity", [0, 5.0, np.float64(1.5)])
+    def test_value_passes(self, capacity):
+        # 0 is a valid capacity and must not be mistaken for "not set"
+        assert type_checks.test_capacity_not_set(capacity) is None

@@ -184,14 +184,14 @@ def solve_energy_system_from_dp(
     results = optimise(es)
     if results_path is None:
         return results
-    else:
-        results_path.mkdir(parents=True, exist_ok=True)
-        export_results(
-            results,
-            path=results_path,
-            component_type_mapping=get_component_type_mapping_from_dp(path),
-        )
-        return results_path
+    results_path = Path(results_path)
+    results_path.mkdir(parents=True, exist_ok=True)
+    export_results(
+        results,
+        path=results_path,
+        component_type_mapping=get_component_type_mapping_from_dp(path),
+    )
+    return results_path
 
 
 def cli():
