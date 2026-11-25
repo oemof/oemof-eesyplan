@@ -1,0 +1,2 @@
+type,name,absolute_losses,relative_losses,return_pipe,bus_1_heat,bus_2_heat
+heating_pipe,heating_pipe-0,0.1,0.0,True,bus-1,heating_network-0

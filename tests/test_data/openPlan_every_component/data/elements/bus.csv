@@ -1,0 +1,10 @@
+name,type,carrier,balanced,excess_cost,shortage_cost,absolute_losses
+bus-1,Bus,Heat,True,0,,
+heating_network-0,HeatingNetwork,,,0,,sine_demand_24_2.csv
+bus-7,Bus,Heat,True,0,,
+bus-4,Bus,Electricity,True,0,,
+bus-2,Bus,Gas,True,0,,
+bus-5,Bus,Heat,True,0,,
+bus-0,Bus,Electricity,True,0,,
+bus-6,Bus,H2,True,0,,
+bus-3,Bus,H2,True,0,,

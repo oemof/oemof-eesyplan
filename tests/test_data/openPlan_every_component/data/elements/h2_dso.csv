@@ -1,0 +1,2 @@
+type,name,energy_price,feedin_tariff,bus_hydrogen
+h2_dso,h2_dso-0,0.3,,bus-3

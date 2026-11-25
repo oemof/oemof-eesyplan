@@ -60,7 +60,8 @@ def compare_KPIs(datasets, es=None, name="Scenario") -> pd.DataFrame:
     -------
     pandas.DataFrame
         One row per KPI and one column per scenario.  The rows are
-        "Total investment costs (year 0) [€]", "Total yearly costs
+        "Total investment costs (year 0) [€]", "Total yearly fix costs
+        [€/yr]", "Total yearly dispatch costs (including energy costs)
         [€/yr]", "LCOE [ct/kWh]" and "Share of renewables [%]".  All
         values are numeric; use :func:`format_KPIs` to display them with
         one decimal.
@@ -85,10 +86,11 @@ def compare_KPIs(datasets, es=None, name="Scenario") -> pd.DataFrame:
                 f"The entry of '{entry_name}' must be a (results, es) pair."
             )
 
-    year0_column = "investment cost in year 0 (not including reinvestment)"
+    year0_column = "Investment cost in year 0 (not including reinvestment)"
     rows = {
         "Total investment costs (year 0) [€]": {},
-        "Total yearly costs [€/yr]": {},
+        "Total yearly fix costs [€/yr]": {},
+        "Total yearly dispatch costs (including energy costs) [€/yr]": {},
         "LCOE [ct/kWh]": {},
         "Share of renewables [%]": {},
     }
@@ -98,10 +100,15 @@ def compare_KPIs(datasets, es=None, name="Scenario") -> pd.DataFrame:
         kpis = _eesyplan_kpis(results)
         project_costs = kpis["project_cost_table"]
         year0 = project_costs.loc[
-            project_costs["component"] == "total", year0_column
+            project_costs["Component"] == "total", year0_column
         ].iloc[0]
         rows["Total investment costs (year 0) [€]"][scenario] = float(year0)
-        rows["Total yearly costs [€/yr]"][scenario] = float(kpis["total_cost"])
+        rows["Total yearly fix costs [€/yr]"][scenario] = float(
+            _total_component_opex(results, es)
+        )
+        rows["Total yearly dispatch costs (including energy costs) [€/yr]"][
+            scenario
+        ] = float(_total_variable_costs(results))
         rows["LCOE [ct/kWh]"][scenario] = float(kpis["lcoe"]) * 100.0
         rows["Share of renewables [%]"][scenario] = (
             float(kpis["renewable_share"]) * 100.0
@@ -285,7 +292,11 @@ def LCOE(results, es):
     ]
     total_demand = sum(flows[column].sum() for column in considered_flows)
 
-    _store_result(results, "lcoe", kpis["total_cost"] / total_demand)
+    if total_demand != 0:
+        lcoe = kpis["total_cost"] / total_demand
+    else:
+        lcoe = 0
+    _store_result(results, "lcoe", lcoe)
     _store_result(
         results,
         "lcoe_considered_flows",
@@ -407,8 +418,15 @@ def _component_cost_data(results, es):
     keyed by the top-level component node (``components`` is a list):
 
     capacity            optimised capacity from ``invest``
-    investment_cost     annual model cost from ``investment_costs``
-                        (annualised capex + fixed opex)
+    investment_cost     annual model cost read from oemof's
+                        ``investment_costs`` result key.  The name is
+                        oemof's and is misleading: the value is the
+                        annualised capex plus the fixed opex (the
+                        equivalent periodical costs), not an investment
+                        cost.  It is only used to recover the annuity as
+                        ``investment_cost - opex`` (see
+                        :func:`_component_costs`), never as our
+                        investment cost.
     variable            variable costs summed over the whole horizon
     fix_investment_ann  annualised ``investment_fix_cost`` (a flat cost
                         that is not tied to a capacity)
@@ -433,6 +451,11 @@ def _component_cost_data(results, es):
                 continue
             capacity[owner] = float(value)
 
+    # oemof's result key is called "investment_costs" but its value is the
+    # annual model cost (annualised capex + fixed opex, i.e. the equivalent
+    # periodical costs), not an investment cost.  We only use it to
+    # reconstruct the annuity by subtracting the opex (see
+    # :func:`_component_costs`).
     if "investment_costs" in results:
         for column, value in results["investment_costs"].iloc[0].items():
             owner = _owner_of_parts(_column_parts(column), owners)
@@ -446,7 +469,13 @@ def _component_cost_data(results, es):
             owner = _edge_owner(column, owners)
             if owner is None:
                 continue
-            variable[owner] = variable.get(owner, 0.0) + costs[column].sum()
+            try:
+                variable[owner] = (
+                    variable.get(owner, 0.0) + costs[column].sum()
+                )
+            except TypeError:
+                # TODO remove when https://github.com/oemof/oemof-solph/pull/1348 is merged in dev
+                variable[owner] = variable.get(owner, 0.0)
 
     fix_investment_ann, fix_annual = _fix_cost_data(es, capacity)
 
@@ -579,13 +608,13 @@ def _cost_table(rows, value_columns):
 
     Components without any cost are dropped.
     """
-    table = pd.DataFrame(rows, columns=["component", *value_columns])
+    table = pd.DataFrame(rows, columns=["Component", *value_columns])
     table = table[(table[value_columns].abs() > 1e-9).any(axis=1)]
     table["total"] = table[value_columns].sum(axis=1)
     table = table.sort_values("total", ascending=False, ignore_index=True)
 
     total = table[[*value_columns, "total"]].sum()
-    total_row = pd.DataFrame([{"component": "total", **total.to_dict()}])
+    total_row = pd.DataFrame([{"Component": "total", **total.to_dict()}])
     return pd.concat([table, total_row], ignore_index=True)
 
 
@@ -608,8 +637,10 @@ def _component_costs(
     """Annualised investment and fixed operational costs of a component.
 
     For optimised components the model bundles investment and fixed
-    operation costs into a single annual ``investment_costs`` value.  The
-    annuity is therefore reconstructed as ``investment_costs - opex``.
+    operation costs into a single annual ``investment_costs`` value (the
+    misleading oemof name for the equivalent periodical costs, see
+    :func:`_component_cost_data`).  The annuity is therefore reconstructed
+    as ``investment_costs - opex``.
 
     Component Costs with an ``installed_capacity`` are not part of the
     optimisation.  They carry no investment in the model, so their
@@ -668,6 +699,40 @@ def _component_costs(
     return component_capex, component_opex
 
 
+def _total_component_opex(results, es):
+    """Total annual fixed operational costs of all components.
+
+    Sums the ``component_opex`` of every top-level component as returned
+    by :func:`_component_costs` (``opex_spec * capacity`` plus the flat
+    ``annual_fix_cost``).
+    """
+    (
+        components,
+        capacity,
+        investment_cost,
+        _variable,
+        fix_investment_ann,
+        fix_annual,
+    ) = _component_cost_data(results, es)
+    return sum(
+        _component_costs(
+            node,
+            capacity,
+            investment_cost,
+            fix_investment_ann,
+            fix_annual,
+        )[1]
+        for node in components
+    )
+
+
+def _total_variable_costs(results):
+    """Total variable (dispatch) costs over the whole horizon."""
+    if "variable_costs" not in results:
+        return 0.0
+    return float(results["variable_costs"].sum().sum())
+
+
 def yearly_project_costs(results, es):
     """Yearly project costs per component as a table.
 
@@ -679,10 +744,10 @@ def yearly_project_costs(results, es):
 
     with ``opex = opex_spec * capacity``.  The columns are:
 
-    component                   readable label of every top-level component
-    annualized investment cost  annualised investment cost (annuity)
-    fix operational costs       fixed operation & maintenance cost
-    dispatch costs              sum of the variable costs of all flows of the
+    Component                   readable label of every top-level component
+    Annualized investment cost  annualised investment cost (annuity)
+    Fix operational costs       fixed operation & maintenance cost
+    Dispatch costs              sum of the variable costs of all flows of the
                                 component over the whole horizon
 
     Components with an ``installed_capacity`` are not optimised and
@@ -718,10 +783,10 @@ def yearly_project_costs(results, es):
         )
         rows.append(
             {
-                "component": _norm_label(node.label),
-                "annualized investment cost": component_capex,
-                "fix operational costs": component_opex,
-                "dispatch costs": variable.get(node, 0.0),
+                "Component": _norm_label(node.label),
+                "Annualized investment cost": component_capex,
+                "Fix operational costs": component_opex,
+                "Dispatch costs": variable.get(node, 0.0),
             }
         )
 
@@ -731,9 +796,9 @@ def yearly_project_costs(results, es):
         _cost_table(
             rows,
             [
-                "annualized investment cost",
-                "fix operational costs",
-                "dispatch costs",
+                "Annualized investment cost",
+                "Fix operational costs",
+                "Dispatch costs",
             ],
         ),
     )
@@ -776,14 +841,15 @@ def project_cost_table(results, es, project_duration=None):
     Unlike :func:`yearly_project_costs` this table is not annualised and
     spans the whole project duration (``economic_period``):
 
-    component          readable label of every top-level component
-    investment cost in year 0 (not including reinvestment)
+    Component          readable label of every top-level component
+    Investment cost in year 0 (not including reinvestment)
                        one-time investment ``capex_spec * capacity``
-    investment cost over the full project (including reinvestments)
-                       ``annualized investment cost * project_duration``
-    fix operational costs over project duration
+    Reinvestment cost over the full project
+                       full project investment (``annualized investment
+                       cost * project_duration``) minus the year 0 investment
+    Fix operational costs over project duration
                        ``opex_spec * capacity * project_duration``
-    dispatch costs over project duration
+    Dispatch costs over project duration
                        yearly variable costs * ``project_duration``
 
     Components with an ``installed_capacity`` are not optimised.  They
@@ -794,7 +860,7 @@ def project_cost_table(results, es, project_duration=None):
 
     The flat fix costs are included as well: the ``investment_fix_cost``
     of new components is part of the year 0 investment, its annualised
-    value is part of the investment over the full project and the
+    value is part of the reinvestment cost over the full project and the
     ``annual_fix_cost`` is part of the fixed operational costs.
 
     The project duration is read from the ``economic_period`` of the
@@ -836,15 +902,15 @@ def project_cost_table(results, es, project_duration=None):
         operational = component_opex_ann * project_duration
         rows.append(
             {
-                "component": _norm_label(node.label),
-                "investment cost in year 0 (not including reinvestment)": (
+                "Component": _norm_label(node.label),
+                "Investment cost in year 0 (not including reinvestment)": (
                     investment_year0
                 ),
-                "investment cost over the full project (including reinvestments)": (
-                    investment_full
+                "Reinvestment cost over the full project": (
+                    investment_full - investment_year0
                 ),
-                "fix operational costs over project duration": operational,
-                "dispatch costs over project duration": (
+                "Fix operational costs over project duration": operational,
+                "Dispatch costs over project duration": (
                     variable.get(node, 0.0) * project_duration
                 ),
             }
@@ -856,10 +922,10 @@ def project_cost_table(results, es, project_duration=None):
         _cost_table(
             rows,
             [
-                "investment cost in year 0 (not including reinvestment)",
-                "investment cost over the full project (including reinvestments)",
-                "fix operational costs over project duration",
-                "dispatch costs over project duration",
+                "Investment cost in year 0 (not including reinvestment)",
+                "Reinvestment cost over the full project",
+                "Fix operational costs over project duration",
+                "Dispatch costs over project duration",
             ],
         ),
     )

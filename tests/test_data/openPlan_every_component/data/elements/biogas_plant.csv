@@ -1,0 +1,2 @@
+type,project_data,name,age_installed,installed_capacity,capex_spec,opex_spec,variable_costs,lifetime,maximum_capacity,renewable_asset,input_timeseries,bus_out_fuel
+biogas_plant,EesyPlan testing Heat components,biogas_plant-0,0.0,0.0,1000.0,10.0,0.01,20,,True,constant value = 1.0,bus-2

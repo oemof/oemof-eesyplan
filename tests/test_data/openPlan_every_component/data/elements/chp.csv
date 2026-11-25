@@ -1,0 +1,2 @@
+type,project_data,name,age_installed,installed_capacity,capex_spec,opex_spec,variable_costs,lifetime,maximum_capacity,efficiency_electricity_state_b,efficiency_heat_state_b,efficiency_electricity_state_a,efficiency_heat_state_a,bus_in_fuel,bus_out_heat,bus_out_electricity
+chp,EesyPlan testing Heat components,chp-0,0.0,0.0,1000.0,10.0,0.01,20,,constant value = 0.35,constant value = 0.5,constant value = 0.4,constant value = 0.0,bus-2,bus-5,bus-4

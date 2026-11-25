@@ -1,0 +1,2 @@
+type,project_data,name,age_installed,installed_capacity,maximum_capacity,capex_spec,opex_spec,variable_costs,lifetime,auxiliary_heat_fraction,bus_in_heat,bus_in_heat_auxiliary,bus_out_heat
+auxiliary_heat,EesyPlan testing Heat components,auxiliary_heat-0,0.0,,,1000.0,10.0,0.01,20,constant value = 0.5,bus-1,heating_network-0,bus-7

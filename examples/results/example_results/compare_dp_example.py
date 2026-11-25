@@ -2,12 +2,13 @@ import warnings
 from pathlib import Path
 
 from oemof.eesyplan import ThermalStorage
-from oemof.eesyplan import export_results
 from oemof.eesyplan import import_results
 from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
 )
-from oemof.eesyplan.model import optimise
+from oemof.eesyplan.datapackage.energy_system import (
+    solve_energy_system_from_dp,
+)
 from oemof.eesyplan.postprocessing import graphs
 from oemof.eesyplan.postprocessing.KPIs import compare_KPIs
 from oemof.eesyplan.postprocessing.KPIs import format_KPIs
@@ -41,11 +42,13 @@ def load_scenario(scenario_name):
     exists yet.
     """
     scenario_path = EXAMPLE_PATH / scenario_name
-    es = create_energy_system_from_dp(scenario_path, attributemap=LEGACY_NAMES)
     results_path = scenario_path / "datapackage_solved"
     if not (results_path / "datapackage.json").exists():
-        results = optimise(es)
-        export_results(results, path=results_path)
+        solve_energy_system_from_dp(
+            scenario_path, results_path=results_path, attributemap=LEGACY_NAMES
+        )
+    es = create_energy_system_from_dp(scenario_path, attributemap=LEGACY_NAMES)
+
     return import_results(path=results_path, es=es), es
 
 
@@ -63,7 +66,7 @@ if __name__ == "__main__":
 
     for name, (results, _es) in datasets.items():
         table = results["eesyplan"]["yearly_project_costs"]
-        total = table.loc[table["component"] == "total", "total"].iloc[0]
+        total = table.loc[table["Component"] == "total", "total"].iloc[0]
         print(f"Total annual costs ({name}): {total:.2f} EUR")
 
     fig.show()

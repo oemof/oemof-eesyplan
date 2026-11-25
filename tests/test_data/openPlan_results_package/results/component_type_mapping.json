@@ -1,0 +1,8 @@
+{
+    "lithium_battery_system": "bess",
+    "electricity": "Bus",
+    "demand_el": "demand",
+    "My_DSO": "dso",
+    "pv": "pv_plant",
+    "wind": "wind_plant"
+}

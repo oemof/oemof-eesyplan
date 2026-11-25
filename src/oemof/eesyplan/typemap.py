@@ -106,6 +106,7 @@ TYPEMAP = {
     "gas_demand": FuelDemand,
     "h2_demand": H2Demand,
     "heat_demand": HeatDemand,
+    "electrical_transformer": ElectricalTransformator,
     "transformer_station_in": ElectricalTransformator,
     "transformer_station_out": ElectricalTransformator,
     "storage_charge_controller_in": ElectricalTransformator,

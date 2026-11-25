@@ -1,0 +1,2 @@
+type,name,energy_price,bus_heat
+heat_dso,heat_dso-0,0.3,bus-1

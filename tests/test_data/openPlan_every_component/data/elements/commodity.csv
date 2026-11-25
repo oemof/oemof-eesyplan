@@ -1,0 +1,2 @@
+type,name,full_load_time_max,capacity,variable_costs,commodity,bus_out
+commodity,commodity-0,0.0,0.0,1000.0,Electricity,bus-0
