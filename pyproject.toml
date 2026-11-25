@@ -167,3 +167,6 @@ force-single-line = true
 
 [tool.ruff.format]
 quote-style = "double"
+
+[tool.isort]
+force_single_line = true

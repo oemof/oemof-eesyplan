@@ -1,9 +1,10 @@
 from numpy.typing import ArrayLike
-
-from oemof.eesyplan.project import Project
 from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Source
+
+from oemof.eesyplan.project import Project
+from oemof.eesyplan.type_checks import test_capacity_not_set
 
 
 class SolarThermalPlant(Source):
@@ -75,13 +76,14 @@ class SolarThermalPlant(Source):
         lifetime: float | int = 20,
         renewable_asset: bool = True,
     ):
-        nv = project_data.create_invest_if_wanted(
+        self.nv = project_data.create_invest_if_wanted(
             capex_spec=capex_spec,
             opex_spec=opex_spec,
             lifetime=lifetime,
             installed_capacity=installed_capacity,
             maximum_capacity=maximum_capacity,
         )
+        test_capacity_not_set(self.nv)
 
         self.bus_out_heat = bus_out_heat
         self.input_timeseries = input_timeseries
@@ -99,7 +101,7 @@ class SolarThermalPlant(Source):
         outputs = {
             self.bus_out_heat: Flow(
                 fix=input_timeseries,
-                nominal_capacity=nv,
+                nominal_capacity=self.nv,
                 variable_costs=variable_costs,
             )
         }

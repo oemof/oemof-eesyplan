@@ -83,6 +83,6 @@ class Project:
                 "same time. Create an existing component with an installed "
                 "capacity or create an non existing component that shall be "
                 "optimised\n"
-                f"Maxiumum capacity: {maximum_capacity}\n"
+                f"Maximum capacity: {maximum_capacity}\n"
                 f"Installed capacity: {installed_capacity}\n"
             )
