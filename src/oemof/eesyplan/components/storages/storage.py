@@ -137,6 +137,7 @@ class EnergyStorage(GenericStorage):
             invest_relation_input_capacity = self.c_rate_charge
             invest_relation_output_capacity = self.c_rate_discharge
         else:
+            print(name)
             self.capacity_charge = self.nv * self.c_rate_charge
             self.capacity_discharge = self.nv * self.c_rate_discharge
             invest_relation_input_capacity = None

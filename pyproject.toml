@@ -29,7 +29,7 @@ dependencies = [
   "oemof-datapackage @ git+https://github.com/oemof/oemof-datapackage.git@op2.0.0",
   "oemof-demand",
   "oemof-network",
-  "oemof.solph[solver] @ git+https://github.com/oemof/oemof-solph.git@7b4f4a0403331e2b768d26910a729f3168979142",
+  "oemof.solph[solver] >= 0.6.7",
 ]
 dynamic = ["version"]
 
@@ -58,7 +58,6 @@ test = [
   "tox",
   "oemof-visio",
   "pyproj",
-  "mip",
   "mock",
   "plotly",
   "dash"

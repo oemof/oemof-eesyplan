@@ -1,10 +1,7 @@
-from pandas.api.types import is_scalar
-
 from oemof.network import Node
-from oemof.solph import Bus
-from oemof.solph import Flow
-from oemof.solph import Investment
+from oemof.solph import Bus, Flow, Investment
 from oemof.solph.components import Converter
+from pandas.api.types import is_scalar
 
 
 class FlowPricing(Node):
@@ -31,7 +28,7 @@ class FlowPricing(Node):
         cost_unlimited: |cost_unlimited|
         cost_limited: |cost_limited|
         full_load_time_limit: |full_load_time_limit|
-        virtual_capacity: |virtual_capacity|
+        virtual_flow_capacity: |virtual_flow_capacity|
         maximum_limited_path: |maximum_limited_path|
         maximum_unlimited_path: |maximum_unlimited_path|
 
@@ -46,7 +43,7 @@ class FlowPricing(Node):
         ...     bus_out=bus_out,
         ...     cost_unlimited=0.1,
         ...     cost_limited=0.2,
-        ...     virtual_capacity=500,
+        ...     virtual_flow_capacity=500,
         ...     full_load_time_limit=3000,
         ... )
         >>> my_extra_pricing.full_load_time_limit
@@ -70,14 +67,14 @@ class FlowPricing(Node):
         name,
         bus_in,
         bus_out,
-        virtual_capacity: float | int | None = None,
+        virtual_flow_capacity: float | int | None = None,
         cost_unlimited=0.0,
         cost_limited=None,
         full_load_time_limit: float | int | None = None,
         maximum_unlimited_path=None,
         maximum_limited_path=None,
     ):
-        if full_load_time_limit is not None and virtual_capacity is None:
+        if full_load_time_limit is not None and virtual_flow_capacity is None:
             raise ValueError("full_load_time_limit cannot be set to infinity")
 
         super().__init__(label=name)
@@ -96,7 +93,9 @@ class FlowPricing(Node):
 
             self.subnode(
                 Converter,
-                inputs={internal_bus: Flow(nominal_capacity=virtual_capacity)},
+                inputs={
+                    internal_bus: Flow(nominal_capacity=virtual_flow_capacity)
+                },
                 outputs={bus_out: Flow()},
                 local_name="flow_price_converter_limit",
             )
@@ -105,7 +104,7 @@ class FlowPricing(Node):
                 Converter,
                 inputs={
                     bus_in: Flow(
-                        nominal_capacity=virtual_capacity,
+                        nominal_capacity=virtual_flow_capacity,
                         variable_costs=cost_limited,
                         full_load_time_max=full_load_time_limit,
                         maximum=maximum_limited_path,
@@ -123,7 +122,7 @@ class FlowPricing(Node):
             Converter,
             inputs={
                 bus_in: Flow(
-                    nominal_capacity=virtual_capacity,
+                    nominal_capacity=virtual_flow_capacity,
                     variable_costs=cost_unlimited,
                     maximum=maximum_unlimited_path,
                 )
@@ -173,7 +172,7 @@ class PeakPricing(Node):
         Fixed costs (basic amount) of the component. Will be added in the
         postprocessing and will be ignored in the optimisation. Only use if you
         know what you are doing.
-    virtual_capacity : float, default: float("inf")
+    virtual_peak_capacity : float, default: float("inf")
         Maximum capacity.
 
     Examples
@@ -189,7 +188,7 @@ class PeakPricing(Node):
     ...     peak_price=500,
     ...     operational_cost=0.2,
     ...     basic_amount=100,
-    ...     virtual_capacity=1000,
+    ...     virtual_peak_capacity=1000,
     ... )
     >>> my_peak_pricing.fix_cost
     100
@@ -203,7 +202,7 @@ class PeakPricing(Node):
         peak_price=None,
         operational_cost=0.0,
         basic_amount=0.0,
-        virtual_capacity=float("inf"),
+        virtual_peak_capacity=float("inf"),
     ):
         super().__init__(label=name)
 
@@ -214,7 +213,7 @@ class PeakPricing(Node):
             inputs={
                 bus_in: Flow(
                     nominal_capacity=Investment(
-                        ep_costs=peak_price, maximum=virtual_capacity
+                        ep_costs=peak_price, maximum=virtual_peak_capacity
                     ),
                     variable_costs=operational_cost,
                 )
