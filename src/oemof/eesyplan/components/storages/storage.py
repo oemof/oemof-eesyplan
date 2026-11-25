@@ -131,14 +131,16 @@ class EnergyStorage(GenericStorage):
         self.initial_storage_level = normalise(initial_storage_level)
         self.end_storage_level = end_storage_level
 
-        if installed_capacity:
-            self.capacity_charge = self.nv * self.c_rate_charge
-            self.capacity_discharge = self.nv * self.c_rate_discharge
-            self.c_rate_charge = None
-            self.c_rate_discharge = None
-        else:
+        if isinstance(self.nv, Investment):
             self.capacity_charge = Investment()
             self.capacity_discharge = Investment()
+            invest_relation_input_capacity = self.c_rate_charge
+            invest_relation_output_capacity = self.c_rate_discharge
+        else:
+            self.capacity_charge = self.nv * self.c_rate_charge
+            self.capacity_discharge = self.nv * self.c_rate_discharge
+            invest_relation_input_capacity = None
+            invest_relation_output_capacity = None
 
         if bus_out is None:
             bus_out = bus_in
@@ -172,8 +174,8 @@ class EnergyStorage(GenericStorage):
             initial_storage_level=self.initial_storage_level,
             inflow_conversion_factor=self.efficiency_charge,
             outflow_conversion_factor=self.efficiency_discharge,
-            invest_relation_input_capacity=self.c_rate_charge,
-            invest_relation_output_capacity=self.c_rate_discharge,
+            invest_relation_input_capacity=invest_relation_input_capacity,
+            invest_relation_output_capacity=invest_relation_output_capacity,
             loss_rate=self.loss_rate,
             fixed_losses_relative=self.fixed_losses_relative,
             fixed_losses_absolute=self.fixed_losses_absolute,
