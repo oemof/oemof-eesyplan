@@ -1,12 +1,12 @@
 from numpy.typing import ArrayLike
-from oemof.solph import Bus
-from oemof.solph import Flow
-from oemof.solph import Investment
-from oemof.solph.components import GenericStorage
 
 from oemof.eesyplan.project import Project
 from oemof.eesyplan.type_checks import normalise
 from oemof.eesyplan.type_checks import test_capacity_not_set
+from oemof.solph import Bus
+from oemof.solph import Flow
+from oemof.solph import Investment
+from oemof.solph.components import GenericStorage
 
 
 class EnergyStorage(GenericStorage):

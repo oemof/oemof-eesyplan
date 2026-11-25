@@ -1,7 +1,10 @@
-from oemof.network import Node
-from oemof.solph import Bus, Flow, Investment
-from oemof.solph.components import Converter
 from pandas.api.types import is_scalar
+
+from oemof.network import Node
+from oemof.solph import Bus
+from oemof.solph import Flow
+from oemof.solph import Investment
+from oemof.solph.components import Converter
 
 
 class FlowPricing(Node):

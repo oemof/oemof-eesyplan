@@ -118,6 +118,9 @@ exclude = ["docs/_build", "**/*.egg-info", "examples/simple_script/tester/*"]
 [tool.flit.module]
 name = "oemof.eesyplan"
 
+[tool.isort]
+force_single_line = true
+
 [tool.ruff]
 extend-exclude = ["static", "ci/templates"]
 line-length = 79
@@ -167,6 +170,3 @@ force-single-line = true
 
 [tool.ruff.format]
 quote-style = "double"
-
-[tool.isort]
-force_single_line = true

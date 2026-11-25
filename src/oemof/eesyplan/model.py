@@ -1,9 +1,4 @@
 import logging
-from decimal import Decimal
-
-from pyomo.core.expr.numvalue import NumericValue
-from pyomo.core.expr.visitor import identify_components
-from pyomo.environ import Objective
 
 from oemof.solph import EnergySystem as SolphES
 from oemof.solph import Model
