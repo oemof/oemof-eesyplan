@@ -1,3 +1,5 @@
+from pandas.api.types import is_scalar
+
 from oemof.network import Node
 from oemof.solph import Bus
 from oemof.solph import Flow
@@ -19,69 +21,48 @@ class FlowPricing(Node):
         part of the optimisation and will be ignored by the solver. Use it only
         if you know what you are doing.
 
-    :Structure:
-      *input*
-        1. from_bus : ``bus_in``
-      *output*
-        1. to_bus : ``bus_out``
-
-    :Optimization:
+    Optimization:
         To be written.
 
-    Parameters
-    ----------
-    name : str
-        Name of the component.
-    bus_in : bus object
-        Input bus from which the energy is drawn.
-    bus_out : bus object
-        Output bus into which the energy is fed.
-    cost_unlimited : float or array-like, default: 0
-        Variable costs fo an unlimited amount of energy.
-    cost_limited : float or array-like or None, default: None
-        Variable costs of a limited amount of energy. Set full load time to
-        define the amount of energy. If no full load time is defined, the
-        cost_limited will be ignored.
-    full_load_time_limit : float or None, default: None
-        Maximum full load time to define the amount of energy for the limited
-        cost. If "None" the limited cost are ignored.
-    maximum_capacity : float, default: float("inf")
-        Maximum capacity.
-    maximum_limited_path : float or array-like or None, default: None
-        Time series, where the
-    maximum_unlimited_path : float or array-like or None, default: None
-        Time series, where the
+    Args:
+        name: |name|
+        bus_in: |bus_in|
+        bus_out: |bus_out|
+        cost_unlimited: |cost_unlimited|
+        cost_limited: |cost_limited|
+        full_load_time_limit: |full_load_time_limit|
+        virtual_flow_capacity: |virtual_flow_capacity|
+        maximum_limited_path: |maximum_limited_path|
+        maximum_unlimited_path: |maximum_unlimited_path|
 
-    Examples
-    --------
-    >>> from oemof.eesyplan import CarrierBus
-    >>> from oemof.eesyplan import FlowPricing
-    >>> bus_in = CarrierBus(name="bus_in")
-    >>> bus_out = CarrierBus(name="bus_out")
-    >>> my_extra_pricing = FlowPricing(
-    ...     name="extra_pricing_node",
-    ...     bus_in=bus_in,
-    ...     bus_out=bus_out,
-    ...     cost_unlimited=0.1,
-    ...     cost_limited=0.2,
-    ...     maximum_capacity=500,
-    ...     full_load_time_limit=3000,
-    ... )
-    >>> my_extra_pricing.full_load_time_limit
-    3000
-    >>> len(my_extra_pricing.subnodes)
-    4
-
-    >>> my_extra_pricing_unlimited = FlowPricing(
-    ...     name="extra_pricing_unlimited",
-    ...     bus_in=bus_in,
-    ...     bus_out=bus_out,
-    ...     cost_unlimited=0.1,
-    ... )
-    >>> my_extra_pricing_unlimited.full_load_time_limit is None
-    True
-    >>> len(my_extra_pricing_unlimited.subnodes)
-    1
+    Examples:
+        >>> from oemof.eesyplan import CarrierBus
+        >>> from oemof.eesyplan import FlowPricing
+        >>> bus_in = CarrierBus(name="bus_in")
+        >>> bus_out = CarrierBus(name="bus_out")
+        >>> my_extra_pricing = FlowPricing(
+        ...     name="extra_pricing_node",
+        ...     bus_in=bus_in,
+        ...     bus_out=bus_out,
+        ...     cost_unlimited=0.1,
+        ...     cost_limited=0.2,
+        ...     virtual_flow_capacity=500,
+        ...     full_load_time_limit=3000,
+        ... )
+        >>> my_extra_pricing.full_load_time_limit
+        3000
+        >>> len(my_extra_pricing.subnodes)
+        4
+        >>> my_extra_pricing_unlimited = FlowPricing(
+        ...     name="extra_pricing_unlimited",
+        ...     bus_in=bus_in,
+        ...     bus_out=bus_out,
+        ...     cost_unlimited=0.1,
+        ... )
+        >>> my_extra_pricing_unlimited.full_load_time_limit is None
+        True
+        >>> len(my_extra_pricing_unlimited.subnodes)
+        1
     """
 
     def __init__(
@@ -89,14 +70,14 @@ class FlowPricing(Node):
         name,
         bus_in,
         bus_out,
-        maximum_capacity=None,
+        virtual_flow_capacity: float | int | None = None,
         cost_unlimited=0.0,
         cost_limited=None,
-        full_load_time_limit=None,
+        full_load_time_limit: float | int | None = None,
         maximum_unlimited_path=None,
         maximum_limited_path=None,
     ):
-        if full_load_time_limit is not None and maximum_capacity is None:
+        if full_load_time_limit is not None and virtual_flow_capacity is None:
             raise ValueError("full_load_time_limit cannot be set to infinity")
 
         super().__init__(label=name)
@@ -104,13 +85,20 @@ class FlowPricing(Node):
         self.full_load_time_limit = full_load_time_limit
 
         if full_load_time_limit is not None:
+            if not is_scalar(full_load_time_limit):
+                raise ValueError(
+                    "The parameter 'full_load_time_limit' of class "
+                    "'FlowPricing` must be a scalar"
+                )
             internal_bus = self.subnode(
                 Bus, local_name="internal_bus_flow_price"
             )
 
             self.subnode(
                 Converter,
-                inputs={internal_bus: Flow(nominal_capacity=maximum_capacity)},
+                inputs={
+                    internal_bus: Flow(nominal_capacity=virtual_flow_capacity)
+                },
                 outputs={bus_out: Flow()},
                 local_name="flow_price_converter_limit",
             )
@@ -119,7 +107,7 @@ class FlowPricing(Node):
                 Converter,
                 inputs={
                     bus_in: Flow(
-                        nominal_capacity=maximum_capacity,
+                        nominal_capacity=virtual_flow_capacity,
                         variable_costs=cost_limited,
                         full_load_time_max=full_load_time_limit,
                         maximum=maximum_limited_path,
@@ -137,7 +125,7 @@ class FlowPricing(Node):
             Converter,
             inputs={
                 bus_in: Flow(
-                    nominal_capacity=maximum_capacity,
+                    nominal_capacity=virtual_flow_capacity,
                     variable_costs=cost_unlimited,
                     maximum=maximum_unlimited_path,
                 )
@@ -187,7 +175,7 @@ class PeakPricing(Node):
         Fixed costs (basic amount) of the component. Will be added in the
         postprocessing and will be ignored in the optimisation. Only use if you
         know what you are doing.
-    maximum_capacity : float, default: float("inf")
+    virtual_peak_capacity : float, default: float("inf")
         Maximum capacity.
 
     Examples
@@ -203,7 +191,7 @@ class PeakPricing(Node):
     ...     peak_price=500,
     ...     operational_cost=0.2,
     ...     basic_amount=100,
-    ...     maximum_capacity=1000,
+    ...     virtual_peak_capacity=1000,
     ... )
     >>> my_peak_pricing.fix_cost
     100
@@ -217,7 +205,7 @@ class PeakPricing(Node):
         peak_price=None,
         operational_cost=0.0,
         basic_amount=0.0,
-        maximum_capacity=float("inf"),
+        virtual_peak_capacity=float("inf"),
     ):
         super().__init__(label=name)
 
@@ -228,7 +216,7 @@ class PeakPricing(Node):
             inputs={
                 bus_in: Flow(
                     nominal_capacity=Investment(
-                        ep_costs=peak_price, maximum=maximum_capacity
+                        ep_costs=peak_price, maximum=virtual_peak_capacity
                     ),
                     variable_costs=operational_cost,
                 )

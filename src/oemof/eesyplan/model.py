@@ -90,5 +90,5 @@ def optimise(energy_system, solver="cbc", debug=False):
         skwargs = {"tee": True, "keepfiles": False}
     else:
         skwargs = {}
-    results = optimization_model.solve(solver=solver, solve_kwargs=skwargs)
-    return results
+
+    return optimization_model.solve(solver=solver, solve_kwargs=skwargs)

@@ -11,7 +11,7 @@ from oemof.datapackage.resultpackage import read
 from oemof.datapackage.resultpackage import write
 
 
-def export_results(results, path, component_type_mapping=None):
+def export_results(results, path, component_type_mapping=None, zip=False):
     # ToDo The following lines are neccessary until the bug is fixed in solph
     for key in results.keys():
         if key in ["Solver", "Problem", "Solution"]:
@@ -23,9 +23,10 @@ def export_results(results, path, component_type_mapping=None):
     # ToDo End of temporary fix
 
     if isinstance(path, str):
-        path = Path(str)
+        path = Path(path)
+
     write.export_results_to_datapackage(
-        results=results, base_path=path, zip=False
+        results=results, base_path=path, zip=zip
     )
     logging.info(f"Exported results to {path.resolve()}")
 
@@ -55,7 +56,8 @@ def export_results(results, path, component_type_mapping=None):
                 "path": f"results/{fname}",
                 "format": "json",
                 "kind": "typemap",
-                "description": "Name of the components of the energy system mapped to their type",
+                "description": "Name of the components of the energy system "
+                "mapped to their type",
             }
         )
 
@@ -78,16 +80,10 @@ def export_results(results, path, component_type_mapping=None):
                 df_opex[(i, o)] = variable_costs * flow_values[(i, o)]
 
         df_opex = df_opex.reset_index(drop=True)
-        if df_opex.index.name is None:
-            df_opex.index.name = "index"
-
-        if not isinstance(df_opex.columns, pd.MultiIndex):
-            if all(
-                isinstance(c, tuple) and len(c) == 2 for c in df_opex.columns
-            ):
-                df_opex.columns = pd.MultiIndex.from_tuples(
-                    df_opex.columns, names=["from", "to"]
-                )
+        df_opex.index.name = "index"
+        df_opex.columns = pd.MultiIndex.from_tuples(
+            df_opex.columns, names=["from", "to"]
+        )
 
         res = package.get_resource("variable_costs")
         out_csv = path / res.descriptor["path"]

@@ -1,3 +1,4 @@
+from oemof.eesyplan.type_checks import normalise
 from oemof.solph import Bus as SolphBus
 from oemof.solph import Flow
 from oemof.solph.components import Sink
@@ -6,7 +7,7 @@ from oemof.solph.components import Source
 
 class CarrierBus(SolphBus):
     """
-    Bus with carrier information
+    Bus with carrier information.
 
     Args:
         name: |name|
@@ -26,7 +27,7 @@ class CarrierBus(SolphBus):
         >>> h2_bus = CarrierBus(name="h2_net", carrier="hydrogen",
         ...                     excess_cost=0, shortage_cost=99)
         >>> h2_bus
-        <Bus 'h2_net', carrier='hydrogen', shortage: 99, excess: 0.0>
+        <Bus 'h2_net', carrier='hydrogen', shortage: 99.0, excess: 0.0>
     """
 
     def __init__(
@@ -40,29 +41,27 @@ class CarrierBus(SolphBus):
         super().__init__(label=name, balanced=balanced)
         self.carrier = carrier
         self.name = name
-        if excess_cost is not None:
-            excess_cost = float(excess_cost)
-        self.excess_cost = excess_cost
-        self.shortage_cost = shortage_cost
+        self.excess_cost = normalise(excess_cost)
+        self.shortage_cost = normalise(shortage_cost)
 
-        if excess_cost is not None:
+        if self.excess_cost is not None:
             self.subnode(
                 Sink,
                 local_name="excess",
                 inputs={
                     self: Flow(
-                        variable_costs=excess_cost,
+                        variable_costs=self.excess_cost,
                     )
                 },
             )
 
-        if shortage_cost is not None:
+        if self.shortage_cost is not None:
             self.subnode(
                 Source,
                 local_name="shortage",
                 outputs={
                     self: Flow(
-                        variable_costs=shortage_cost,
+                        variable_costs=self.shortage_cost,
                     )
                 },
             )

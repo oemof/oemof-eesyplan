@@ -1,78 +1,40 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 
 
 class ElectricalTransformator(Converter):
-    def __init__(
-        self,
-        name: str,
-        bus_in_electricity: CarrierBus,
-        bus_out_electricity: CarrierBus,
-        project_data: Project,
-        efficiency: float | int | ArrayLike = 0.3,  # CHECK
-        age_installed: float | int = 0,
-        installed_capacity: float | int | None = None,
-        maximum_capacity: float | int | None = None,
-        capex_spec: float | int = 1000,
-        opex_spec: float | int | ArrayLike = 10,  # CHECK
-        variable_costs: float | int | ArrayLike = 0,
-        lifetime: float | int = 20,
-    ):
-        """
-        This is an Electrical transformator, e.g. for different voltage levels
+    """
+    Electrical transformator, e.g. for different voltage levels.
 
-        This class represents an electrical conversion of any kind
+    This class represents an electrical conversion of any kind.
 
-        .. important ::
-            The efficiency parameter determines the conversion rate
-            from electricity input to electricity output.
+    .. important::
+        The efficiency parameter determines the conversion rate
+        from electricity input to electricity output.
 
-        Structure
-        ---------
-          *input*
-            1. from_bus : Electricity
-          *output*
-            1. to_bus : Electricity
+    Optimisation:
+        The characteristic quantity of the optimisation is the *maximum
+        power-output* of the transformer given in kW.
 
-        Optimisation
-        ------------
-          The characteristic quantity of the optimization is the *maximum
-          power-output* of the Transformer given in kW
+    Args:
+        name: |name|
+        bus_in_electricity: |bus_in_electricity|
+        bus_out_electricity: |bus_out_electricity|
+        project_data: |project_data|
+        efficiency: (optional) -- |efficiency|
+        age_installed: (optional) -- |age_installed|
+        installed_capacity: (optional) -- |installed_capacity|
+        maximum_capacity: (optional) -- |maximum_capacity|
+        capex_spec: (optional) -- |capex_spec|
+        opex_spec: (optional) -- |opex_spec|
+        variable_costs: (optional) -- |variable_costs|
+        lifetime: (optional) -- |lifetime|
 
-        Parameters
-        ----------
-        name : str
-            |name|
-        bus_in_electricity : CarrierBus
-            |bus_in_electricity|
-        bus_out_electricity : CarrierBus
-            |bus_out_electricity|
-        project_data : Project object
-            |project_data|
-        efficiency : float, optional (default: 0.3)
-            |efficiency|
-        age_installed : float or int, optional (default: 0)
-            |age_installed|
-        installed_capacity : float or None (default: None)
-            |installed_capacity|
-        maximum_capacity : float or None (default: None)
-            |maximum_capacity|
-        capex_spec : float, optional (default: 1000)
-            |capex_spec|
-        opex_spec : float, optional (default: 10)
-            |opex_spec|
-        variable_costs : float, optional (default: 0)
-            |variable_costs|
-        lifetime : int, optional (default: 20)
-            |lifetime|
-
-        Examples
-        --------
-
+    Examples:
         >>> from oemof.eesyplan import Project
         >>> from oemof.eesyplan import CarrierBus
         >>> el_bus_in = CarrierBus(name="el_bus_in")
@@ -92,8 +54,23 @@ class ElectricalTransformator(Converter):
         ...         name="Project_X", economic_period=20, tax=0,
         ...         discount_factor=0.01),
         ...     )
+    """
 
-        """
+    def __init__(
+        self,
+        name: str,
+        bus_in_electricity: Bus,
+        bus_out_electricity: Bus,
+        project_data: Project,
+        efficiency: float | int | ArrayLike = 0.3,  # CHECK
+        age_installed: float | int = 0,
+        installed_capacity: float | int | None = None,
+        maximum_capacity: float | int | None = None,
+        capex_spec: float | int = 1000,
+        opex_spec: float | int | ArrayLike = 10,  # CHECK
+        variable_costs: float | int | ArrayLike = 0,
+        lifetime: float | int = 20,
+    ):
         nv = project_data.create_invest_if_wanted(
             capex_spec=capex_spec,
             opex_spec=opex_spec,

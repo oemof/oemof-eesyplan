@@ -32,6 +32,7 @@ from oemof.eesyplan.components.production.pv_plant import PvPlant
 from oemof.eesyplan.components.production.solar_thermal_plant import (
     SolarThermalPlant,
 )
+from oemof.eesyplan.components.production.source import Source
 from oemof.eesyplan.components.production.wind_turbine import WindTurbine
 from oemof.eesyplan.components.providers.dso import DSO
 from oemof.eesyplan.components.providers.dso_electricity import DsoElectricity
@@ -46,24 +47,51 @@ from oemof.eesyplan.components.storages.hydrogen_storage import HydrogenStorage
 from oemof.eesyplan.components.storages.storage import EnergyStorage
 from oemof.eesyplan.components.storages.thermal_storage import ThermalStorage
 from oemof.eesyplan.components.transport.heat import HeatingPipe
+from oemof.eesyplan.components.virtual.pricing import FlowPricing
+from oemof.eesyplan.components.virtual.pricing import PeakPricing
 from oemof.eesyplan.project import Project
-from oemof.solph.components import Source
 
 TYPEMAP = {
-    "a": Demand,
-    "b": Sink,
-    "c": Excess,
-    "d": Shortage,
-    "e": AuxiliaryHeat,
-    "f": Commodity,
-    "g": DSO,
-    "h": EnergyStorage,
-    "i": HeatingNetwork,
-    "j": HeatingPipe,
+    "CarrierBus": CarrierBus,
+    "HeatingNetwork": HeatingNetwork,
+    "Excess": Excess,
+    "Shortage": Shortage,
+    "AuxiliaryHeat": AuxiliaryHeat,
+    "Boiler": Boiler,
+    "ChpFixedRatio": ChpFixedRatio,
+    "ChpVariableRatio": ChpVariableRatio,
+    "ElectricalTransformator": ElectricalTransformator,
+    "Electrolyzer": Electrolyzer,
+    "FuelCell": FuelCell,
+    "FuelGenerator": FuelGenerator,
+    "HeatPump": HeatPump,
+    "Demand": Demand,
+    "ElectricityDemand": ElectricityDemand,
+    "FuelDemand": FuelDemand,
+    "HeatDemand": HeatDemand,
+    "H2Demand": H2Demand,
+    "Sink": Sink,
+    "BiogasPlant": BiogasPlant,
+    "Commodity": Commodity,
+    "GeothermalPlant": GeothermalPlant,
+    "PvPlant": PvPlant,
+    "SolarThermalPlant": SolarThermalPlant,
+    "WindTurbine": WindTurbine,
+    "DSO": DSO,
+    "DsoElectricity": DsoElectricity,
+    "DsoFuel": DsoFuel,
+    "DsoHeat": DsoHeat,
+    "DsoHydrogen": DsoHydrogen,
+    "ElectricalStorage": ElectricalStorage,
+    "FuelStorage": FuelStorage,
+    "HydrogenStorage": HydrogenStorage,
+    "EnergyStorage": EnergyStorage,
+    "ThermalStorage": ThermalStorage,
+    "HeatingPipe": HeatingPipe,
+    "FlowPricing": FlowPricing,
+    "PeakPricing": PeakPricing,
     "Battery": ElectricalStorage,
     "Bus": CarrierBus,
-    "CarrierBus": CarrierBus,  # back compatibility
-    "HeatingNetwork": HeatingNetwork,
     "heating_network": HeatingNetwork,
     "demand": ElectricityDemand,
     "Source": Source,

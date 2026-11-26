@@ -1,25 +1,25 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.project import Project
+from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Converter
 
 
 class FuelGenerator(Converter):
     """
-    Fuel generator for electricity generation e.g. fuel generator.
+    Fuel generator for electricity generation.
 
     This class represents a fuel generator that converts fuel
     into electrical energy for backup or primary power generation.
 
-    .. important ::
+    .. important::
         The efficiency parameter determines the conversion rate
         from fuel to electrical power.
 
     Optimisation:
-        The characteristic quantity of the optimization is the *maximum
-        power-output* of the Generator given in kW
+        The characteristic quantity of the optimisation is the
+        *maximum power-output* of the fuel generator given in kW.
 
     Args:
         name: |name|
@@ -60,8 +60,8 @@ class FuelGenerator(Converter):
     def __init__(
         self,
         name: str,
-        bus_in_fuel: CarrierBus,
-        bus_out_electricity: CarrierBus,
+        bus_in_fuel: Bus,
+        bus_out_electricity: Bus,
         project_data: Project,
         efficiency: float | int | ArrayLike = 0.3,  # CHECK
         age_installed: float | int = 0,

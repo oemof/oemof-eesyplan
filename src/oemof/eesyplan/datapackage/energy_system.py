@@ -6,10 +6,10 @@ from pathlib import Path
 from datapackage import Package
 
 from oemof.datapackage import datapackage  # noqa
-from oemof.eesyplan import TYPEMAP
-from oemof.eesyplan import export_results
+from oemof.eesyplan.datapackage.results import export_results
 from oemof.eesyplan.io import unzip_package
 from oemof.eesyplan.model import optimise
+from oemof.eesyplan.typemap import TYPEMAP
 from oemof.network import graph
 from oemof.solph import EnergySystem
 from oemof.tools.debugging import ExperimentalFeatureWarning
@@ -184,14 +184,14 @@ def solve_energy_system_from_dp(
     results = optimise(es)
     if results_path is None:
         return results
-    else:
-        results_path.mkdir(parents=True, exist_ok=True)
-        export_results(
-            results,
-            path=results_path,
-            component_type_mapping=get_component_type_mapping_from_dp(path),
-        )
-        return results_path
+    results_path = Path(results_path)
+    results_path.mkdir(parents=True, exist_ok=True)
+    export_results(
+        results,
+        path=results_path,
+        component_type_mapping=get_component_type_mapping_from_dp(path),
+    )
+    return results_path
 
 
 def cli():
