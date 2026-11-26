@@ -64,7 +64,7 @@ project = "oemof-eesyplan"
 year = "2025-2026"
 author = "Open Plan Community"
 copyright = f"{year}, {author}"
-version = release = "0.0.1"
+version = release = "0.0.9"
 language = "en"
 
 
