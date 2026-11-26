@@ -1,6 +1,6 @@
 """oemof.eesyplan - SHORT DESCRIPTION"""
 
-__version__ = "0.0.1"
+__version__ = "0.0.9"
 
 from oemof.eesyplan.components.buses.carrier import CarrierBus
 from oemof.eesyplan.components.buses.network import HeatingNetwork
