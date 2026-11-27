@@ -30,7 +30,8 @@ def export_results(results, path, component_type_mapping=None, zip=False):
     )
     logging.info(f"Exported results to {path.resolve()}")
 
-    # TODO add this as results key in the future (NB one need to modify export_results_to_datapackage
+    # TODO add this as results key in the future (NB one need to modify
+    #  export_results_to_datapackage
     #  to allow exporting json format
     if isinstance(component_type_mapping, dict):
         results_root = path / "results"

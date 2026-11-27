@@ -194,7 +194,9 @@ class DashboardResults(ImportResults):
                 self._data[key] = value
             else:
                 raise TypeError(
-                    f"The value you would like to assign to the DashboardResults instance under the key {key} is not a dataframe or a dict"
+                    f"The value you would like to assign to the "
+                    f"DashboardResults instance under the key {key} is not a "
+                    f"dataframe or a dict"
                 )
         else:
             if key in self._core_keys:
@@ -305,7 +307,8 @@ class DashboardResults(ImportResults):
                     tables[k] = json.loads(json.dumps(table))
                 else:
                     raise TypeError(
-                        f"The tables should either be dict or panda Dataframe and not {type(table)} (for key '{k}')"
+                        f"The tables should either be dict or panda Dataframe "
+                        f"and not {type(table)} (for key '{k}')"
                     )
             else:
                 tables[k] = self[k]

@@ -26,7 +26,7 @@ classifiers = [
   "Topic :: Utilities",
 ]
 dependencies = [
-  "oemof-datapackage",
+  "oemof-datapackage>= 0.0.7",
   "oemof-demand",
   "oemof-network",
   "oemof.solph[solver] >= 0.6.7",
