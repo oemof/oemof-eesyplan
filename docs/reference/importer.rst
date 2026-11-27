@@ -1,11 +1,23 @@
-Importer
-========
+Preliminary calculations
+========================
 
-Calculation of the coefficient of performance (COP) of heat pumps, either
-simplified or via TESPy.
+The following functions calculate input parameters for component classes using readily available data, such as weather data. They generate more complex inputs, including consumption profiles, feed-in time series and coefficient of performance (COP) time series.
+
+Auxiliary heat calculation
+--------------------------
+
+
+
+.. dropdown:: Auxiliary heat calculation
+
+    .. automodule:: oemof.eesyplan.importer.auxiliary_heat_fraction
+        :members:
+        :undoc-members:
+        :show-inheritance:
+
 
 COP calculation
-----------------
+---------------
 
 Calculate the performance factor using the temperature of the source and the
 supply temperature.
@@ -18,15 +30,14 @@ supply temperature.
         :show-inheritance:
 
 
-Auxiliary heat calculation
---------------------------
+Feed-in profiles
+----------------
 
-Calculate the performance factor using the temperature of the source and the
-supply temperature.
+Generation of PV and Wind energy feed-in time serie, based on pvlib and windpowerlib.
 
-.. dropdown:: Auxiliary heat calculation
+.. dropdown:: PV Time Series (pvlib)
 
-    .. automodule:: oemof.eesyplan.importer.auxiliary_heat_fraction
+    .. automodule:: oemof.eesyplan.importer.create_timeseries_pv
         :members:
         :undoc-members:
         :show-inheritance:
@@ -46,30 +57,8 @@ based on BDEW standard load profiles.
         :show-inheritance:
 
 
-.. dropdown:: Time Series Generation
-
-    .. automodule:: oemof.eesyplan.importer.create_timeseries
-        :members:
-        :undoc-members:
-        :show-inheritance:
-
-
-Feed-in profiles
------------------
-
-Generation of PV or wind feed-in time series (currently inactive, based on
-pvlib and windpowerlib).
-
-.. dropdown:: PV Time Series (pvlib)
-
-    .. automodule:: oemof.eesyplan.importer.create_timeseries_pv
-        :members:
-        :undoc-members:
-        :show-inheritance:
-
-
 Weather data
--------------
+------------
 
 Reading and processing of DWD test reference year weather data.
 
