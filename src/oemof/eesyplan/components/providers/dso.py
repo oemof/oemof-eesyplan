@@ -1,6 +1,6 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.type_checks import normalise
+from oemof.eesyplan.core.type_checks import normalise
 from oemof.network import Node
 from oemof.solph import Bus
 from oemof.solph import Flow
@@ -70,6 +70,8 @@ class DSO(Node):
         self.fix_cost = normalise(basic_amount)
 
         super().__init__(label=self.name)
+
+        # ToDo: Error if feedin_tariff is higher than energy_price!
 
         if energy_price is None and feedin_tariff is None:
             raise ValueError(

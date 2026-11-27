@@ -1,12 +1,12 @@
 from unittest.mock import Mock
 from unittest.mock import patch
 
-from oemof.eesyplan import model
+from oemof.eesyplan.core import model
 
 
 def test_results_init():
     with patch(
-        "oemof.eesyplan.model.SolphResults.__init__", return_value=None
+        "oemof.eesyplan.core.model.SolphResults.__init__", return_value=None
     ) as mock_base_init:
         instance = model.Results(object())
         assert isinstance(instance, model.Results)
@@ -14,7 +14,7 @@ def test_results_init():
 
 
 def test_optimise_debug():
-    with patch("oemof.eesyplan.model.Model") as mock_model_class:
+    with patch("oemof.eesyplan.core.model.Model") as mock_model_class:
         mock_model = mock_model_class.return_value
         mock_model.solve.return_value = "ok"
         result = model.optimise(Mock(), solver="cbc", debug=True)
@@ -25,7 +25,7 @@ def test_optimise_debug():
 
 
 def test_optimise_default():
-    with patch("oemof.eesyplan.model.Model") as mock_model_class:
+    with patch("oemof.eesyplan.core.model.Model") as mock_model_class:
         mock_model = mock_model_class.return_value
         mock_model.solve.return_value = "ok"
         result = model.optimise(Mock())

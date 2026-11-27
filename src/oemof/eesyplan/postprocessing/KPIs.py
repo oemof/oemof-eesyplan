@@ -3,11 +3,11 @@ import re
 
 import pandas as pd
 
-from oemof.eesyplan import CarrierBus
-from oemof.eesyplan import Demand
-from oemof.eesyplan import FuelDemand
-from oemof.eesyplan import H2Demand
-from oemof.eesyplan import HeatDemand
+from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.components.demand.demand import Demand
+from oemof.eesyplan.components.demand.fuel_demand import FuelDemand
+from oemof.eesyplan.components.demand.heat_demand import HeatDemand
+from oemof.eesyplan.components.demand.hydrogen_demand import H2Demand
 from oemof.solph.components import Source
 
 # Empty pyomo solver metadata that older exports still contain. Newer ones
@@ -15,12 +15,14 @@ from oemof.solph.components import Source
 META_KEYS = {"Problem", "Solution", "Solver"}
 
 # Namespace in the results object that holds all calculated eesyplan KPIs.
+# ToDo: Should be stored as kpis.csv and not json.
 EESYPLAN_KEY = "eesyplan"
 
 # All eesyplan demand components (they are the sinks that consume energy).
 DEMAND_TYPES = (Demand, FuelDemand, H2Demand, HeatDemand)
 
 
+# ToDo: All calculations of KPIs should be stand-alone functions.
 def calculate_all_kpis(results, es, project_duration=None):
     """Calculate every KPI and write it into the results object.
 
@@ -28,15 +30,19 @@ def calculate_all_kpis(results, es, project_duration=None):
     ``results["eesyplan"]``. The order matters: :func:`LCOE` uses the
     ``total_cost`` calculated first.
     """
-    total_cost(results, es)
-    LCOE(results, es)
-    renewable_share(results, es)
+    kpis = {
+        "total_cost": total_cost(results, es),
+        "lcoe": LCOE(results, es),
+        "renewable_share": renewable_share(results, es),
+    }
     yearly_project_costs(results, es)
     project_cost_table(results, es, project_duration=project_duration)
+    return pd.Series(kpis)
 
 
 def compare_KPIs(datasets, es=None, name="Scenario") -> pd.DataFrame:
-    """Compare key KPIs of one or more scenarios in a single table.
+    """
+    Compare key KPIs of one or more scenarios in a single table.
 
     ``datasets`` maps the name of a scenario to its ``(results, es)``
     pair.  A single scenario can also be passed directly as a
@@ -71,6 +77,7 @@ def compare_KPIs(datasets, es=None, name="Scenario") -> pd.DataFrame:
     ValueError
         If ``datasets`` is empty or an entry is no ``(results, es)``
         pair.
+
     """
     if es is not None:
         datasets = {name: (datasets, es)}
@@ -305,6 +312,7 @@ def LCOE(results, es):
             for column in considered_flows
         ],
     )
+    return lcoe
 
 
 def _norm_label(label):
@@ -359,8 +367,9 @@ def renewable_share(results, es):
         )
         total_energy += energy
         renewable_energy += energy * _renewable_fraction(node)
-
-    _store_result(results, "renewable_share", renewable_energy / total_energy)
+    share = renewable_energy / total_energy
+    _store_result(results, "renewable_share", share)
+    return share
 
 
 def _top_level_node(node):
@@ -736,24 +745,22 @@ def _total_variable_costs(results):
 def yearly_project_costs(results, es):
     """Yearly project costs per component as a table.
 
-    The model bundles investment and fixed operation costs into a single
-    annual ``investment_costs`` value per component.  Because the annuity
-    can not be recovered without the project data, it is reconstructed as
+        The model bundles investment and fixed operation costs into a single
+        annual ``investment_costs`` value per component.  Because the annuity
+        can not be recovered without the project data, it is reconstructed as
+        ``capex = investment_costs - opex`` with ``opex = opex_spec *
+        capacity``.  The columns are:
 
-        capex = investment_costs - opex
+        - ``Component``: readable label of every top-level component
+        - ``Annualized investment cost``: annualised investment cost (annuity)
+        - ``Fix operational costs``: fixed operation & maintenance cost
+        - ``Dispatch costs``: sum of the variable costs of all flows of the
+          component over the whole horizon
 
-    with ``opex = opex_spec * capacity``.  The columns are:
-
-    Component                   readable label of every top-level component
-    Annualized investment cost  annualised investment cost (annuity)
-    Fix operational costs       fixed operation & maintenance cost
-    Dispatch costs              sum of the variable costs of all flows of the
-                                component over the whole horizon
-
-    Components with an ``installed_capacity`` are not optimised and
-    therefore carry no investment cost in the model.  Their replacement
-    within the project duration is added as annualised investment cost
-    (see :func:`_component_costs`).
+        Components with an ``installed_capacity`` are not optimised and
+        therefore carry no investment cost in the model.  Their replacement
+        within the project duration is added as annualised investment cost
+        (see :func:`_component_costs`).
 
     The flat fix costs ``investment_fix_cost`` (annualised) and
     ``annual_fix_cost`` are not tied to a capacity.  They are added to
@@ -836,32 +843,37 @@ def _project_duration(es, project_duration=None):
 
 
 def project_cost_table(results, es, project_duration=None):
-    """Total project costs per component over the project duration.
+    """
+    Total project costs per component over the project duration.
 
     Unlike :func:`yearly_project_costs` this table is not annualised and
     spans the whole project duration (``economic_period``):
 
-    Component          readable label of every top-level component
-    Investment cost in year 0 (not including reinvestment)
-                       one-time investment ``capex_spec * capacity``
-    Reinvestment cost over the full project
-                       full project investment (``annualized investment
-                       cost * project_duration``) minus the year 0 investment
-    Fix operational costs over project duration
-                       ``opex_spec * capacity * project_duration``
-    Dispatch costs over project duration
-                       yearly variable costs * ``project_duration``
+    ``Component``: readable label of every top-level component
+
+    ``Investment cost in year 0 (not including reinvestment)``: one-time
+      investment ``capex_spec * capacity``
+
+    ``Reinvestment cost over the full project``: full project investment
+      (``annualised investment cost * project_duration``) minus the year 0
+      investment
+
+    ``Fix operational costs over project duration``:
+      ``opex_spec * capacity * project_duration``
+
+    ``Dispatch costs over project duration``: yearly variable
+      costs * ``project_duration``
 
     Components with an ``installed_capacity`` are not optimised.  They
     were built before the project, so they have no investment cost in
     year 0, but their operational costs are accounted for over the
-    project duration.  Reinvestments for installed components are
-    included based on their annualized replacement cost.
+    project duration. Reinvestment for installed components are
+    included based on their annualised replacement cost.
 
     The flat fix costs are included as well: the ``investment_fix_cost``
     of new components is part of the year 0 investment, its annualised
-    value is part of the reinvestment cost over the full project and the
-    ``annual_fix_cost`` is part of the fixed operational costs.
+    value is part of the reinvestment cost over the full project
+    and the ``annual_fix_cost`` is part of the fixed operational costs.
 
     The project duration is read from the ``economic_period`` of the
     project attached to the energy system. If none is found, a warning is
@@ -1016,8 +1028,10 @@ def total_cost(results, es):
     The result is written to ``results["eesyplan"]["total_cost"]``.
     """
     objective = get_objective(results)
+    cost = objective + _additional_installed_costs(results, es)
     _store_result(
         results,
         "total_cost",
-        objective + _additional_installed_costs(results, es),
+        cost,
     )
+    return cost

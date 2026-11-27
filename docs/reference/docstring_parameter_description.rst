@@ -7,13 +7,32 @@
     lifetime, the replacement costs of the asset will be taken into
     account [a] (Natural number).
 
+.. |air_pressure_hpa| replace:: Air pressure at station height [hPa]
+    (pd.Series or None).
+
+.. |air_temperature_c| replace:: Air temperature at 2 m above ground [°C]
+    (pd.Series or None).
+
+.. |albedo| replace:: Reflection fraction of sunlight in the surrounding
+    area (numeric, default: 0.25).
+
 .. |annual_fix_cost| replace:: Fixed annual cost of the asset that is
     independent of its capacity, used in postprocessing only.
     (non-negative real number).
 
+.. |annual_heat_demand| replace:: Total heat demand in the chosen time
+    period (numeric).
+
+.. |atmospheric_radiation_wm2| replace:: Atmospheric longwave radiation on
+    the horizontal plane [W/m²]. Positive means downward (pd.Series or None).
+
 .. |auxiliary_heat_fraction| replace:: Share of the heat output that has
     to be provided by the auxiliary heat input in order to raise the heat
     flow to the supply temperature. [-] (real number between 0 and 1).
+
+.. |azimuth| replace:: For fixed tilt: azimuth angle of the module
+    orientation in degrees (North is 0°, East is 90°). For a tracker:
+    azimuth angle of the rotation axis (numeric).
 
 .. |balanced| replace:: Choose whether the sum of all inflows into the
     bus must equal the sum of all outflows at every timestep (energy
@@ -21,7 +40,10 @@
     False).
 
 .. |basic_amount| replace:: Fixed cost charged independently of the energy
-   exchanged with the grid.
+    exchanged with the grid.
+
+.. |building_year| replace:: Building year, used only for residential
+    buildings to estimate insulation (int).
 
 .. |bus| replace:: Connected Bus component through which energy is
     exchanged with the utility grid (DSO). [object].
@@ -63,21 +85,6 @@
 .. |bus_out_hydrogen| replace:: Connected Bus component for the hydrogen
     output flow. [object].
 
-.. |capacity| replace:: Nominal capacity of the component [:unit:]
-    (non-negative real number).
-
-.. |capex_spec| replace:: Specific investment costs of the asset related to
-    the installed capacity (CAPEX) in €/:unit:.
-
-.. |carrier| replace:: Energy carrier/medium, such as 'electricity', 'gas',
-    'heat' or 'hydrogen' [-] (string).
-
-.. |commodity| replace:: Commodity or energy carrier provided by the
-    component. [-] (string).
-
-.. |cop| replace:: Coefficient of performance. Ratio of energy output to
-    energy input.
-
 .. |c_rate_charge| replace:: Maximum charging power of the storage relative
     to its nominal storage capacity, e.g. 0.5 for a storage that needs two
     hours to charge completely [1/h] (acceptable values are either a
@@ -88,11 +95,45 @@
     can be emptied within one hour [1/h] (acceptable values are either a
     positive real number or None).
 
+.. |capacity| replace:: Nominal capacity of the component [:unit:]
+    (non-negative real number).
+
+.. |capex_spec| replace:: Specific investment costs of the asset related to
+    the installed capacity (CAPEX) in €/:unit:.
+
+.. |carrier| replace:: Energy carrier/medium, such as 'electricity', 'gas',
+    'heat' or 'hydrogen' [-] (string).
+
+.. |cloud_cover_oktas| replace:: Cloud cover [oktas]. Valid range: 0–8;
+    9 means sky obscured (pd.Series or None).
+
+.. |commodity| replace:: Commodity or energy carrier provided by the
+    component. [-] (string).
+
+.. |cop| replace:: Coefficient of performance. Ratio of energy output to
+    energy input.
+
+.. |cost_limited| replace:: TEXT MISSING
+
+.. |cost_unlimited| replace:: TEXT MISSING
+
 .. |custom_properties| replace:: Additional custom properties attached to the
     component. [-] (dict or None).
 
 .. |custom_properties_flow| replace:: Additional custom properties attached
     to the flow definition of the component. [-] (dict or None).
+
+.. |diffuse_irradiation_horizontal| replace:: Diffuse solar radiation on
+    the horizontal plane [W/m²] (array-like with hourly timestep).
+
+.. |diffuse_solar_wm2| replace:: Diffuse solar irradiance on the horizontal
+    plane [W/m²]. Positive means downward (pd.Series or None).
+
+.. |direct_irradiation_horizontal| replace:: Direct solar radiation on the
+    horizontal plane [W/m²] (array-like with hourly timestep).
+
+.. |direct_solar_wm2| replace:: Direct solar irradiance on the horizontal
+    plane [W/m²]. Positive means downward (pd.Series or None).
 
 .. |efficiency| replace:: Ratio of the energy delivered at the output of
     the component to the energy drawn at its input. The remaining share is
@@ -143,6 +184,8 @@
 .. |energy_price| replace:: Price of the energy carrier sourced from the
     utility grid. May also be a time series, in €/kWh.
 
+.. |eta_s| replace:: TEXT MISSING
+
 .. |excess_cost| replace:: Cost incurred per unit of energy absorbed by
     the excess sink. Typically set to a high value to penalise and
     thus avoid excess energy in the optimisation results, unless
@@ -157,6 +200,8 @@
 .. |feedin_tariff| replace:: Price received for feeding electricity into the
     grid. May also be a time series, in €/kWh.
 
+.. |file| replace:: TEXT MISSING
+
 .. |fix| replace:: Fixed operation profile of the flow. Can be given as a
     scalar or time series relative to the nominal capacity [-]
     (acceptable values are either a real number, an iterable, or None).
@@ -170,6 +215,8 @@
     relative to the nominal storage capacity [-] (real number between 0
     and 1).
 
+.. |full_load_time_limit| replace:: TEXT MISSING
+
 .. |full_load_time_max| replace:: Maximum number of full load hours the
     asset may accumulate over the optimisation horizon, used e.g. to
     represent licensing or resource limits [h] (acceptable values are
@@ -179,6 +226,9 @@
     asset has to accumulate over the optimisation horizon, e.g. due to
     contractual take-or-pay obligations [h] (acceptable values are either
     a non-negative real number or None).
+
+.. |gcr| replace:: Ground Coverage Ratio: ratio of the module area to the
+    ground area of the module field. Only needed for trackers (numeric).
 
 .. |initial_storage_level| replace:: Initial relative storage level at the
     first timestep, as a factor of the nominal storage capacity [-]
@@ -199,12 +249,19 @@
     that is independent of its capacity, used in postprocessing only.
     (non-negative real number).
 
+.. |latitude| replace:: TEXT MISSING
+
 .. |lifetime| replace:: Number of operational years of the asset before it
     has to be replaced [a] (natural number).
+
+.. |longitude| replace:: TEXT MISSING
 
 .. |loss_rate| replace:: Relative loss of the storage content between two
     consecutive timesteps, applied to the current state of charge [-]
     (real number between 0 and 1).
+
+.. |max_angle| replace:: Maximum tilt angle for tracking systems. Only used
+    for tracker systems (numeric, default: 60°).
 
 .. |maximum| replace:: Maximum operation level of the flow as a factor of
     the nominal capacity [-] (acceptable values are either a real number
@@ -222,9 +279,18 @@
     that may be used for feeding electricity into the grid. [kW]
     (acceptable values are either a non-negative real number or None).
 
+.. |maximum_limited_path| replace:: TEXT MISSING
+
+.. |maximum_unlimited_path| replace:: TEXT MISSING
+
 .. |minimum| replace:: Minimum operation level of the flow as a factor of
     the nominal capacity [-] (acceptable values are either a real number
     between 0 and 1, or None).
+
+.. |mounting_type| replace:: Mounting type (string): "fix tilt" for static
+    systems with one orientation; "fix tilt two directions back to back"
+    for an east-west-like system, where the second orientation is set up
+    automatically; or "tracker" for one-axis tracking systems.
 
 .. |name| replace:: Name of the asset. [-] (Input the name in a
     computer-friendly format, preferably with underscores instead of
@@ -237,6 +303,9 @@
 .. |opex_spec| replace:: Specific operational and maintenance costs of the
     asset related to the installed capacity (opex_spec), in €/(:unit: • a).
 
+.. |outdoor_temperature| replace:: Outside air temperature [°C] (numeric,
+    scalar or iterable).
+
 .. |peak_demand_pricing| replace:: Grid fee to be paid based on the peak
     demand of a given period, in €/kW.
 
@@ -248,8 +317,30 @@
     between two consecutive timesteps as a factor of the nominal capacity
     [-] (acceptable values are either a non-negative real number or None).
 
+.. |pressure_loss_factor_hex| replace:: TEXT MISSING
+
+.. |profile_type| replace:: BDEW heat profile (string). Available profiles:
+    "EFH" or "Single-family house"; "MFH" or "Apartment building";
+    "GHD" or "Commerce/Services general"; "GMF" or "Household-like
+    business enterprises"; "GGA" or "Restaurants"; "GBH" or "Retail and
+    wholesale"; "GMK" or "Metal and automotive"; "GBH" or
+    "Accommodation"; "GKO" or "Local authorities, credit institutions and
+    insurance companies"; "GBD" or "Other operational services"; "GWA" or
+    "Laundries, dry cleaning"; "GGB" or "Horticulture"; "GBA" or "Bakery";
+    "GPD" or "Paper and printing".
+
 .. |project_data| replace:: The framework of the project in which the asset
     is to be optimised.
+
+.. |quality_factor| replace:: TEXT MISSING
+
+.. |quality_flag| replace:: Quality flag regarding selection criteria
+    (pd.Series or None).
+
+.. |refrigerant| replace:: TEXT MISSING
+
+.. |relative_humidity_percent| replace:: Relative humidity at 2 m above
+    ground [%]. Valid range: 1–100 (pd.Series or None).
 
 .. |relative_losses| replace:: Relative heat losses of the pipe per
     timestep as a factor of the transferred heat [-] (acceptable values
@@ -285,6 +376,12 @@
     discharged, the state of charge is represented by the value 0 [-] (real
     number between 0 and 1).
 
+.. |start_datetime| replace:: Timestamp in datetime format (str, default:
+    "2021-01-01 0:00").
+
+.. |system_eff| replace:: Performance ratio of the total PV system, usually
+    around 0.8 (numeric).
+
 .. |temp_in_heat| replace:: Temperature of the incoming heat flow
     [°C] (real number above 0).
 
@@ -298,6 +395,25 @@
     that the temperature of the auxiliary heat is assumed to be above this
     temperature. [°C] (real number above 0).
 
+.. |temperature_aux| replace:: TEXT MISSING
+
+.. |temperature_difference_aux| replace:: TEXT MISSING
+
+.. |temperature_difference_source| replace:: TEXT MISSING
+
+.. |temperature_source| replace:: TEXT MISSING
+
+.. |temperature_supply| replace:: TEXT MISSING
+
+.. |terrestrial_radiation_wm2| replace:: Terrestrial longwave radiation
+    [W/m²]. Negative means upward (pd.Series or None).
+
+.. |tilt| replace:: Tilt angle in degrees: 0° is horizontal and 90° is
+    vertical (numeric).
+
+.. |tz| replace:: Timezone in datetime format (str, default:
+    "Europe/Berlin").
+
 .. |value| replace:: No TEXT
 
 .. |variable_costs| replace:: Costs associated with a flow through or out of
@@ -305,3 +421,18 @@
     operation-dependent costs of a thermal power plant [€/kWh] (acceptable
     values are either a non-negative real number or a series of
     non-negative real numbers).
+
+.. |virtual_flow_capacity| replace:: TEXT MISSING
+
+.. |water_vapor_gkg| replace:: Water vapor content, mixing ratio [g/kg]
+    (pd.Series or None).
+
+.. |wind_class| replace:: "Windy" for exposed buildings on free fields,
+    near the coast or on high ground; "Not windy" for unexposed buildings
+    in villages or cities (str).
+
+.. |wind_direction_deg| replace:: Wind direction at 10 m above ground
+    [degrees]. Valid range: 0–360; 999 means variable (pd.Series or None).
+
+.. |wind_speed_ms| replace:: Wind speed at 10 m above ground [m/s]
+    (pd.Series or None).

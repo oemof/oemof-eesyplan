@@ -7,14 +7,14 @@ from unittest.mock import patch
 
 import pytest
 
-from oemof.eesyplan.gui import select_value
+from oemof.eesyplan.core.gui import select_value
 
 
 class TestSelectValue:
     """Tests for the select_value function."""
 
-    @patch("oemof.eesyplan.gui.ttk")
-    @patch("oemof.eesyplan.gui.tk")
+    @patch("oemof.eesyplan.core.gui.ttk")
+    @patch("oemof.eesyplan.core.gui.tk")
     def test_select_value_with_selection(self, mock_tk, mock_ttk):
         """Test select_value when user makes a selection."""
         mock_root = MagicMock()
@@ -35,8 +35,8 @@ class TestSelectValue:
         assert result == "Option 2"
         mock_root.destroy.assert_called_once()
 
-    @patch("oemof.eesyplan.gui.ttk")
-    @patch("oemof.eesyplan.gui.tk")
+    @patch("oemof.eesyplan.core.gui.ttk")
+    @patch("oemof.eesyplan.core.gui.tk")
     def test_select_value_no_selection(self, mock_tk, mock_ttk):
         """Test select_value when user closes window without selection."""
         mock_root = MagicMock()
@@ -50,8 +50,8 @@ class TestSelectValue:
 
         assert result == "None"
 
-    @patch("oemof.eesyplan.gui.ttk")
-    @patch("oemof.eesyplan.gui.tk")
+    @patch("oemof.eesyplan.core.gui.ttk")
+    @patch("oemof.eesyplan.core.gui.tk")
     def test_select_value_window_properties(self, mock_tk, mock_ttk):
         """Test that window is created with correct properties."""
         mock_root = MagicMock()
@@ -65,8 +65,8 @@ class TestSelectValue:
         mock_root.geometry.assert_called_once_with("450x80")
         mock_root.mainloop.assert_called_once()
 
-    @patch("oemof.eesyplan.gui.ttk")
-    @patch("oemof.eesyplan.gui.tk")
+    @patch("oemof.eesyplan.core.gui.ttk")
+    @patch("oemof.eesyplan.core.gui.tk")
     def test_select_value_combobox_configuration(self, mock_tk, mock_ttk):
         """Test that combobox is configured correctly."""
         mock_root = MagicMock()
@@ -86,8 +86,8 @@ class TestSelectValue:
         mock_combo.pack.assert_called_once()
         mock_combo.bind.assert_called_once_with("<<ComboboxSelected>>", ANY)
 
-    @patch("oemof.eesyplan.gui.ttk")
-    @patch("oemof.eesyplan.gui.tk")
+    @patch("oemof.eesyplan.core.gui.ttk")
+    @patch("oemof.eesyplan.core.gui.tk")
     def test_select_value_empty_choices(self, mock_tk, mock_ttk):
         """Test select_value with empty choices list."""
         mock_root = MagicMock()
@@ -99,8 +99,8 @@ class TestSelectValue:
 
         assert result == "None"
 
-    @patch("oemof.eesyplan.gui.ttk")
-    @patch("oemof.eesyplan.gui.tk")
+    @patch("oemof.eesyplan.core.gui.ttk")
+    @patch("oemof.eesyplan.core.gui.tk")
     def test_select_value_single_choice(self, mock_tk, mock_ttk):
         """Test select_value with a single choice."""
         mock_root = MagicMock()
@@ -120,7 +120,7 @@ class TestSelectValue:
 
         assert result == "Only Option"
 
-    @patch("oemof.eesyplan.gui.tk", None)
+    @patch("oemof.eesyplan.core.gui.tk", None)
     def test_select_value_raises_import_error_when_tkinter_missing(self):
         """Test select_value raises ImportError if tkinter is unavailable."""
         with pytest.raises(
@@ -133,7 +133,7 @@ class TestSelectValue:
 def test_gui_module_sets_tk_and_ttk_to_none_when_tkinter_import_fails():
     """Test module import fallback when tkinter import fails."""
     original_import = builtins.__import__
-    original_module = sys.modules.get("oemof.eesyplan.gui")
+    original_module = sys.modules.get("oemof.eesyplan.core.gui")
 
     def mocked_import(name, *args, **kwargs):
         if name == "tkinter":
@@ -141,10 +141,10 @@ def test_gui_module_sets_tk_and_ttk_to_none_when_tkinter_import_fails():
         return original_import(name, *args, **kwargs)
 
     try:
-        sys.modules.pop("oemof.eesyplan.gui", None)
+        sys.modules.pop("oemof.eesyplan.core.gui", None)
 
         with patch("builtins.__import__", side_effect=mocked_import):
-            gui = importlib.import_module("oemof.eesyplan.gui")
+            gui = importlib.import_module("oemof.eesyplan.core.gui")
 
         assert gui.tk is None
         assert gui.ttk is None
@@ -155,5 +155,5 @@ def test_gui_module_sets_tk_and_ttk_to_none_when_tkinter_import_fails():
         ):
             gui.select_value(["Option 1"])
     finally:
-        sys.modules.pop("oemof.eesyplan.gui", None)
-        sys.modules["oemof.eesyplan.gui"] = original_module
+        sys.modules.pop("oemof.eesyplan.core.gui", None)
+        sys.modules["oemof.eesyplan.core.gui"] = original_module

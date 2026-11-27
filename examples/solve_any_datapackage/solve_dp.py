@@ -8,11 +8,11 @@ from tkinter import filedialog
 from oemof.datapackage import datapackage  # noqa
 from oemof.eesyplan import export_results
 from oemof.eesyplan import import_results
+from oemof.eesyplan.core.model import optimise
 from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
 )
 from oemof.eesyplan.datapackage.energy_system import unzip_package
-from oemof.eesyplan.model import optimise
 from oemof.eesyplan.postprocessing import balance
 from oemof.tools.debugging import ExperimentalFeatureWarning
 from oemof.tools.logger import define_logging

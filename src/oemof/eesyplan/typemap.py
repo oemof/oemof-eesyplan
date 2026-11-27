@@ -1,5 +1,5 @@
-from oemof.eesyplan import HeatingNetwork
 from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.components.buses.network import HeatingNetwork
 from oemof.eesyplan.components.compensation.excess import Excess
 from oemof.eesyplan.components.compensation.shortage import Shortage
 from oemof.eesyplan.components.converters.auxiliary_heat import AuxiliaryHeat
@@ -49,7 +49,7 @@ from oemof.eesyplan.components.storages.thermal_storage import ThermalStorage
 from oemof.eesyplan.components.transport.heat import HeatingPipe
 from oemof.eesyplan.components.virtual.pricing import FlowPricing
 from oemof.eesyplan.components.virtual.pricing import PeakPricing
-from oemof.eesyplan.project import Project
+from oemof.eesyplan.core.project import Project
 
 TYPEMAP = {
     "CarrierBus": CarrierBus,

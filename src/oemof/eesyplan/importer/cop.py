@@ -16,24 +16,20 @@ def calculate_cop_simple(
     temperature_source: float | int | ArrayLike,
     temperature_supply: float | int | ArrayLike,
     quality_factor: float | int,
-):
+) -> float | int | ArrayLike:
     """
+    Simple COP calculation using the Carnot efficiency and a quality factor.
 
-    Parameters
-    ----------
-    temperature_source : float or array-like
-    temperature_supply : float or array-like
-    quality_factor : float or array-like
+    .. important:: Temperature input must have the same length.
 
-    Returns
-    -------
-    float or array-like
+    Args:
+        temperature_source: |temperature_source|
+        temperature_supply: |temperature_supply|
+        quality_factor: |quality_factor|
 
-    Examples
-    --------
-    >>> round(calculate_cop_simple(10.0, 55.0, 0.5), 2)
-    3.65
-
+    Examples:
+        >>> round(calculate_cop_simple(10.0, 55.0, 0.5), 2)
+        3.65
     """
     temperature_source = np.array(temperature_source)
     temperature_supply = np.array(temperature_supply)
@@ -57,37 +53,34 @@ def calculate_cop_tespy(
     capacity: float | int = 1000,
     pressure_loss_factor_hex: float | int = 1,
     eta_s: float | int = 0.55,
-):
+) -> float | int | ArrayLike:
     """
-    Temperature input must have the same length.
+    Advanced COP calculation using thermodynamic cycle simulation of TESPy.
 
-    Parameters
-    ----------
-    temperature_source
-    temperature_supply
-    capacity
-    refrigerant
-    pressure_loss_factor_hex
-    eta_s
+    .. important:: Temperature input must have the same length.
 
-    Returns
-    -------
+    Args:
+        temperature_source: |temperature_source|.
+        temperature_supply: |temperature_supply|.
+        refrigerant: |refrigerant|
+        capacity: |capacity|
+        pressure_loss_factor_hex: |pressure_loss_factor_hex|
+        eta_s: |eta_s|
 
-    Examples
-    --------
-    >>> c = calculate_cop_simple(10.0, [35, 45, 55], 0.5)
-    >>> [round(float(val), 2) for val in c]
-    [6.16, 4.54, 3.65]
-    >>> c = calculate_cop_tespy([10.0] * 3, [35, 45, 55])
-    >>> [round(float(val), 2) for val in c]
-    [6.33, 4.54, 3.52]
-    >>> c = calculate_cop_tespy([10.0] * 3, [35, 45, 55], refrigerant="R134a")
-    >>> [round(float(val), 2) for val in c]
-    [6.42, 4.62, 3.59]
-    >>> round(calculate_cop_simple(10, 40, 0.5), 2)
-    5.22
-    >>> round(calculate_cop_tespy(10, 40), 2)
-    5.29
+    Examples:
+        >>> c = calculate_cop_simple(10.0, [35, 45, 55], 0.5)
+        >>> [round(float(val), 2) for val in c]
+        [6.16, 4.54, 3.65]
+        >>> c = calculate_cop_tespy([10.0] * 3, [35, 45, 55])
+        >>> [round(float(val), 2) for val in c]
+        [6.33, 4.54, 3.52]
+        >>> c = calculate_cop_tespy([10.0] * 3, [35, 45, 55], refrigerant="R134a")
+        >>> [round(float(val), 2) for val in c]
+        [6.42, 4.62, 3.59]
+        >>> round(calculate_cop_simple(10, 40, 0.5), 2)
+        5.22
+        >>> round(calculate_cop_tespy(10, 40), 2)
+        5.29
     """
 
     if Network is None:

@@ -27,6 +27,7 @@ from oemof.datapackage.resultpackage.read import ImportResults
 from oemof.eesyplan import CarrierBus
 from oemof.eesyplan import export_results
 from oemof.eesyplan import import_results
+from oemof.eesyplan.core.model import optimise
 from oemof.eesyplan.dashboard.graphs_to_json import FIGURES
 from oemof.eesyplan.dashboard.graphs_to_json import sankey_to_json
 from oemof.eesyplan.datapackage.energy_system import (
@@ -35,7 +36,6 @@ from oemof.eesyplan.datapackage.energy_system import (
 from oemof.eesyplan.datapackage.energy_system import (
     get_component_type_mapping_from_dp,
 )
-from oemof.eesyplan.model import optimise
 from oemof.eesyplan.postprocessing.KPIs import _eesyplan_kpis
 from oemof.eesyplan.postprocessing.KPIs import calculate_all_kpis
 from oemof.tools.logger import define_logging

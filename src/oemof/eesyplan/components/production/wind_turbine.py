@@ -1,7 +1,7 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.project import Project
-from oemof.eesyplan.type_checks import test_capacity_not_set
+from oemof.eesyplan.core.project import Project
+from oemof.eesyplan.core.type_checks import capacity_not_set
 from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import Source
@@ -83,7 +83,7 @@ class WindTurbine(Source):
             installed_capacity=installed_capacity,
             maximum_capacity=maximum_capacity,
         )
-        test_capacity_not_set(self.nv)
+        capacity_not_set(self.nv)
         self.bus_out_electricity = bus_out_electricity
         self.input_timeseries = input_timeseries
         self.name = name

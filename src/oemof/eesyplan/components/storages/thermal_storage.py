@@ -1,7 +1,7 @@
 from numpy.typing import ArrayLike
 
 from oemof.eesyplan.components.storages.storage import EnergyStorage
-from oemof.eesyplan.project import Project
+from oemof.eesyplan.core.project import Project
 from oemof.solph import Bus
 
 

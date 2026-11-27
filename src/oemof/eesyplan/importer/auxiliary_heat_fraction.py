@@ -22,32 +22,27 @@ def calculate_top_up_fraction(
        0, & \text{für } T_{\mathrm{supply}} \leq T_{\mathrm{source}}.
        \end{cases}
 
-    Parameters
-    ----------
-    temperature_difference_source
-    temperature_source
-    temperature_supply
+    Args:
+        temperature_difference_source: |temperature_difference_source|
+        temperature_source: |temperature_source|
+        temperature_supply: |temperature_supply|
 
-    Returns
-    -------
-
-    Examples
-    --------
-    >>> a=5
-    >>> top_frac = calculate_top_up_fraction(
-    ...     temperature_difference_source=[40, 40, 80],
-    ...     temperature_source=[60, 80, 140],
-    ...     temperature_supply=[80, 80, 80],
-    ... )
-    >>> [round(float(t), 2) for t in top_frac]
-    [0.33, 0.0, 0.0]
-    >>> top_frac = calculate_top_up_fraction(
-    ...     temperature_difference_source=[40, 40, 40],
-    ...     temperature_source=[90, 90, 90],
-    ...     temperature_supply=[100, 110, 120],
-    ... )
-    >>> [round(float(t), 2) for t in top_frac]
-    [0.2, 0.33, 0.43]
+    Examples:
+        >>> a=5
+        >>> top_frac = calculate_top_up_fraction(
+        ...     temperature_difference_source=[40, 40, 80],
+        ...     temperature_source=[60, 80, 140],
+        ...     temperature_supply=[80, 80, 80],
+        ... )
+        >>> [round(float(t), 2) for t in top_frac]
+        [0.33, 0.0, 0.0]
+        >>> top_frac = calculate_top_up_fraction(
+        ...     temperature_difference_source=[40, 40, 40],
+        ...     temperature_source=[90, 90, 90],
+        ...     temperature_supply=[100, 110, 120],
+        ... )
+        >>> [round(float(t), 2) for t in top_frac]
+        [0.2, 0.33, 0.43]
     """
     temperature_supply = np.array(temperature_supply)
     temperature_source = np.array(temperature_source)
@@ -96,38 +91,33 @@ def calculate_fluid_mixture(
        0, & \text{für } T_{\mathrm{supply}} \leq T_{\mathrm{source}}.
        \end{cases}
 
-    Parameters
-    ----------
-    temperature_difference_source
-    temperature_difference_aux
-    temperature_aux
-    temperature_source
-    temperature_supply
+    Args:
+        temperature_supply: |temperature_supply|
+        temperature_aux: |temperature_aux|
+        temperature_source: |temperature_source|
+        temperature_difference_aux: |temperature_difference_aux|
+        temperature_difference_source: |temperature_difference_source|
 
-    Returns
-    -------
-
-    Examples
-    --------
-    >>> a=5
-    >>> top_frac = calculate_fluid_mixture(
-    ...     temperature_difference_source=[20, 40, 60],
-    ...     temperature_difference_aux=[60, 60, 60],
-    ...     temperature_source=[60, 80, 100],
-    ...     temperature_supply=[80, 80, 80],
-    ...     temperature_aux=[100, 100, 101],
-    ... )
-    >>> [round(abs(float(t)), 3) for t in top_frac]
-    [0.75, 0.0, 0.0]
-    >>> top_frac = calculate_fluid_mixture(
-    ...     temperature_difference_source=[40, 40, 40],
-    ...     temperature_difference_aux=[80, 80, 80],
-    ...     temperature_source=[90, 90, 90],
-    ...     temperature_supply=[100, 110, 120],
-    ...     temperature_aux=[130, 130, 130],
-    ... )
-    >>> [round(abs(float(t)), 3) for t in top_frac]
-    [0.4, 0.667, 0.857]
+    Examples:
+        >>> a=5
+        >>> top_frac = calculate_fluid_mixture(
+        ...     temperature_difference_source=[20, 40, 60],
+        ...     temperature_difference_aux=[60, 60, 60],
+        ...     temperature_source=[60, 80, 100],
+        ...     temperature_supply=[80, 80, 80],
+        ...     temperature_aux=[100, 100, 101],
+        ... )
+        >>> [round(abs(float(t)), 3) for t in top_frac]
+        [0.75, 0.0, 0.0]
+        >>> top_frac = calculate_fluid_mixture(
+        ...     temperature_difference_source=[40, 40, 40],
+        ...     temperature_difference_aux=[80, 80, 80],
+        ...     temperature_source=[90, 90, 90],
+        ...     temperature_supply=[100, 110, 120],
+        ...     temperature_aux=[130, 130, 130],
+        ... )
+        >>> [round(abs(float(t)), 3) for t in top_frac]
+        [0.4, 0.667, 0.857]
 
     """
     temperature_supply = np.array(temperature_supply)

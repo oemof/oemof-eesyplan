@@ -16,6 +16,14 @@ heat, gas).
         :undoc-members:
         :show-inheritance:
 
+.. dropdown:: Heating Network
+
+    .. automodule:: oemof.eesyplan.components.buses.network
+        :members:
+        :undoc-members:
+        :show-inheritance:
+
+
 
 Compensation
 ------------
@@ -76,14 +84,6 @@ and CHP units.
         :show-inheritance:
 
 
-.. dropdown:: Fuel Generator
-
-    .. automodule:: oemof.eesyplan.components.converters.fuel_generator
-        :members:
-        :undoc-members:
-        :show-inheritance:
-
-
 .. dropdown:: Electrical Transformer
 
     .. automodule:: oemof.eesyplan.components.converters.electrical_transformator
@@ -103,6 +103,14 @@ and CHP units.
 .. dropdown:: Fuel Cell
 
     .. automodule:: oemof.eesyplan.components.converters.fuel_cell
+        :members:
+        :undoc-members:
+        :show-inheritance:
+
+
+.. dropdown:: Fuel Generator
+
+    .. automodule:: oemof.eesyplan.components.converters.fuel_generator
         :members:
         :undoc-members:
         :show-inheritance:
@@ -214,6 +222,14 @@ Generation components such as PV, wind, biogas and geothermal plants.
         :show-inheritance:
 
 
+.. dropdown:: Source (General Source)
+
+    .. automodule:: oemof.eesyplan.components.production.source
+        :members:
+        :undoc-members:
+        :show-inheritance:
+
+
 .. dropdown:: Wind Turbine
 
     .. automodule:: oemof.eesyplan.components.production.wind_turbine
@@ -281,6 +297,14 @@ Storage components for electrical, thermal, fuel and hydrogen energy.
         :show-inheritance:
 
 
+.. dropdown:: Energy Storage (Base Class)
+
+    .. automodule:: oemof.eesyplan.components.storages.storage
+        :members:
+        :undoc-members:
+        :show-inheritance:
+
+
 .. dropdown:: Fuel Storage
 
     .. automodule:: oemof.eesyplan.components.storages.fuel_storage
@@ -297,17 +321,43 @@ Storage components for electrical, thermal, fuel and hydrogen energy.
         :show-inheritance:
 
 
-.. dropdown:: Energy Storage (Base Class)
+.. dropdown:: Thermal Storage
 
-    .. automodule:: oemof.eesyplan.components.storages.storage
+    .. automodule:: oemof.eesyplan.components.storages.thermal_storage
         :members:
         :undoc-members:
         :show-inheritance:
 
 
-.. dropdown:: Thermal Storage
+Transport
+---------
 
-    .. automodule:: oemof.eesyplan.components.storages.thermal_storage
+Transmission components for spatial energy transport.
+
+.. dropdown:: Heating Pipe
+
+    .. automodule:: oemof.eesyplan.components.transport.heat
+        :members:
+        :undoc-members:
+        :show-inheritance:
+
+
+Virtual
+-------
+
+Virtual components used for pricing and evaluation purposes.
+
+.. dropdown:: Flow Pricing
+
+    .. autoclass:: oemof.eesyplan.components.virtual.pricing.FlowPricing
+        :members:
+        :undoc-members:
+        :show-inheritance:
+
+
+.. dropdown:: Peak Pricing
+
+    .. autoclass:: oemof.eesyplan.components.virtual.pricing.PeakPricing
         :members:
         :undoc-members:
         :show-inheritance:

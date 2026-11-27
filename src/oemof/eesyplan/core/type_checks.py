@@ -63,7 +63,7 @@ def normalise(
     return float(arr) if arr.ndim == 0 else arr
 
 
-def test_capacity_not_set(capacity):
+def capacity_not_set(capacity):
     if capacity is None:
         msg = "The 'installed capacity' must be set for existing components."
         raise ValueError(msg)
