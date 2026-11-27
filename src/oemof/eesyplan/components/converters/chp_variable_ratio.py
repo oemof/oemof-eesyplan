@@ -1,8 +1,8 @@
 import numpy as np
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.project import Project
-from oemof.eesyplan.type_checks import normalise
+from oemof.eesyplan.core.project import Project
+from oemof.eesyplan.core.type_checks import normalise
 from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph.components import VariableSplitConverter

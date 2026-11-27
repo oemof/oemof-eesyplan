@@ -3,11 +3,10 @@ from pathlib import Path
 
 import pandas as pd
 from numpy.typing import ArrayLike
+
 from oemof.demand import bdew
-
-from oemof.eesyplan.gui import select_value
-from oemof.eesyplan.io import unzip_package
-
+from oemof.eesyplan.core.gui import select_value
+from oemof.eesyplan.core.io import unzip_package
 
 PROFILE_TYPES_HEAT_BDEW = {
     "EFH": "Single-family house",
@@ -46,9 +45,9 @@ def import_heat_demand_f_heat(file, network=None):
 def create_heat_demand(
     outdoor_temperature: ArrayLike,
     profile_type: str,
-    annual_heat_demand: float|int,
+    annual_heat_demand: float | int,
     building_year: int,
-    wind_class: str ="not windy",
+    wind_class: str = "not windy",
     # todo: add a function to "restore variability or randomness to a profile"
 ):
     """
@@ -94,8 +93,12 @@ def create_heat_demand(
 
     building_class = 0
 
-    if profile_type in ("Single-family house", "Apartment building", "EFH",
-                        "MFH"):
+    if profile_type in (
+        "Single-family house",
+        "Apartment building",
+        "EFH",
+        "MFH",
+    ):
         match building_year:
             case y if y <= 1918:
                 building_class = 1

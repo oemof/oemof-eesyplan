@@ -1,4 +1,4 @@
-from oemof.eesyplan.investment import calculate_annuity
+from oemof.eesyplan.core.investment import calculate_annuity
 from oemof.solph import Investment
 
 

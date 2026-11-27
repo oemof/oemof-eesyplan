@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from oemof.eesyplan.io import unzip_package
+from oemof.eesyplan.core.io import unzip_package
 
 
 class TestUnzipPackage:

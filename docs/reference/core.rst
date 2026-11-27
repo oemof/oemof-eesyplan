@@ -87,7 +87,7 @@ Mapping of datapackage identifiers to the corresponding component classes.
 
 .. dropdown:: Type Mapping (TYPEMAP)
 
-    .. automodule:: oemof.eesyplan.core.typemap
+    .. automodule:: oemof.eesyplan.typemap
         :members:
         :undoc-members:
         :show-inheritance:

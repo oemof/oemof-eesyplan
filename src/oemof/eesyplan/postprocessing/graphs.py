@@ -6,9 +6,9 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.colors import qualitative
 
-from oemof.eesyplan import CarrierBus
-from oemof.eesyplan import EnergySystem
-from oemof.eesyplan import Shortage
+from oemof.eesyplan.components.buses.carrier import CarrierBus
+from oemof.eesyplan.components.compensation.shortage import Shortage
+from oemof.eesyplan.datapackage.energy_system import EnergySystem
 from oemof.eesyplan.postprocessing.KPIs import _column_parts
 from oemof.eesyplan.postprocessing.KPIs import _eesyplan_kpis
 from oemof.eesyplan.postprocessing.KPIs import _owner_map
@@ -646,7 +646,7 @@ def capacities_graph(
     ----------
     invest : pandas.DataFrame
         Obtained from oemof.solph.Result object accessing the 'invest' key
-    energy_system : oemof.eesyplan.model.EnergySystem
+    energy_system : oemof.eesyplan.core.model.EnergySystem
 
     Returns
     -------

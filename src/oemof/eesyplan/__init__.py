@@ -52,14 +52,14 @@ from oemof.eesyplan.components.storages.thermal_storage import ThermalStorage
 from oemof.eesyplan.components.transport.heat import HeatingPipe
 from oemof.eesyplan.components.virtual.pricing import FlowPricing
 from oemof.eesyplan.components.virtual.pricing import PeakPricing
-from oemof.eesyplan.datapackage.results import export_results
-from oemof.eesyplan.datapackage.results import import_results
 from oemof.eesyplan.core.model import EnergySystem
 from oemof.eesyplan.core.model import Results
 from oemof.eesyplan.core.model import optimise
 from oemof.eesyplan.core.project import Project
-from oemof.eesyplan.core.typemap import TYPEMAP
-from oemof.eesyplan.core.weather.weather_data import WeatherData
+from oemof.eesyplan.datapackage.results import export_results
+from oemof.eesyplan.datapackage.results import import_results
+from oemof.eesyplan.typemap import TYPEMAP
+from oemof.eesyplan.weather.weather_data import WeatherData
 
 __all__ = [
     "DSO",

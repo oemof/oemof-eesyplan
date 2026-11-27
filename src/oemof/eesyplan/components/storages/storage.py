@@ -1,8 +1,8 @@
 from numpy.typing import ArrayLike
 
-from oemof.eesyplan.project import Project
-from oemof.eesyplan.type_checks import normalise
-from oemof.eesyplan.type_checks import test_capacity_not_set
+from oemof.eesyplan.core.project import Project
+from oemof.eesyplan.core.type_checks import capacity_not_set
+from oemof.eesyplan.core.type_checks import normalise
 from oemof.solph import Bus
 from oemof.solph import Flow
 from oemof.solph import Investment
@@ -138,7 +138,7 @@ class EnergyStorage(GenericStorage):
             invest_relation_input_capacity = self.c_rate_charge
             invest_relation_output_capacity = self.c_rate_discharge
         else:
-            test_capacity_not_set(self.nv)
+            capacity_not_set(self.nv)
             self.capacity_charge = self.nv * self.c_rate_charge
             self.capacity_discharge = self.nv * self.c_rate_discharge
             invest_relation_input_capacity = None

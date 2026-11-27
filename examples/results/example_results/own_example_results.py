@@ -20,7 +20,7 @@ from oemof.eesyplan import ThermalStorage
 from oemof.eesyplan import WindTurbine
 from oemof.eesyplan import export_results
 from oemof.eesyplan import import_results
-from oemof.eesyplan.model import optimise
+from oemof.eesyplan.core.model import optimise
 from oemof.eesyplan.postprocessing import graphs
 from oemof.eesyplan.postprocessing.KPIs import calculate_all_kpis
 from oemof.eesyplan.postprocessing.KPIs import compare_KPIs

@@ -349,15 +349,15 @@ Virtual components used for pricing and evaluation purposes.
 
 .. dropdown:: Flow Pricing
 
-    .. automodule:: oemof.eesyplan.components.virtual.pricing
-        :members: FlowPricing
+    .. autoclass:: oemof.eesyplan.components.virtual.pricing.FlowPricing
+        :members:
         :undoc-members:
         :show-inheritance:
 
 
 .. dropdown:: Peak Pricing
 
-    .. automodule:: oemof.eesyplan.components.virtual.pricing
-        :members: PeakPricing
+    .. autoclass:: oemof.eesyplan.components.virtual.pricing.PeakPricing
+        :members:
         :undoc-members:
         :show-inheritance:

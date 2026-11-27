@@ -6,9 +6,9 @@ from pathlib import Path
 from datapackage import Package
 
 from oemof.datapackage import datapackage  # noqa
+from oemof.eesyplan.core.io import unzip_package
+from oemof.eesyplan.core.model import optimise
 from oemof.eesyplan.datapackage.results import export_results
-from oemof.eesyplan.io import unzip_package
-from oemof.eesyplan.model import optimise
 from oemof.eesyplan.typemap import TYPEMAP
 from oemof.network import graph
 from oemof.solph import EnergySystem

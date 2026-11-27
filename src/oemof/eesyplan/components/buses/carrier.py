@@ -1,4 +1,4 @@
-from oemof.eesyplan.type_checks import normalise
+from oemof.eesyplan.core.type_checks import normalise
 from oemof.solph import Bus as SolphBus
 from oemof.solph import Flow
 from oemof.solph.components import Sink

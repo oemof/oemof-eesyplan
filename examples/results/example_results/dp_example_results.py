@@ -6,10 +6,10 @@ from oemof.datapackage import datapackage  # noqa
 from oemof.eesyplan import ThermalStorage
 from oemof.eesyplan import export_results
 from oemof.eesyplan import import_results
+from oemof.eesyplan.core.model import optimise
 from oemof.eesyplan.datapackage.energy_system import (
     create_energy_system_from_dp,
 )
-from oemof.eesyplan.model import optimise
 from oemof.eesyplan.postprocessing import balance
 from oemof.eesyplan.postprocessing import graphs
 from oemof.eesyplan.postprocessing.KPIs import calculate_all_kpis
