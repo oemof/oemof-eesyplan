@@ -12,6 +12,24 @@ from oemof.eesyplan.importer import heat_demand as heat
 from oemof.eesyplan.weather import weather_data as weather
 
 
+PROFILE_TYPES_HEAT_BDEW = [
+    "Single-family house",
+    "Apartment building",
+    "Commerce/Services general",
+    "Household-like business enterprises",
+    "Restaurants",
+    "Retail and wholesale",
+    "Metal and automotive",
+    "Accommodation",
+    "Local authorities, credit institutions and insurancecompanies",
+    "Other operational services",
+    "Laundries, dry cleaning",
+    "Horticulture",
+    "Bakery",
+    "Paper and printing",
+]
+
+
 def create_test_heat_demand_data(periods=48, seed=42):
     """Create test heat demand data with random values using a seed"""
     np.random.seed(seed)
@@ -65,7 +83,6 @@ def test_f_heat_importer_with_mocked_select_value(heat_demand_zip_file):
     mock_select_value.assert_called_once()
 
 
-PROFILE_TYPES_HEAT_BDEW = heat.PROFILE_TYPES_HEAT_BDEW
 WIND_CLASS = ["Windy", "Not windy"]
 YEARS = [1918, 1948, 1957, 1968, 1978, 1983, 1994, 1999, 2006, 2010, 2011]
 

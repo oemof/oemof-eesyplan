@@ -1,22 +1,23 @@
 import numpy as np
 import pandas as pd
 import pvlib
+from numpy.typing import ArrayLike
 
 
 def create_pv_production_timeseries(
-    latitude,
-    longitude,
-    direct_irradiation_horizontal,
-    diffuse_irradiation_horizontal,
-    azimuth=180,
-    tilt=15.0,
-    system_eff=0.80,
-    mounting_type="fix tilt",
-    start_datetime="2021-01-01 0:00",
-    tz="Europe/Berlin",
-    gcr=0.5,
-    max_angle=60,
-    albedo=0.25,
+    latitude: float | int,
+    longitude: float | int,
+    direct_irradiation_horizontal: ArrayLike,
+    diffuse_irradiation_horizontal: ArrayLike,
+    azimuth: float | int = 180,
+    tilt: float | int = 15.0,
+    system_eff: float | int = 0.80,
+    mounting_type: str = "fix tilt",
+    start_datetime: str = "2021-01-01 0:00",
+    tz: str = "Europe/Berlin",
+    gcr: float | int = 0.5,
+    max_angle: float | int = 60,
+    albedo: float | int = 0.25,
 ):
     """
     This is an internal function based on PV-lib. It creates a simple
@@ -31,81 +32,66 @@ def create_pv_production_timeseries(
     datapoint of the weatherdata. The length of the resulting timeseries is
     then automatically set to the length of the weatherdata.
 
-    start_datetime : str
-        timestamp in datetime format, (default: "2021-01-01 0:00")
-    tz : str
-        timezone in datetime format, (default: "Europe/Berlin")
-    direct_solar_wm2 : array-like with hourly timestep
-        direct solar radiation on the horizontal plane in W/m²
-    diffuse_solar_wm2 : array-like with hourly timestep
-        diffuse solar radiation on the horizontal plane in W/m²
-    tilt: numeric
-        Tilt angle in degrees (0° is horizontal, 90° is vertical)
-    azimuth: numeric
-        for fix tilt: Azimuth angle of the module orientation in degrees
-        (North is 0°, East is 90°...)
-        for tracker: Azimuth angle of the rotation-axis for tracking systems
-    system_efficiency: numeric
-        Performace Ratio of the total PV-system (usually around 0,8)
-    gcr: numeric
-        Ground Coverage Ratio (Ratio of the module-area to the ground-area of
-        the modulefield), only needed for tracker
-    mounting_type: string
-        "fix tilt" for static systems with one orientation,
-        "fix tilt two directions back to back" for an east-west like system
-        (only one orientation is given, the other one is set up automatically),
-        "tracker" for 1-axis tracking systems
-    albedo: numeric
-        Reflection fraction of sunligth in the surrounding area (default: 0.25)
-    max_angle: numeric
-        Maximum tilt angle for tracking system (default: 60°). This value is
-        only used for 'tracker' systems.
+    Args:
+        latitude: |latitude|
+        longitude: |longitude|
+        direct_irradiation_horizontal: |direct_irradiation_horizontal|
+        diffuse_irradiation_horizontal: |diffuse_irradiation_horizontal|
+        azimuth: |azimuth|
+        tilt: |tilt|
+        system_eff: |system_eff|
+        mounting_type: |mounting_type|
+        start_datetime: |start_datetime|
+        tz: |tz|
+        gcr: |gcr|
+        max_angle: |max_angle|
+        albedo: |albedo|
 
 
-    Example
-    >>> from oemof.eesyplan import WeatherData
-    >>> weather_data = WeatherData()
-    >>> weather_data.latitude = 52
-    >>> weather_data.longitude = 13
-    >>> weather_data.direct_solar_wm2=[100, 100, 100, 100, 100]
-    >>> weather_data.diffuse_solar_wm2=[100, 100, 100, 100, 100]
-    >>> production_timeseries_south = create_pv_production_timeseries(
-    ...     latitude=weather_data.latitude,
-    ...     longitude=weather_data.longitude,
-    ...     direct_irradiation_horizontal=weather_data.direct_solar_wm2,
-    ...     diffuse_irradiation_horizontal=weather_data.diffuse_solar_wm2,
-    ...     azimuth=180,
-    ...     tilt=30.0,
-    ...     system_eff=1,
-    ...     mounting_type="fix tilt",
-    ...     start_datetime="2021-01-01 6:00",
-    ...     tz="Europe/Berlin",
-    ...     gcr=0.5,
-    ...     max_angle=60,
-    ...     albedo=0.25,
-    ...     )
-    >>> round(float(production_timeseries_south.sum()),1)
-    1.2
-    >>> production_timeseries_east_west=create_pv_production_timeseries(
-    ...     latitude=weather_data.latitude,
-    ...     longitude=weather_data.longitude,
-    ...     direct_irradiation_horizontal=weather_data.direct_solar_wm2,
-    ...     diffuse_irradiation_horizontal=weather_data.diffuse_solar_wm2,
-    ...     azimuth=93, #273° added automatically
-    ...     tilt=10,
-    ...     system_eff=0.85,
-    ...     mounting_type="fix tilt two directions back to back",
-    ...     )
-    >>> production_timeseries_tracker=create_pv_production_timeseries(
-    ...     latitude=weather_data.latitude,
-    ...     longitude=weather_data.longitude,
-    ...     direct_irradiation_horizontal=weather_data.direct_solar_wm2,
-    ...     diffuse_irradiation_horizontal=weather_data.diffuse_solar_wm2,
-    ...     azimuth=180,
-    ...     system_eff=0.85,
-    ...     mounting_type="tracker",
-    ...     gcr = 0.5,
-    ...     )
+    Example:
+        >>> from oemof.eesyplan import WeatherData
+        >>> weather_data = WeatherData()
+        >>> weather_data.latitude = 52
+        >>> weather_data.longitude = 13
+        >>> weather_data.direct_solar_wm2=[100, 100, 100, 100, 100]
+        >>> weather_data.diffuse_solar_wm2=[100, 100, 100, 100, 100]
+        >>> production_timeseries_south = create_pv_production_timeseries(
+        ...     latitude=weather_data.latitude,
+        ...     longitude=weather_data.longitude,
+        ...     direct_irradiation_horizontal=weather_data.direct_solar_wm2,
+        ...     diffuse_irradiation_horizontal=weather_data.diffuse_solar_wm2,
+        ...     azimuth=180,
+        ...     tilt=30.0,
+        ...     system_eff=1,
+        ...     mounting_type="fix tilt",
+        ...     start_datetime="2021-01-01 6:00",
+        ...     tz="Europe/Berlin",
+        ...     gcr=0.5,
+        ...     max_angle=60,
+        ...     albedo=0.25,
+        ...     )
+        >>> round(float(production_timeseries_south.sum()),1)
+        1.2
+        >>> production_timeseries_east_west=create_pv_production_timeseries(
+        ...     latitude=weather_data.latitude,
+        ...     longitude=weather_data.longitude,
+        ...     direct_irradiation_horizontal=weather_data.direct_solar_wm2,
+        ...     diffuse_irradiation_horizontal=weather_data.diffuse_solar_wm2,
+        ...     azimuth=93, #273° added automatically
+        ...     tilt=10,
+        ...     system_eff=0.85,
+        ...     mounting_type="fix tilt two directions back to back",
+        ...     )
+        >>> production_timeseries_tracker=create_pv_production_timeseries(
+        ...     latitude=weather_data.latitude,
+        ...     longitude=weather_data.longitude,
+        ...     direct_irradiation_horizontal=weather_data.direct_solar_wm2,
+        ...     diffuse_irradiation_horizontal=weather_data.diffuse_solar_wm2,
+        ...     azimuth=180,
+        ...     system_eff=0.85,
+        ...     mounting_type="tracker",
+        ...     gcr = 0.5,
+        ...     )
     """
     steps = len(direct_irradiation_horizontal)
 
@@ -246,4 +232,4 @@ def create_pv_production_timeseries(
 
         ac = (ac + ac2) / 2
 
-    return ac.reset_index(drop=True)
+    return ac.values

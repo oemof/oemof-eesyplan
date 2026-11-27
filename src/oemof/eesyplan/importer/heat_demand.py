@@ -2,14 +2,34 @@ import datetime
 from pathlib import Path
 
 import pandas as pd
-
+from numpy.typing import ArrayLike
 from oemof.demand import bdew
+
 from oemof.eesyplan.gui import select_value
 from oemof.eesyplan.io import unzip_package
 
 
-def import_heat_demand_f_heat(path, network=None):
-    temp_path = unzip_package(path)
+PROFILE_TYPES_HEAT_BDEW = {
+    "EFH": "Single-family house",
+    "MFH": "Apartment building",
+    "GHD": "Commerce/Services general",
+    "GMF": "Household-like business enterprises",
+    "GGA": "Restaurants",
+    "GHA": "Retail and wholesale",
+    "GMK": "Metal and automotive",
+    "GBH": "Accommodation",
+    "GKO": "Local authorities, credit institutions and insurancecompanies",
+    "GBD": "Other operational services",
+    "GWA": "Laundries, dry cleaning",
+    "GGB": "Horticulture",
+    "GBA": "Bakery",
+    "GPD": "Paper and printing",
+}
+
+
+def import_heat_demand_f_heat(file, network=None):
+    """Import f-heat heat demand from zip-file."""
+    temp_path = unzip_package(file)
     networks = {
         f.stem.split("_")[-1]: f for f in Path(temp_path.name).rglob("*.xlsx")
     }
@@ -23,46 +43,12 @@ def import_heat_demand_f_heat(path, network=None):
     return df
 
 
-PROFILE_TYPES_HEAT_BDEW = [
-    "Single-family house",
-    "Apartment building",
-    "Commerce/Services general",
-    "Household-like business enterprises",
-    "Restaurants",
-    "Retail and wholesale",
-    "Metal and automotive",
-    "Accommodation",
-    "Local authorities, credit institutions and insurancecompanies",
-    "Other operational services",
-    "Laundries, dry cleaning",
-    "Horticulture",
-    "Bakery",
-    "Paper and printing",
-]
-PROFILE_TYPES_HEAT_BDEW_ABBR = [
-    "EFH",
-    "MFH",
-    "GHD",
-    "GMF",
-    "GGA",
-    "GMF",
-    "GMK",
-    "GBH",
-    "GKO",
-    "GBD",
-    "GWA",
-    "GGB",
-    "GBA",
-    "GPD",
-]
-
-
 def create_heat_demand(
-    outdoor_temperature,
-    profile_type,
-    annual_heat_demand,
-    building_year,
-    wind_class="not windy",
+    outdoor_temperature: ArrayLike,
+    profile_type: str,
+    annual_heat_demand: float|int,
+    building_year: int,
+    wind_class: str ="not windy",
     # todo: add a function to "restore variability or randomness to a profile"
 ):
     """
@@ -74,44 +60,23 @@ def create_heat_demand(
     aggregated demand studies but not ideal for simulating individual building
     peaks.
 
-
-    outdoor_temperature: numeric (scalar or iterable)
-        Outside Air-temperature in °C
-    profile_type: str
-        A BDWD profile can be chosen. Available BDEW heat profiles are:
-
-        "EFH" or "Single-family house"
-        "MFH" or "Apartment building"
-        "GHD" or "Commerce/Services general"
-        "GMF" or "Household-like business enterprises"
-        "GGA" or "Restaurants"
-        "GBH" or "Retail and wholesale"
-        "GMK" or "Metal and automotive"
-        "GBH" or "Accommodation"
-        "GKO" or "Local authorities, credit institutions and insurancecompanies"
-        "GBD" or "Other operational services"
-        "GWA" or "Laundries, dry cleaning"
-        "GGB" or "Horticulture"
-        "GBA" or "Bakery"
-        "GPD" or "Paper and printing"
-
-    annual_heat_demand: numeric
-        total heat demand in the chosen timeperiod
-    building_year: int
-        Only for residential buildings (estimating insulation)
-    wind_class: str
-        "Windy" for exposed buildings on free fields / near coast / high ground
-        "Not windy" for unexposed buildings in villages / cities
+    Args:
+        outdoor_temperature: |outdoor_temperature|
+        profile_type: |profile_type|
+        annual_heat_demand: |annual_heat_demand|
+        building_year: |building_year|
+        wind_class: |wind_class|
+        building_year: |building_year|
+        wind_class: |wind_class|
 
     Example:
-
-    >>> from oemof.demand import bdew
-    >>> heat_demand = create_heat_demand(
-    ...     outdoor_temperature=[3] * 8760,
-    ...     profile_type="Single-family house",
-    ...     annual_heat_demand=231,
-    ...     building_year=1992,
-    ...     wind_class="Not windy",)
+        >>> from oemof.demand import bdew
+        >>> heat_demand = create_heat_demand(
+        ...     outdoor_temperature=[3] * 8760,
+        ...     profile_type="Single-family house",
+        ...     annual_heat_demand=231,
+        ...     building_year=1992,
+        ...     wind_class="Not windy",)
     """
 
     # todo: get time from project
@@ -126,14 +91,11 @@ def create_heat_demand(
             wind_class = 1
         case _:  # pragma: no cover
             pass
-    if profile_type not in [
-        "Single-family house",
-        "Apartment building",
-        "EFH",
-        "MFH",
-    ]:
-        building_class = 0
-    else:
+
+    building_class = 0
+
+    if profile_type in ("Single-family house", "Apartment building", "EFH",
+                        "MFH"):
         match building_year:
             case y if y <= 1918:
                 building_class = 1
@@ -157,8 +119,6 @@ def create_heat_demand(
                 building_class = 10
             case y if y >= 2011:
                 building_class = 11
-            case _:  # pragma: no cover
-                pass
 
     match profile_type:
         case "Single-family house":
@@ -189,12 +149,15 @@ def create_heat_demand(
             profile_type = "GBA"
         case "Paper and printing":
             profile_type = "GPD"
-        case _ if profile_type in PROFILE_TYPES_HEAT_BDEW_ABBR:
+        case _ if profile_type in PROFILE_TYPES_HEAT_BDEW.keys():
             pass
         case _:  # pragma: no cover
             return "Unknown value"
 
-    holidays = {  # ToDo: Create a more accurate table based on location of project
+    # ToDo: https://github.com/workalendar/workalendar
+    #  This package could be an optional dependency:
+    #  pip install oemof-eesyplan[importer]
+    holidays = {
         datetime.date(times[0].year, 1, 1): "New year",
         datetime.date(times[0].year, 5, 1): "Labour Day",
         datetime.date(times[0].year, 10, 3): "Day of German Unity",
