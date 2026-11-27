@@ -843,32 +843,37 @@ def _project_duration(es, project_duration=None):
 
 
 def project_cost_table(results, es, project_duration=None):
-    """Total project costs per component over the project duration.
+    """
+    Total project costs per component over the project duration.
 
-        Unlike :func:`yearly_project_costs` this table is not annualised and
-        spans the whole project duration (``economic_period``):
+    Unlike :func:`yearly_project_costs` this table is not annualised and
+    spans the whole project duration (``economic_period``):
 
-        - ``Component``: readable label of every top-level component
-        - ``Investment cost in year 0 (not including reinvestment)``: one-time
-          investment ``capex_spec * capacity``
-        - ``Reinvestment cost over the full project``: full project investment
-          (``annualized investment cost * project_duration``) minus the year 0
-          investment
-        - ``Fix operational costs over project duration``: ``opex_spec *
-          capacity * project_duration``
-        - ``Dispatch costs over project duration``: yearly variable costs *
-          ``project_duration``
+    ``Component``: readable label of every top-level component
 
-        Components with an ``installed_capacity`` are not optimised.  They
+    ``Investment cost in year 0 (not including reinvestment)``: one-time
+      investment ``capex_spec * capacity``
+
+    ``Reinvestment cost over the full project``: full project investment
+      (``annualised investment cost * project_duration``) minus the year 0
+      investment
+
+    ``Fix operational costs over project duration``:
+      ``opex_spec * capacity * project_duration``
+
+    ``Dispatch costs over project duration``: yearly variable
+      costs * ``project_duration``
+
+    Components with an ``installed_capacity`` are not optimised.  They
     were built before the project, so they have no investment cost in
     year 0, but their operational costs are accounted for over the
-    project duration.  Reinvestments for installed components are
-    included based on their annualized replacement cost.
+    project duration. Reinvestment for installed components are
+    included based on their annualised replacement cost.
 
     The flat fix costs are included as well: the ``investment_fix_cost``
     of new components is part of the year 0 investment, its annualised
-    value is part of the reinvestment cost over the full project and the
-    ``annual_fix_cost`` is part of the fixed operational costs.
+    value is part of the reinvestment cost over the full project
+    and the ``annual_fix_cost`` is part of the fixed operational costs.
 
     The project duration is read from the ``economic_period`` of the
     project attached to the energy system. If none is found, a warning is
