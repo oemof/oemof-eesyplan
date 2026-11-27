@@ -15,12 +15,14 @@ from oemof.solph.components import Source
 META_KEYS = {"Problem", "Solution", "Solver"}
 
 # Namespace in the results object that holds all calculated eesyplan KPIs.
+# ToDo: Should be stored as kpis.csv and not json.
 EESYPLAN_KEY = "eesyplan"
 
 # All eesyplan demand components (they are the sinks that consume energy).
 DEMAND_TYPES = (Demand, FuelDemand, H2Demand, HeatDemand)
 
 
+# ToDo: All calculations of KPIs should be stand-alone functions.
 def calculate_all_kpis(results, es, project_duration=None):
     """Calculate every KPI and write it into the results object.
 
@@ -28,11 +30,14 @@ def calculate_all_kpis(results, es, project_duration=None):
     ``results["eesyplan"]``. The order matters: :func:`LCOE` uses the
     ``total_cost`` calculated first.
     """
-    total_cost(results, es)
-    LCOE(results, es)
-    renewable_share(results, es)
+    kpis = {
+        "total_cost": total_cost(results, es),
+        "lcoe": LCOE(results, es),
+        "renewable_share": renewable_share(results, es),
+    }
     yearly_project_costs(results, es)
     project_cost_table(results, es, project_duration=project_duration)
+    return pd.Series(kpis)
 
 
 def compare_KPIs(datasets, es=None, name="Scenario") -> pd.DataFrame:
@@ -305,6 +310,7 @@ def LCOE(results, es):
             for column in considered_flows
         ],
     )
+    return lcoe
 
 
 def _norm_label(label):
@@ -359,8 +365,9 @@ def renewable_share(results, es):
         )
         total_energy += energy
         renewable_energy += energy * _renewable_fraction(node)
-
-    _store_result(results, "renewable_share", renewable_energy / total_energy)
+    share = renewable_energy / total_energy
+    _store_result(results, "renewable_share", share)
+    return share
 
 
 def _top_level_node(node):
@@ -1016,8 +1023,10 @@ def total_cost(results, es):
     The result is written to ``results["eesyplan"]["total_cost"]``.
     """
     objective = get_objective(results)
+    cost = objective + _additional_installed_costs(results, es)
     _store_result(
         results,
         "total_cost",
-        objective + _additional_installed_costs(results, es),
+        cost,
     )
+    return cost

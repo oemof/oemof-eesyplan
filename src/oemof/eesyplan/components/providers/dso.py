@@ -71,6 +71,8 @@ class DSO(Node):
 
         super().__init__(label=self.name)
 
+        # ToDo: Error if feedin_tariff is higher than energy_price!
+
         if energy_price is None and feedin_tariff is None:
             raise ValueError(
                 "Either energy_price or feedin_tariff must be set"
